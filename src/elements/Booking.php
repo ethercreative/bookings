@@ -15,6 +15,7 @@ use craft\base\Element;
 use craft\elements\db\ElementQuery;
 use craft\elements\db\ElementQueryInterface;
 use craft\models\FieldLayout;
+use ether\bookings\elements\db\BookingQuery;
 use yii\base\InvalidConfigException;
 
 /**
@@ -91,11 +92,17 @@ use yii\base\InvalidConfigException;
  *
  *
  * @author    Ether Creative
- * @package   Bookings
+ * @package   ether\bookings\elements
  * @since     1.0.0-alpha.1
  */
 class Booking extends Element
 {
+
+	// Properties
+	// =========================================================================
+
+	static $tableName = '{{%products}}';
+	static $tableNameClean = 'products';
 
 	// Static Methods
 	// =========================================================================
@@ -200,7 +207,7 @@ class Booking extends Element
 	 */
 	public static function find (): ElementQueryInterface
 	{
-		return new ElementQuery(get_called_class());
+		return new BookingQuery(self::class);
 	}
 
 	/**
@@ -338,9 +345,31 @@ class Booking extends Element
 	 * @param bool $isNew Whether the element is brand new
 	 *
 	 * @return void
+	 * @throws \yii\db\Exception
 	 */
 	public function afterSave (bool $isNew)
 	{
+		$craft = \Craft::$app;
+
+		if ($isNew)
+		{
+			$craft->db->createCommand()
+				->insert(self::$tableName, [
+					'id' => $this->id,
+					// TODO: Add necessary fields
+				])
+				->execute();
+		}
+		else
+		{
+			$craft->db->createCommand()
+				->update(self::$tableName, [
+					// TODO: Add necessary fields
+				], ['id' => $this->id])
+				->execute();
+		}
+
+		parent::afterSave($isNew);
 	}
 
 	/**

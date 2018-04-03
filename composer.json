@@ -33,8 +33,6 @@
   "extra": {
     "name": "Bookings",
     "handle": "bookings",
-    "hasCpSettings": false,
-    "hasCpSection": true,
     "changelogUrl": "https://raw.githubusercontent.com/ethercreative/bookings/master/CHANGELOG.md",
     "class": "ether\\bookings\\Bookings"
   }
