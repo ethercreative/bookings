@@ -12,97 +12,65 @@ namespace ether\bookings\elements;
 
 use Craft;
 use craft\base\Element;
-use craft\elements\db\ElementQuery;
 use craft\elements\db\ElementQueryInterface;
 use craft\models\FieldLayout;
-use ether\bookings\elements\db\BookingQuery;
+use ether\bookings\elements\db\BookableQuery;
+use ether\bookings\records\Bookable as BookableRecord;
 use yii\base\InvalidConfigException;
 
 /**
- * Booking Element
+ * Bookable Element
  *
  * @property FieldLayout|null      $fieldLayout
- *     The field layout used by this element
  * @property array                 $htmlAttributes
- *     Any attributes that should be included in the element’s DOM
- *     representation in the Control Panel
  * @property int[]                 $supportedSiteIds
- *     The site IDs this element is available in
  * @property string|null           $uriFormat
- *     The URI format used to generate this element’s URL
  * @property string|null           $url
- *     The element’s full URL
  * @property \Twig_Markup|null     $link
- *     An anchor pre-filled with this element’s URL and title
  * @property string|null           $ref
- *     The reference string to this element
  * @property string                $indexHtml
- *     The element index HTML
  * @property bool                  $isEditable
- *     Whether the current user can edit the element
  * @property string|null           $cpEditUrl
- *     The element’s CP edit URL
  * @property string|null           $thumbUrl
- *     The URL to the element’s thumbnail, if there is one
  * @property string|null           $iconUrl
- *     The URL to the element’s icon image, if there is one
  * @property string|null           $status
- *     The element’s status
  * @property Element               $next
- *     The next element relative to this one, from a given set of criteria
  * @property Element               $prev
- *     The previous element relative to this one, from a given set of criteria
  * @property Element               $parent
- *     The element’s parent
  * @property mixed                 $route
- *     The route that should be used when the element’s URI is requested
  * @property int|null              $structureId
- *     The ID of the structure that the element is associated with, if any
  * @property ElementQueryInterface $ancestors
- *     The element’s ancestors
  * @property ElementQueryInterface $descendants
- *     The element’s descendants
  * @property ElementQueryInterface $children
- *     The element’s children
  * @property ElementQueryInterface $siblings
- *     All of the element’s siblings
  * @property Element               $prevSibling
- *     The element’s previous sibling
  * @property Element               $nextSibling
- *     The element’s next sibling
  * @property bool                  $hasDescendants
- *     Whether the element has descendants
  * @property int                   $totalDescendants
- *     The total number of descendants that the element has
  * @property string                $title
- *     The element’s title
  * @property string|null           $serializedFieldValues
- *     Array of the element’s serialized custom field values, indexed by their
- *     handles
  * @property array                 $fieldParamNamespace
- *     The namespace used by custom field params on the request
  * @property string                $contentTable
- *     The name of the table this element’s content is stored in
  * @property string                $fieldColumnPrefix
- *     The field column prefix this element’s content uses
  * @property string                $fieldContext
- *     The field context this element’s content uses
  * @property int                   $groupId
- *     The element's tag group ID
- *
  *
  * @author    Ether Creative
  * @package   ether\bookings\elements
  * @since     1.0.0-alpha.1
  */
-class Booking extends Element
+class Bookable extends Element
 {
 
-	// Properties
+	// Constants
 	// =========================================================================
 
-	static $tableName = '{{%products}}';
-	static $tableNameClean = 'products';
+	// Statuses
+	// -------------------------------------------------------------------------
+
+	const STATUS_LIVE = 'live';
+	const STATUS_PENDING = 'pending';
+	const STATUS_FULLY_BOOKED = 'fully_booked';
 
 	// Static Methods
 	// =========================================================================
@@ -114,7 +82,7 @@ class Booking extends Element
 	 */
 	public static function displayName (): string
 	{
-		return Craft::t('bookings', 'Booking');
+		return Craft::t('bookings', 'Bookable');
 	}
 
 	/**
@@ -159,55 +127,12 @@ class Booking extends Element
 	/**
 	 * Creates an [[ElementQueryInterface]] instance for query purpose.
 	 *
-	 * The returned [[ElementQueryInterface]] instance can be further
-	 * customized by calling methods defined in [[ElementQueryInterface]]
-	 * before `one()` or `all()` is called to return populated
-	 * [[ElementInterface]] instances. For example,
-	 *
-	 * ```php
-	 * // Find the entry whose ID is 5
-	 * $entry = Entry::find()->id(5)->one();
-	 *
-	 * // Find all assets and order them by their filename:
-	 * $assets = Asset::find()
-	 *     ->orderBy('filename')
-	 *     ->all();
-	 * ```
-	 *
-	 * If you want to define custom criteria parameters for your elements, you
-	 * can do so by overriding this method and returning a custom query class.
-	 * For example,
-	 *
-	 * ```php
-	 * class Product extends Element
-	 * {
-	 *     public static function find()
-	 *     {
-	 *         // use ProductQuery instead of the default ElementQuery
-	 *         return new ProductQuery(get_called_class());
-	 *     }
-	 * }
-	 * ```
-	 *
-	 * You can also set default criteria parameters on the ElementQuery if you
-	 * don’t have a need for a custom query class. For example,
-	 *
-	 * ```php
-	 * class Customer extends ActiveRecord
-	 * {
-	 *     public static function find()
-	 *     {
-	 *         return parent::find()->limit(50);
-	 *     }
-	 * }
-	 * ```
-	 *
 	 * @return ElementQueryInterface The newly created
 	 *                               [[ElementQueryInterface]] instance.
 	 */
 	public static function find (): ElementQueryInterface
 	{
-		return new BookingQuery(self::class);
+		return new BookableQuery(self::class);
 	}
 
 	/**
@@ -354,7 +279,7 @@ class Booking extends Element
 		if ($isNew)
 		{
 			$craft->db->createCommand()
-				->insert(self::$tableName, [
+				->insert(BookableRecord::TABLE_NAME, [
 					'id' => $this->id,
 					// TODO: Add necessary fields
 				])
@@ -363,7 +288,7 @@ class Booking extends Element
 		else
 		{
 			$craft->db->createCommand()
-				->update(self::$tableName, [
+				->update(BookableRecord::TABLE_NAME, [
 					// TODO: Add necessary fields
 				], ['id' => $this->id])
 				->execute();

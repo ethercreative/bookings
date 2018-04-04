@@ -12,7 +12,7 @@ namespace ether\bookings\elements\db;
 
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
-use ether\bookings\elements\Booking;
+use ether\bookings\records\Bookable;
 
 /**
  * Class BookingQuery
@@ -23,7 +23,7 @@ use ether\bookings\elements\Booking;
  * @package   ether\bookings\elements
  * @since     1.0.0-alpha.1
  */
-class BookingQuery extends ElementQuery
+class BookableQuery extends ElementQuery
 {
 
 	// Properties
@@ -42,7 +42,7 @@ class BookingQuery extends ElementQuery
 
 	protected function beforePrepare (): bool
 	{
-		$tableName = Booking::$tableNameClean;
+		$tableName = Bookable::TABLE_NAME_CLEAN;
 
 		$this->joinElementTable($tableName);
 

@@ -11,7 +11,7 @@
 namespace ether\bookings;
 
 use craft\web\twig\variables\CraftVariable;
-use ether\bookings\elements\Booking as BookingElement;
+use ether\bookings\elements\Bookable as BookingElement;
 
 use craft\base\Plugin;
 use craft\services\Elements;

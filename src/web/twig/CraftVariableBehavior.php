@@ -11,8 +11,8 @@
 namespace ether\bookings\web\twig;
 
 use craft\elements\db\ElementQueryInterface;
-use ether\bookings\elements\Booking;
-use ether\bookings\elements\db\BookingQuery;
+use ether\bookings\elements\Bookable;
+use ether\bookings\elements\db\BookableQuery;
 use yii\base\Behavior;
 
 /**
@@ -29,15 +29,15 @@ class CraftVariableBehavior extends Behavior
 	// =========================================================================
 
 	/**
-	 * Adds a `craft.bookings()` function to the templates
+	 * Adds a `craft.bookables()` function to the templates
 	 *
 	 * @param null $criteria
 	 *
-	 * @return BookingQuery|ElementQueryInterface
+	 * @return BookableQuery|ElementQueryInterface
 	 */
-	public function bookings ($criteria = null) : BookingQuery
+	public function bookables ($criteria = null) : BookableQuery
 	{
-		$query = Booking::find();
+		$query = Bookable::find();
 
 		if ($criteria)
 			\Craft::configure($query, $criteria);

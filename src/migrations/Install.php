@@ -11,7 +11,7 @@
 namespace ether\bookings\migrations;
 
 use craft\db\Migration;
-use ether\bookings\elements\Booking;
+use ether\bookings\records\Bookable;
 
 /**
  * Class Install
@@ -25,12 +25,12 @@ class Install extends Migration
 
 	public function safeUp ()
 	{
-		$this->bookingsTableUp();
+		$this->bookablesTableUp();
 	}
 
 	public function safeDown ()
 	{
-		$this->bookingsTableDown();
+		$this->bookablesTableDown();
 	}
 
 	// Tables
@@ -39,12 +39,12 @@ class Install extends Migration
 	// Bookings
 	// -------------------------------------------------------------------------
 
-	private function bookingsTableUp ()
+	private function bookablesTableUp ()
 	{
-		if ($this->db->tableExists(Booking::$tableName))
+		if ($this->db->tableExists(Bookable::TABLE_NAME))
 			return;
 
-		$this->createTable(Booking::$tableName, [
+		$this->createTable(Bookable::TABLE_NAME, [
 			'id' => $this->integer()->notNull(),
 
 			// TODO: Add necessary columns
@@ -56,8 +56,8 @@ class Install extends Migration
 		]);
 
 		$this->addForeignKey(
-			$this->db->getForeignKeyName(Booking::$tableName, 'id'),
-			Booking::$tableName,
+			$this->db->getForeignKeyName(Bookable::TABLE_NAME, 'id'),
+			Bookable::TABLE_NAME,
 			'id',
 			'{{%elements}}',
 			'id',
@@ -66,17 +66,17 @@ class Install extends Migration
 		);
 	}
 
-	private function bookingsTableDown ()
+	private function bookablesTableDown ()
 	{
-		if (!$this->db->tableExists(Booking::$tableName))
+		if (!$this->db->tableExists(Bookable::TABLE_NAME))
 			return;
 
 		$this->dropForeignKey(
-			$this->db->getForeignKeyName(Booking::$tableName, 'id'),
-			Booking::$tableName
+			$this->db->getForeignKeyName(Bookable::TABLE_NAME, 'id'),
+			Bookable::TABLE_NAME
 		);
 
-		$this->dropTable(Booking::$tableName);
+		$this->dropTable(Bookable::TABLE_NAME);
 	}
 
 }
