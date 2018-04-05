@@ -8,8 +8,9 @@
 
 namespace ether\bookings\elements;
 
-use craft\base\Element;
 use craft\commerce\base\Purchasable;
+use ether\bookings\Bookings;
+use yii\base\InvalidConfigException;
 
 /**
  * Class Variant
@@ -93,16 +94,49 @@ class Variant extends Purchasable
 		return $rules;
 	}
 
-	public function extraFields (): array
+	public function extraAttributes (): array
 	{
-		$names = parent::extraFields();
+		$names = parent::extraAttributes();
 
 		$names[] = 'bookable';
 
 		return $names;
 	}
 
-	// TODO: Finish
-	// https://github.com/craftcms/commerce/blob/develop/src/elements/Variant.php#L166
+	/**
+	 * @return \craft\models\FieldLayout|null
+	 * @throws InvalidConfigException
+	 */
+	public function getFieldLayout ()
+	{
+		return parent::getFieldLayout()
+			?? $this->getBookable()->getType()->getVariantFieldLayout();
+	}
+
+	/**
+	 * @return Bookable|null
+	 * @throws InvalidConfigException
+	 */
+	public function getBookable ()
+	{
+		if ($this->_bookable !== null)
+			return $this->_bookable;
+
+		if ($this->bookableId === null)
+			throw new InvalidConfigException('Variant is missing its bookable');
+
+		if (
+			($bookable = Bookings::getInstance()->getBookables()->getBookableById(
+				$this->bookableId,
+				$this->siteId
+			)) === null
+		) {
+			throw new InvalidConfigException(
+				'Invalid bookable ID: ' .  $this->bookableId
+			);
+		}
+
+		return $this->_bookable = $bookable;
+	}
 
 }

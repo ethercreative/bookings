@@ -12,9 +12,13 @@ namespace ether\bookings\elements;
 
 use Craft;
 use craft\base\Element;
+use craft\commerce\models\TaxCategory;
+use craft\commerce\Plugin;
 use craft\elements\db\ElementQueryInterface;
 use craft\models\FieldLayout;
+use ether\bookings\Bookings;
 use ether\bookings\elements\db\BookableQuery;
+use ether\bookings\models\BookableType;
 use ether\bookings\records\Bookable as BookableRecord;
 use yii\base\InvalidConfigException;
 
@@ -65,12 +69,51 @@ class Bookable extends Element
 	// Constants
 	// =========================================================================
 
-	// Statuses
-	// -------------------------------------------------------------------------
-
 	const STATUS_LIVE = 'live';
 	const STATUS_PENDING = 'pending';
 	const STATUS_FULLY_BOOKED = 'fully_booked';
+
+	// Properties
+	// =========================================================================
+
+	/** @var int */
+	public $id;
+
+	/** @var \DateTime */
+	public $postDate;
+
+	/** @var \DateTime */
+	public $expiryDate;
+
+	/** @var int */
+	public $typeId;
+
+	/** @var int */
+	public $taxCategoryId;
+
+	/** @var bool */
+	public $enabled;
+
+	/** @var int */
+	public $defaultVariantId;
+
+	/** @var string */
+	public $defaultSku;
+
+	/** @var float */
+	public $defaultPrice;
+
+	/** @var TaxCategory */
+	public $taxCategory;
+
+	/** @var string */
+	public $name;
+
+	/** @var Variant[] */
+	private $_variants;
+
+	/** @var Variant */
+	private $_defaultVariant;
 
 	// Static Methods
 	// =========================================================================
@@ -83,6 +126,15 @@ class Bookable extends Element
 	public static function displayName (): string
 	{
 		return Craft::t('bookings', 'Bookable');
+	}
+
+	/**
+	 * @inheritdoc
+	 * @return null|string
+	 */
+	public static function refHandle ()
+	{
+		return 'bookable';
 	}
 
 	/**
@@ -103,6 +155,15 @@ class Bookable extends Element
 	 * @return bool Whether elements of this type have traditional titles.
 	 */
 	public static function hasTitles (): bool
+	{
+		return true;
+	}
+
+	/**
+	 * @inheritdoc
+	 * @return bool
+	 */
+	public static function hasUris (): bool
 	{
 		return true;
 	}
@@ -154,6 +215,98 @@ class Bookable extends Element
 	// =========================================================================
 
 	/**
+	 * @inheritdoc
+	 * @return string
+	 */
+	public function __toString ()
+	{
+		return (string) $this->title;
+	}
+
+	/**
+	 * Returns whether the current user can edit the element.
+	 *
+	 * @return bool
+	 */
+	public function getIsEditable (): bool
+	{
+		return true;
+	}
+
+	/**
+	 * Returns the bookables type
+	 *
+	 * @return BookableType
+	 * @throws InvalidConfigException
+	 */
+	public function getType (): BookableType
+	{
+		if ($this->typeId === null)
+			throw new InvalidConfigException(
+				'Bookable is missing its bookable type ID'
+			);
+
+		$bookableType = Bookings::getInstance()->getBookableTypes()
+			->getBookableTypeById($this->typeId);
+
+		if ($bookableType === null)
+			throw new InvalidConfigException(
+				'Invalid bookable type ID: ' . $this->typeId
+			);
+
+		return $bookableType;
+	}
+
+	/**
+	 * Allows the variant to ask the product what data to snapshot
+	 *
+	 * @return array
+	 */
+	public function getSnapshot (): array
+	{
+		return array_merge($this->getAttributes(), [
+			'title' => $this->title,
+		]);
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getName ()
+	{
+		return $this->title;
+	}
+
+	/**
+	 * @return null|string
+	 * @throws InvalidConfigException
+	 */
+	public function getUriFormat ()
+	{
+		$bookableTypeSiteSettings = $this->getType()->getSiteSettings();
+
+		if (!isset($bookableTypeSiteSettings[$this->siteId]))
+			throw new InvalidConfigException(
+				'Category\'s group (' . $this->groupId . ') is not enabled for site'
+				. $this->siteId
+			);
+
+		return $bookableTypeSiteSettings[$this->siteId]->uriFormat;
+	}
+
+	/**
+	 * @return TaxCategory|null
+	 */
+	public function getTaxCategory ()
+	{
+		if ($this->taxCategoryId)
+			return Plugin::getInstance()->getTaxCategories()
+				->getTaxCategoryById($this->taxCategoryId);
+
+		return null;
+	}
+
+	/**
 	 * Returns the validation rules for attributes.
 	 *
 	 * Validation rules are used by [[validate()]] to check if attribute values
@@ -168,16 +321,6 @@ class Bookable extends Element
 	public function rules ()
 	{
 		return [];
-	}
-
-	/**
-	 * Returns whether the current user can edit the element.
-	 *
-	 * @return bool
-	 */
-	public function getIsEditable (): bool
-	{
-		return true;
 	}
 
 	/**
