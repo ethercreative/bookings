@@ -41,7 +41,10 @@ class BookableType extends ActiveRecord
 
 	public function getBookableTypeTaxCategories (): ActiveQueryInterface
 	{
-		// TODO: BookableType BookableTypeTaxCategories active query interface
+		return $this->hasMany(
+			BookableTypeTaxCategory::class,
+			['bookableTypeId' => 'id']
+		);
 	}
 
 	public function getTaxCategories (): ActiveQueryInterface
@@ -53,12 +56,18 @@ class BookableType extends ActiveRecord
 
 	public function getFieldLayout (): ActiveQueryInterface
 	{
-		return $this->hasOne(FieldLayout::class, ['id' => 'fieldLayoutId']);
+		return $this->hasOne(
+			FieldLayout::class,
+			['id' => 'fieldLayoutId']
+		);
 	}
 
 	public function getVariantFieldLayout (): ActiveQueryInterface
 	{
-		return $this->hasOne(FieldLayout::class, ['id' => 'variantFieldLayout']);
+		return $this->hasOne(
+			FieldLayout::class,
+			['id' => 'variantFieldLayout']
+		);
 	}
 
 }

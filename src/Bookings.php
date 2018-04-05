@@ -31,9 +31,7 @@ class Bookings extends Plugin
 	// Properties
 	// =========================================================================
 
-	public static $plugin;
-
-	public $schemaVersion = '1.0.0-alpha.1';
+	public $schemaVersion = '1.0.0';
 
 	// Plugin
 	// =========================================================================
@@ -41,7 +39,6 @@ class Bookings extends Plugin
 	public function init ()
 	{
 		parent::init();
-		self::$plugin = $this;
 
 		// Events
 		// ---------------------------------------------------------------------

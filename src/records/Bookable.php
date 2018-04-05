@@ -54,7 +54,7 @@ class Bookable extends ActiveRecord
 
 	public function getType (): ActiveQueryInterface
 	{
-		// TODO: Bookable BookableType active query interface
+		return $this->hasOne(BookableType::class, ['id' => 'bookableTypeId']);
 	}
 
 	public function getTaxCategory (): ActiveQueryInterface
