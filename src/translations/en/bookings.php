@@ -21,5 +21,4 @@
  */
 return [
 	'Bookable' => 'Bookable',
-	'Bookable Variant' => 'Bookable Variant',
 ];

@@ -10,15 +10,7 @@
 
 namespace ether\bookings;
 
-use craft\web\twig\variables\CraftVariable;
-use ether\bookings\elements\Bookable as BookingElement;
-
 use craft\base\Plugin;
-use craft\services\Elements;
-use craft\events\RegisterComponentTypesEvent;
-
-use ether\bookings\web\twig\CraftVariableBehavior;
-use yii\base\Event;
 
 /**
  * @author    Ether Creative
@@ -39,51 +31,6 @@ class Bookings extends Plugin
 	public function init ()
 	{
 		parent::init();
-
-		// Events
-		// ---------------------------------------------------------------------
-
-		// Register our elements
-		Event::on(
-			Elements::class,
-			Elements::EVENT_REGISTER_ELEMENT_TYPES,
-			[$this, 'onRegisterElementTypes']
-		);
-
-		// Register our variable behaviours
-		Event::on(
-			CraftVariable::class,
-			CraftVariable::EVENT_INIT,
-			[$this, 'onCraftVariableInit']
-		);
-	}
-
-	// Events
-	// =========================================================================
-
-	/**
-	 * Registers our elements
-	 *
-	 * @param RegisterComponentTypesEvent $event
-	 */
-	public function onRegisterElementTypes (RegisterComponentTypesEvent $event)
-	{
-		$event->types[] = BookingElement::class;
-	}
-
-	/**
-	 * Registers our CraftVariableBehaviour
-	 *
-	 * @param Event $event
-	 */
-	public function onCraftVariableInit (Event $event)
-	{
-		/** @var CraftVariable $variable */
-		$variable = $event->sender;
-		$variable->attachBehavior(
-			'bookings',
-			CraftVariableBehavior::class
-		);
 	}
 
 }
