@@ -8,7 +8,6 @@
 
 namespace ether\bookings\models;
 
-use craft\base\Model;
 use RRule\RRule;
 
 /**
@@ -18,7 +17,7 @@ use RRule\RRule;
  * @package ether\bookings\models
  * @since   1.0.0
  */
-class ExRule extends Model
+class ExRule
 {
 
 	// Properties

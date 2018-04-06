@@ -55,12 +55,22 @@ class Bookable extends Model
 	public $bookableType;
 
 	/**
+	 * @var bool If true, bookable will accept a range of slots
+	 */
+	public $acceptsRange = false;
+
+	/**
 	 * @var int|null The maximum capacity per-slot for this bookable
 	 */
 	public $maxCapacity;
 
 	/**
-	 * @var RRule[] The base RRule
+	 * @var int The number of times each slot is available
+	 */
+	public $slotMultiplier = 1;
+
+	/**
+	 * @var RRule The base RRule
 	 */
 	public $rrule;
 
@@ -82,6 +92,18 @@ class Bookable extends Model
 				$this[$key] = $value;
 
 		parent::__construct($config);
+	}
+
+	public function rules ()
+	{
+		$rules = parent::rules();
+
+		$rules[] = [
+			['bookableType', 'slotMultiplier', 'rrule'],
+			'required',
+		];
+
+		return $rules;
 	}
 
 }

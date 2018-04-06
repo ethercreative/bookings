@@ -9,6 +9,9 @@
 namespace ether\bookings\fields;
 
 use craft\base\Field;
+use ether\bookings\enums\BookableType;
+use ether\bookings\models\ExRule;
+use RRule\RRule;
 
 /**
  * Class BookableField
@@ -19,6 +22,45 @@ use craft\base\Field;
  */
 class BookableField extends Field
 {
+
+	// Properties
+	// =========================================================================
+
+	// Properties: Public
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @var string The type of bookable
+	 * @see BookableType
+	 */
+	public $bookableType;
+
+	/**
+	 * @var bool If true, the bookable will accept a range of slots
+	 *           TRUE  = Flexible
+	 *           FALSE = Fixed
+	 */
+	public $acceptsRange = false;
+
+	/**
+	 * @var int|null The maximum capacity, per-slot, for this bookable
+	 */
+	public $maxCapacity;
+
+	/**
+	 * @var int The number of times each slot is available
+	 */
+	public $slotMultiplier = 1;
+
+	/**
+	 * @var RRule The base RRule
+	 */
+	public $rrule;
+
+	/**
+	 * @var ExRule[] An array of exceptions to the base rule
+	 */
+	public $exRules = [];
 
 	// Public Methods
 	// =========================================================================
@@ -42,6 +84,11 @@ class BookableField extends Field
 	public function rules ()
 	{
 		$rules = parent::rules();
+
+		$rules[] = [
+			['bookableType', 'slotMultiplier', 'rrule'],
+			'required',
+		];
 
 		return $rules;
 	}
