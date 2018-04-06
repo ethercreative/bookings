@@ -165,7 +165,7 @@ class Bookable extends Model
 			]);
 		}
 
-		// If the end time is after the base until time, exclude all slots
+		// If the end time is before the base until time, exclude all slots
 		// between those two times
 		if ($end->getTimestamp() < $baseUntil->getTimestamp())
 		{
