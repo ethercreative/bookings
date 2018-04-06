@@ -30,6 +30,7 @@ class RecursionRule extends Model
 
 	/**
 	 * @var string The frequency of the rule
+	 * @see Frequency
 	 */
 	public $frequency;
 
@@ -47,13 +48,11 @@ class RecursionRule extends Model
 
 	/**
 	 * @var int|null The number of slots to generate
-	 *               (can be null if until is set)
 	 */
 	public $count;
 
 	/**
 	 * @var \DateTime|null The datetime to generate up to
-	 *                     (can be null if count is set)
 	 */
 	public $until;
 
@@ -141,24 +140,6 @@ class RecursionRule extends Model
 		$rules[] = [
 			['interval'],
 			'integer',
-		];
-
-		$rules[] = [
-			['count'],
-			'required',
-			'when' => function ($model) {
-				/** @var RecursionRule $model */
-				return $model->until === null;
-			},
-		];
-
-		$rules[] = [
-			['until'],
-			'required',
-			'when' => function ($model) {
-				/** @var RecursionRule $model */
-				return $model->count === null;
-			},
 		];
 
 		$rules[] = [
