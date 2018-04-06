@@ -36,7 +36,7 @@ class RecursionRule extends Model
 	/**
 	 * @var \DateTime The rules start datetime
 	 */
-	public $dtStart;
+	public $start;
 
 	/**
 	 * @var int The interval between each frequency iteration.
@@ -228,7 +228,7 @@ class RecursionRule extends Model
 	{
 		$rRule = [
 			'FREQ' => RRule::$frequencies[$this->frequency],
-			'DTSTART' => $this->dtStart,
+			'DTSTART' => $this->start,
 			'INTERVAL' => $this->interval,
 		];
 

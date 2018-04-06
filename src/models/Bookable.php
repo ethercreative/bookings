@@ -70,6 +70,7 @@ class Bookable extends Model
 	public $slotMultiplier = 1;
 
 	/**
+	 * TODO: Is this needed, or is RRule enough?
 	 * @var int The duration of each slot in minutes
 	 */
 	public $slotDuration;
@@ -108,27 +109,155 @@ class Bookable extends Model
 		return $rules;
 	}
 
-	public function getSlotsInRange (\DateTime $start, \DateTime $end)
+	/**
+	 * Gets all slots as an array (to a hard max of 1000)
+	 *
+	 * @return array
+	 */
+	public function getAllSlots (): array
 	{
-		// TODO: Return slots between $start and $end
+		return $this->getSet()->getOccurrences(1000);
 	}
 
-	public function getSlotsFrom (\DateTime $start, $count = 100)
+	/**
+	 * Returns the slots as an iterable
+	 *
+	 * This is the recommended way of accessing the slots, especially if you can
+	 * get away with not needing them all generated at once (i.e. not used in JS)
+	 *
+	 * @return RSet|\Iterator|\ArrayAccess|\Countable
+	 */
+	public function getAllSlotsAsIterable ()
 	{
-		// TODO: Return $count number of slots from $start
+		return $this->getSet();
+	}
+
+	/**
+	 * Gets all the slots within the given time frame as an iterable
+	 *
+	 * @param \DateTime|string $start
+	 * @param \DateTime|string $end
+	 *
+	 * @return RSet|\Iterator|\ArrayAccess|\Countable
+	 */
+	public function getSlotsInRangeAsIterable ($start, $end)
+	{
+		if (!$start instanceof \DateTime)
+			$start = new \DateTime($start);
+
+		if (!$end instanceof \DateTime)
+			$end   = new \DateTime($end);
+
+		$baseStart = $this->baseRule->start;
+		$baseUntil = $this->baseRule->until;
+
+		$set = $this->getSet();
+
+		// If the start time is after the base start time, exclude all slots
+		// between those two times
+		if ($start->getTimestamp() > $baseStart->getTimestamp())
+		{
+			$set->addExRule([
+                'FREQ'    => 'SECONDLY',
+                'DTSTART' => $baseStart,
+                'UNTIL'   => $start,
+			]);
+		}
+
+		// If the end time is after the base until time, exclude all slots
+		// between those two times
+		if ($end->getTimestamp() < $baseUntil->getTimestamp())
+		{
+			$set->addExRule([
+				'FREQ'    => 'SECONDLY',
+				'DTSTART' => $end,
+				'UNTIL'   => $baseUntil,
+			]);
+		}
+
+		return $set;
+	}
+
+	/**
+	 * Gets all the slots withing the given range as an array
+	 *
+	 * @param \DateTime|string $start
+	 * @param \DateTime|string $end
+	 *
+	 * @return array
+	 */
+	public function getSlotsInRange ($start, $end): array
+	{
+		return $this->getSlotsInRangeAsIterable($start, $end)->getOccurrences();
+	}
+
+	/**
+	 * Gets X number of slots from the given DateTime
+	 *
+	 * @param \DateTime|string $start
+	 * @param int              $count
+	 *
+	 * @return array
+	 */
+	public function getSlotsFrom ($start, $count = 100): array
+	{
+		if (!$start instanceof \DateTime)
+			$start = new \DateTime($start);
+
+		$baseStart = $this->baseRule->start;
+
+		$set = $this->getSet();
+
+		// If the start time is after the base start time, exclude all slots
+		// between those two times
+		if ($start->getTimestamp() > $baseStart->getTimestamp())
+		{
+			$set->addExRule([
+				'FREQ'    => 'SECONDLY',
+				'DTSTART' => $baseStart,
+				'UNTIL'   => $start,
+			]);
+		}
+
+		return $set->getOccurrences($count);
 	}
 
 	// Methods: Private
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Builds the recurrence set
+	 *
+	 * @return RSet
+	 */
 	private function getSet (): RSet
 	{
 		if ($this->_set)
 			return $this->_set;
 
 		$set = new RSet();
+		$previousSet = null;
 
-		// HMMMM
+		$set->addRRule($this->baseRule->asRRuleArray());
+
+		foreach ($this->exRules as $exRule)
+		{
+			if ($exRule->bookable)
+			{
+				if ($previousSet)
+				{
+					$set->addRRule($previousSet);
+					$previousSet = clone $set;
+					$set = new RSet();
+				}
+
+				$set->addRRule($exRule->asRRuleArray());
+			}
+			else
+			{
+				$set->addExRule($exRule->asRRuleArray());
+			}
+		}
 
 		return $this->_set = $set;
 	}
