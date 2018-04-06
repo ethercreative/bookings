@@ -227,8 +227,8 @@ class RecursionRule extends Model
 	public function asRRuleArray (): array
 	{
 		$rRule = [
-			'FREQ' => RRule::$frequencies[$this->frequency],
-			'DTSTART' => $this->start,
+			'FREQ'     => RRule::$frequencies[$this->frequency],
+			'DTSTART'  => $this->start,
 			'INTERVAL' => $this->interval,
 		];
 
@@ -254,7 +254,7 @@ class RecursionRule extends Model
 			$rRule['BYDAY'] = $this->byDay;
 
 		if (!empty($this->byMinute))
-			$rRule['BYMINUTE'] = $this->byMinute;
+			$rRule['BYMINUTE']  = $this->byMinute;
 
 		if (!empty($this->bySetPosition))
 			$rRule['BYSETPOS'] = $this->bySetPosition;
