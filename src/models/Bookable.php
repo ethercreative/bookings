@@ -10,6 +10,7 @@ namespace ether\bookings\models;
 
 use ether\bookings\base\Model;
 use ether\bookings\enums\BookableType;
+use RRule\RRule;
 use RRule\RSet;
 
 /**
@@ -158,7 +159,7 @@ class Bookable extends Model
 		if ($start->getTimestamp() > $baseStart->getTimestamp())
 		{
 			$set->addExRule([
-                'FREQ'    => 'SECONDLY',
+                'FREQ'    => RRule::SECONDLY,
                 'DTSTART' => $baseStart,
                 'UNTIL'   => $start,
 			]);
@@ -169,7 +170,7 @@ class Bookable extends Model
 		if ($end->getTimestamp() < $baseUntil->getTimestamp())
 		{
 			$set->addExRule([
-				'FREQ'    => 'SECONDLY',
+				'FREQ'    => RRule::SECONDLY,
 				'DTSTART' => $end,
 				'UNTIL'   => $baseUntil,
 			]);
