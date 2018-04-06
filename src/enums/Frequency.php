@@ -11,19 +11,24 @@ namespace ether\bookings\enums;
 use ether\bookings\base\Enum;
 
 /**
- * Class BookableType
+ * Class Frequency
  *
  * @author  Ether Creative
  * @package ether\bookings\enums
  * @since   1.0.0
  */
-abstract class BookableType extends Enum
+abstract class Frequency extends Enum
 {
 
 	// Constants
 	// =========================================================================
 
-	const Single = 'single';
-	const Recurring = 'recurring';
+	const Yearly = 'YEARLY';
+	const Monthly = 'MONTHLY';
+	const Weekly = 'WEEKLY';
+	const Daily = 'DAILY';
+	const Hourly = 'HOURLY';
+	const Minutely = 'MINUTELY';
+
 
 }

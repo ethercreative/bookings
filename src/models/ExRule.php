@@ -8,8 +8,6 @@
 
 namespace ether\bookings\models;
 
-use RRule\RRule;
-
 /**
  * Class Exception
  *
@@ -17,7 +15,7 @@ use RRule\RRule;
  * @package ether\bookings\models
  * @since   1.0.0
  */
-class ExRule
+class ExRule extends RecursionRule
 {
 
 	// Properties
@@ -25,9 +23,6 @@ class ExRule
 
 	// Properties: Public
 	// -------------------------------------------------------------------------
-
-	/** @var RRule */
-	public $rrule;
 
 	/** @var bool */
 	public $bookable = false;

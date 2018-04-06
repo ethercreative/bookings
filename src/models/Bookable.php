@@ -8,9 +8,9 @@
 
 namespace ether\bookings\models;
 
-use craft\base\Model;
+use ether\bookings\base\Model;
 use ether\bookings\enums\BookableType;
-use RRule\RRule;
+use RRule\RSet;
 
 /**
  * Class Bookable
@@ -70,29 +70,31 @@ class Bookable extends Model
 	public $slotMultiplier = 1;
 
 	/**
-	 * @var RRule The base RRule
+	 * @var int The duration of each slot in minutes
 	 */
-	public $rrule;
+	public $slotDuration;
 
 	/**
-	 * @var ExRule[] Exceptions to the base RRule
+	 * @var RecursionRule The base RRule
 	 */
-	public $exRules;
+	public $baseRule;
+
+	/**
+	 * @var ExRule[] An array of exceptions to the base rule
+	 */
+	public $exRules = [];
+
+	// Properties: Private
+	// -------------------------------------------------------------------------
+
+	/** @var RSet|null */
+	private $_set;
 
 	// Methods
 	// =========================================================================
 
 	// Methods: Public
 	// -------------------------------------------------------------------------
-
-	public function __construct (array $attributes = [], array $config = [])
-	{
-		foreach ($attributes as $key => $value)
-			if (property_exists($this, $key))
-				$this[$key] = $value;
-
-		parent::__construct($config);
-	}
 
 	public function rules ()
 	{
@@ -104,6 +106,31 @@ class Bookable extends Model
 		];
 
 		return $rules;
+	}
+
+	public function getSlotsInRange (\DateTime $start, \DateTime $end)
+	{
+		// TODO: Return slots between $start and $end
+	}
+
+	public function getSlotsFrom (\DateTime $start, $count = 100)
+	{
+		// TODO: Return $count number of slots from $start
+	}
+
+	// Methods: Private
+	// -------------------------------------------------------------------------
+
+	private function getSet (): RSet
+	{
+		if ($this->_set)
+			return $this->_set;
+
+		$set = new RSet();
+
+		// HMMMM
+
+		return $this->_set = $set;
 	}
 
 }

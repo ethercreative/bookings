@@ -11,7 +11,7 @@ namespace ether\bookings\fields;
 use craft\base\Field;
 use ether\bookings\enums\BookableType;
 use ether\bookings\models\ExRule;
-use RRule\RRule;
+use ether\bookings\models\RecursionRule;
 
 /**
  * Class BookableField
@@ -53,9 +53,14 @@ class BookableField extends Field
 	public $slotMultiplier = 1;
 
 	/**
-	 * @var RRule The base RRule
+	 * @var int The duration of each slot in minutes
 	 */
-	public $rrule;
+	public $slotDuration;
+
+	/**
+	 * @var RecursionRule The base RRule
+	 */
+	public $baseRule;
 
 	/**
 	 * @var ExRule[] An array of exceptions to the base rule
