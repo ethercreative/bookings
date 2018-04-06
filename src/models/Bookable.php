@@ -151,7 +151,7 @@ class Bookable extends Model
 		$baseStart = $this->baseRule->start;
 		$baseUntil = $this->baseRule->until;
 
-		$set = $this->getSet();
+		$set = clone $this->getSet();
 
 		// If the start time is after the base start time, exclude all slots
 		// between those two times
@@ -206,7 +206,7 @@ class Bookable extends Model
 
 		$baseStart = $this->baseRule->start;
 
-		$set = $this->getSet();
+		$set = clone $this->getSet();
 
 		// If the start time is after the base start time, exclude all slots
 		// between those two times
