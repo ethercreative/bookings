@@ -8,14 +8,11 @@
 	export default {
 		name: "app",
 		components: {},
-		computed: {
-			$style () { return this.$options.cssModules }
-		},
 	}
 </script>
 
 <style scoped lang="less">
-	@col: #2c3e50;
+	@import "variables";
 
 	#app {
 		font-family: 'Avenir', Helvetica, Arial, sans-serif;

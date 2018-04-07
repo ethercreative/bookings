@@ -28,11 +28,17 @@ class FixShit {
 	}
 }
 
-module.exports = {
+const config = {
 	baseUrl: "/##FIX_SHIT##/",
 	outputDir: "../../src/web/assets/ui/dist",
-	configureWebpack: {
-		plugins: process.env.NODE_ENV === "production" ? [
+	css: {
+		sourceMap: true,
+	},
+};
+
+if (process.env.NODE_ENV === "production") {
+	config.configureWebpack = {
+		plugins: [
 			new FixShit(),
 
 			// Generate a PHP file with our compiled asset file names
@@ -46,17 +52,17 @@ module.exports = {
 					var: "Vue",
 				}],
 			}),
-		] : [],
-	},
-	chainWebpack: config => {
+		],
+	};
+
+	config.chainWebpack = config => {
 		// Ensure the manifest file isn't inlined into index.html & prevent
 		// index.html from being generated
 		config.plugins
 			.delete('split-manifest')
 			.delete('inline-manifest')
 			.delete('html');
-	},
-	css: {
-		sourceMap: true,
-	},
-};
+	};
+}
+
+module.exports = config;
