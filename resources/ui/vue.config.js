@@ -10,14 +10,22 @@ class FixShit {
 	apply (compiler) {
 		compiler.plugin('emit', function(compilation, callback) {
 			const jsFiles = Object.keys(compilation.assets)
-				.filter(fileName => /\/vendor\.(.*)\.js$/.test(fileName));
+				.filter(fileName => /\.js$/.test(fileName));
 
 			jsFiles.forEach(fileName => {
 				compilation.assets[fileName].children.forEach(child => {
 					if (child._value) {
+						// Fix the baseUrl
 						child._value = child._value.replace(
 							'"/##FIX_SHIT##/"',
-							"(() => { const scripts = document.getElementsByTagName(\"script\"); return scripts[scripts.length-1].src.split('js/vendor.')[0]; })()"
+							"(() => { const _ = document.getElementsByTagName(\"script\"); return _[_.length-1].src.split('js/vendor.')[0]; })()"
+						);
+
+						// Rename webpack's chunk loader function to prevent any
+						// possible issues with other webpack-compiled code
+						child._value = child._value.replace(
+							/webpackJsonp/g,
+							"bookingsWebpackJsonp"
 						);
 					}
 				});
