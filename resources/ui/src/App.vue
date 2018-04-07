@@ -14,7 +14,7 @@
 	}
 </script>
 
-<style lang="less">
+<style scoped lang="less">
 	@col: #2c3e50;
 
 	#app {
