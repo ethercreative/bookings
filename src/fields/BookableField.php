@@ -8,10 +8,13 @@
 
 namespace ether\bookings\fields;
 
+use craft\base\ElementInterface;
 use craft\base\Field;
+use craft\helpers\Html;
 use ether\bookings\enums\BookableType;
 use ether\bookings\models\ExRule;
 use ether\bookings\models\RecursionRule;
+use ether\bookings\web\assets\ui\UIAsset;
 
 /**
  * Class BookableField
@@ -90,12 +93,34 @@ class BookableField extends Field
 	{
 		$rules = parent::rules();
 
-		$rules[] = [
-			['bookableType', 'slotMultiplier', 'rrule'],
-			'required',
-		];
+//		$rules[] = [
+//			['bookableType', 'slotMultiplier', 'baseRule'],
+//			'required',
+//		];
 
 		return $rules;
+	}
+
+	/**
+	 * @param                       $value
+	 * @param ElementInterface|null $element
+	 *
+	 * @return string
+	 * @throws \yii\base\InvalidConfigException
+	 */
+	public function getInputHtml ($value, ElementInterface $element = null): string {
+		$view = \Craft::$app->view;
+
+		$id           = $view->formatInputId($this->id);
+		$namespacedId = $view->namespaceInputId($id);
+
+		$view->registerAssetBundle(UIAsset::class);
+		$view->registerJs("new window.__BookingsUI('field', '#$namespacedId')");
+
+		return Html::encodeParams(
+			'<div id="{id}"></div>',
+			[ 'id' => $this->id ]
+		);
 	}
 
 }

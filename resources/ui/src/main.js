@@ -21,6 +21,7 @@ function BookingsUI (section, id = "#app") {
 
 	switch (section) {
 		case "dev":
+		case "field":
 			import("./App.vue").then(onImport);
 			break;
 		default:

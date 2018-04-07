@@ -23,7 +23,7 @@ class UIAsset extends AssetBundle
 
 	public function init ()
 	{
-		include './dist/assets-manifest.php';
+		include __DIR__ . '/dist/assets-manifest.php';
 
 		$this->sourcePath = __DIR__ . '/dist';
 
@@ -31,8 +31,13 @@ class UIAsset extends AssetBundle
 			BaseAsset::class,
 		];
 
-		$this->css = array_values(\WebpackBuiltFiles::$cssFiles);
-		$this->js = array_values(\WebpackBuiltFiles::$jsFiles);
+		$this->css = [
+			\WebpackBuiltFiles::$cssFiles['app'],
+		];
+		$this->js = [
+			\WebpackBuiltFiles::$jsFiles['vendor'],
+			\WebpackBuiltFiles::$jsFiles['app'],
+		];
 
 		parent::init();
 	}

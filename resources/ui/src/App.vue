@@ -1,5 +1,5 @@
 <template>
-	<div :id="$style.app">
+	<div id="app">
 		Hello world!
 	</div>
 </template>
@@ -14,7 +14,7 @@
 	}
 </script>
 
-<style module lang="less">
+<style lang="less">
 	@col: #2c3e50;
 
 	#app {

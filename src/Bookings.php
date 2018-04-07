@@ -11,6 +11,10 @@
 namespace ether\bookings;
 
 use craft\base\Plugin;
+use craft\events\RegisterComponentTypesEvent;
+use craft\services\Fields;
+use ether\bookings\fields\BookableField;
+use yii\base\Event;
 
 /**
  * @author    Ether Creative
@@ -31,6 +35,20 @@ class Bookings extends Plugin
 	public function init ()
 	{
 		parent::init();
+
+		Event::on(
+			Fields::class,
+			Fields::EVENT_REGISTER_FIELD_TYPES,
+			[$this, 'onRegisterFieldTypes']
+		);
+	}
+
+	// Events
+	// =========================================================================
+
+	public function onRegisterFieldTypes (RegisterComponentTypesEvent $event)
+	{
+		$event->types[] = BookableField::class;
 	}
 
 }
