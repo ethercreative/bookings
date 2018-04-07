@@ -17,6 +17,7 @@
     "@vue/cli-plugin-eslint": "^3.0.0-beta.6",
     "@vue/cli-service": "^3.0.0-beta.6",
     "vue-template-compiler": "^2.5.13",
+    "webpack-cdn-plugin": "^1.8.1",
     "webpack-php-manifest": "^0.0.5"
   },
   "babel": {

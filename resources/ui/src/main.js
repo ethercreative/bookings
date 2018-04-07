@@ -4,7 +4,7 @@ Vue.config.productionTip = false;
 
 /**
  * ```js
- * new window.__BookingsUI("field", "namespacedId");
+ * new window.__BookingsUI("field", "#namespacedId");
  * ```
  *
  * @param {string} section
