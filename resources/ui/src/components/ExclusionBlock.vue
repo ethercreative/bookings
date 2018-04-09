@@ -7,7 +7,7 @@
 
 			<footer :class="$style.exclusionBlockFooter" v-if="!disabled">
 				<div
-					:class="$style.dragHandle"
+					:class="[$style.dragHandle, 'bookings--drag-handle']"
 					title="Move this block"
 				></div>
 
