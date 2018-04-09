@@ -22,7 +22,7 @@ function BookingsUI (section, id = "#app") {
 	switch (section) {
 		case "dev":
 		case "field":
-			import("./App.vue").then(onImport);
+			import("./Field.vue").then(onImport);
 			break;
 		default:
 			throw new Error(`Unknown Bookings UI section: ${section}`);

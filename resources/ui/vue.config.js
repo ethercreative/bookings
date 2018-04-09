@@ -1,5 +1,6 @@
-const PhpManifestPlugin = require('webpack-php-manifest')
-	, WebpackCdnPlugin = require('webpack-cdn-plugin');
+const PhpManifestPlugin = require("webpack-php-manifest")
+	, WebpackCdnPlugin = require("webpack-cdn-plugin")
+	, merge = require("webpack-merge");
 
 /**
  * Fix shit
@@ -70,6 +71,18 @@ if (process.env.NODE_ENV === "production") {
 			.delete('split-manifest')
 			.delete('inline-manifest')
 			.delete('html');
+
+		// Use short css module names
+		config.module
+			.rule("vue")
+			.use("vue-loader")
+			.tap(options =>
+				merge(options, {
+					cssModules: merge(options.cssModules, {
+						localIdentName: '[hash:base64:5]',
+					}),
+				})
+			);
 	};
 }
 
