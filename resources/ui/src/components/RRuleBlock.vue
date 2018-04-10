@@ -3,6 +3,7 @@
 		<div :class="$style.exclusionBlock">
 			<div>
 				<Row>
+					<!-- Frequency -->
 					<Label label="Frequency">
 						<Select
 							name="frequency"
@@ -19,12 +20,14 @@
 						</Select>
 					</Label>
 
+					<!-- Start Date -->
 					<Label label="Start Date">
 						[Date Time]
 					</Label>
 				</Row>
 
 				<Row>
+					<!-- Duration -->
 					<Label label="Duration">
 						<Select
 							name="duration"
@@ -37,10 +40,12 @@
 						</Select>
 					</Label>
 
+					<!-- Until Date -->
 					<Label label="End Date" v-if="duration === 'until'">
 						[Date Time]
 					</Label>
 
+					<!-- Count -->
 					<Label label="Count" v-if="duration === 'count'">
 						<Input
 							type="number"
@@ -51,18 +56,40 @@
 						/>
 					</Label>
 				</Row>
+
+				<Row>
+					<!-- Interval -->
+					<Label label="Interval">
+						<Input
+							type="number"
+							:min="1"
+							:required="true"
+							:disabled="disabled"
+							v-model="interval"
+						/>
+					</Label>
+
+					<!-- Bookable -->
+					<Label label="Bookable" v-if="isException">
+						<Lightswitch
+							v-model="bookable"
+						/>
+					</Label>
+				</Row>
 			</div>
 
 			<footer
 				:class="$style.exclusionBlockFooter"
 				v-if="!disabled && !hideFooter"
 			>
+				<!-- Move Handle -->
 				<div
 					:class="[$style.dragHandle, 'bookings--drag-handle']"
 					title="Move this block"
 				></div>
 
 				<div>
+					<!-- Duplicate -->
 					<button
 						type="button"
 						title="Duplicate this block"
@@ -71,6 +98,7 @@
 						Duplicate
 					</button>
 
+					<!-- Delete -->
 					<button
 						type="button"
 						:class="$style.danger"
@@ -90,6 +118,7 @@
 	import Label from "./form/Label";
 	import Select from "./form/Select";
 	import Input from "./form/Input";
+	import Lightswitch from "./form/Lightswitch";
 	import RecursionRule from "../models/RecursionRule";
 	import Frequency from "../const/Frequency";
 	import ExRule from "../models/ExRule";
@@ -107,7 +136,7 @@
 
 			disabled: Boolean,
 		},
-		components: { Row, Label, Select, Input },
+		components: { Row, Label, Select, Input, Lightswitch },
 
 		data () {
 			let r;
@@ -121,14 +150,17 @@
 			if (!r)
 				throw new Error("Missing RRule or ID");
 
-			return r.convertToDataObject();
+			return {
+				internal_rrule: r,
+				...r.convertToDataObject(),
+			};
 		},
 
 		computed: {
 			frequencies: () => Frequency.asKeyValueArray(),
 
 			isException () {
-				return this.id && !this.rrule;
+				return this.internal_rrule.constructor === ExRule;
 			}
 		},
 
@@ -144,6 +176,8 @@
 			 * @param {Object} next
 			 */
 			onUpdateRule (next) {
+				// FIXME: ExRule properties are not being by RecursionRule's constructor :(
+
 				const rule =
 					this.isException
 						? new ExRule(next)

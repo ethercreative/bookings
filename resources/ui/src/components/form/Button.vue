@@ -49,7 +49,7 @@
 		background-position-y: 50%;
 		border: 1px solid rgba(0,0,0,0.1);
 		border-radius: 3px;
-		outline: none;
+		/*outline: none;*/
 
 		cursor: pointer;
 		transition: background-position 0.2s ease, border-color 0.2s ease;

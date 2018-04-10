@@ -1,5 +1,5 @@
 <template>
-	<span :class="$style.select">
+	<label :class="$style.select">
 		<select
 			:name="name"
 			:value="value"
@@ -8,7 +8,7 @@
 		>
 			<slot></slot>
 		</select>
-	</span>
+	</label>
 </template>
 
 <script>
@@ -27,7 +27,7 @@
 
 	.select {
 		position: relative;
-		display: inline-block;
+		display: block;
 
 		&:before {
 			content: '';

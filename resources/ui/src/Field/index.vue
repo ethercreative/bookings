@@ -17,10 +17,10 @@
 </template>
 
 <script>
-	import ExceptionsModal from "./field/ExceptionsModal";
-	import RRuleBlock from "./components/RRuleBlock";
-	import Button from "./components/form/Button";
-	import RecursionRule from "./models/RecursionRule";
+	import ExceptionsModal from "./ExceptionsModal";
+	import RRuleBlock from "../components/RRuleBlock";
+	import Button from "../components/form/Button";
+	import RecursionRule from "../models/RecursionRule";
 
 	export default {
 		name: "field",

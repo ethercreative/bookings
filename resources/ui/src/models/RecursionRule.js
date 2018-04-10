@@ -109,6 +109,11 @@ export default class RecursionRule {
 	// Helpers
 	// =========================================================================
 
+	/**
+	 * Returns the class as a plain JS object ready of Vue's data()
+	 *
+	 * @return {{}}
+	 */
 	convertToDataObject () {
 		return Object.keys(this).reduce((obj, key) => {
 			if (key !== "id")
@@ -118,8 +123,27 @@ export default class RecursionRule {
 		}, {});
 	}
 
+	/**
+	 * Converts the class to a plain JS object ready for sending to the server
+	 *
+	 * @return {{}}
+	 */
 	convertToRRuleObject () {
-		//
+		const data = this.convertToDataObject();
+
+		switch (data.duration) {
+			case "until":
+				delete data.count;
+				break;
+			case "count":
+				delete data.until;
+				break;
+			default:
+				delete data.count;
+				delete data.until;
+		}
+
+		return data;
 	}
 
 }
