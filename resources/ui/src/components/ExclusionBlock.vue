@@ -33,6 +33,8 @@
 </template>
 
 <script>
+	// TODO: Re-name to ExceptionsBlock
+
 	export default  {
 		name: "ExclusionBlock",
 		props: ["data", "disabled"],
