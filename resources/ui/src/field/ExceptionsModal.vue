@@ -18,7 +18,7 @@
 				v-model="testList"
 				:options="{
 					animation: 150,
-					handle: '.' +$style.dragHandle,
+					handle: '.bookings--drag-handle',
 				}"
 			>
 				<transition-group tag="div">
