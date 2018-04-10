@@ -6,14 +6,14 @@
 		@after-leave="onAfterLeave"
 	>
 		<div
-			:class="$style.overlay"
+			:class="[$style.overlay, { [$style.clear]: clear }]"
 			role="dialog"
 			aria-modal="true"
 
 			v-if="open"
 			@click.self="onRequestClose"
 		>
-			<div :class="$style.modal">
+			<div :class="[$style.modal, { [$style.clear]: clear }]">
 				<slot></slot>
 			</div>
 		</div>
@@ -25,7 +25,19 @@
 
 	export default {
 		name: "Modal",
-		props: ["open", "onRequestClose"],
+		props: {
+			open: {
+				type: Boolean,
+				required: true,
+			},
+
+			onRequestClose: {
+				type: Function,
+				required: true,
+			},
+
+			clear: Boolean,
+		},
 
 		mounted () {
 			// Bind Events
@@ -76,6 +88,9 @@
 		padding: 30px;
 
 		background: fade(#fff, 75);
+
+		will-change: true;
+		transform: translate3d(0, 0, 0);
 	}
 
 	.modal {
@@ -91,6 +106,13 @@
 		box-shadow: 0 25px 100px rgba(0, 0, 0, 0.5);
 
 		overflow: hidden;
+		will-change: true;
+		transform: translate3d(0, 0, 0);
+	}
+
+	.clear {
+		background-color: transparent;
+		box-shadow: none;
 	}
 </style>
 

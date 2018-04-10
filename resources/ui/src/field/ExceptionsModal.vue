@@ -7,58 +7,92 @@
 					from the primary booking window</p>
 			</header>
 
-
-			<RRuleBlock
-				slot="header"
-				disabled="true"
-				:data="{label: 'Fixed'}"
-			/>
-
-			<Draggable
-				v-model="testList"
-				:options="{
-					animation: 150,
-					handle: '.bookings--drag-handle',
-				}"
-			>
-				<transition-group tag="div">
+			<div :class="$style.rulesWrap">
+				<div :class="$style.rules">
+					<!-- Base Rule -->
 					<RRuleBlock
-						v-for="element in testList"
-						:key="element.id"
-						:data="element"
+						slot="header"
+						:disabled="true"
+						:rrule="baseRule"
 					/>
-				</transition-group>
 
-				<button
-					type="button"
-					slot="footer"
-					:class="$style.addRuleButton"
-				>
-					Add new rule
-				</button>
-			</Draggable>
+					<!-- Exceptions -->
+					<Draggable
+						v-model="exceptionsSort"
+						:options="{
+							animation: 150,
+							handle: '.bookings--drag-handle',
+						}"
+					>
+						<transition-group tag="div">
+							<RRuleBlock
+								v-for="id in exceptionsSort"
+								:key="id"
+								:id="id"
+							/>
+						</transition-group>
+
+						<!-- Add New Exception Rule -->
+						<button
+							type="button"
+							slot="footer"
+							:class="$style.addRuleButton"
+							@click="onAddNewRule"
+						>
+							Add new rule
+						</button>
+					</Draggable>
+				</div>
+			</div>
+
+			<footer :class="$style.sidebarFooter">
+				<Button>Save event rules</Button>
+			</footer>
 		</aside>
 	</Modal>
 </template>
 
 <script>
+	import { mapState } from "vuex";
 	import Draggable from "vuedraggable";
 	import Modal from "../components/Modal";
 	import RRuleBlock from "../components/RRuleBlock";
+	import Button from "../components/form/Button";
 
 	export default {
 		name: "ExceptionsModal",
 		props: ["open", "onRequestClose"],
-		components: { Modal, Draggable, RRuleBlock },
-		data () {
-			return {
-				testList: [
-					{ id: 1, label: "Hello" },
-					{ id: 2, label: "World" },
-					{ id: 3, label: "Lorem" },
-					{ id: 4, label: "Ipsum" },
-				]
-			};
+		components: { Modal, Draggable, RRuleBlock, Button },
+
+		// Computed
+		// =====================================================================
+
+		computed: {
+			...mapState([
+				"baseRule",
+				"exceptions",
+			]),
+
+			exceptionsSort: {
+				get () {
+					return this.$store.state.exceptionsSort;
+				},
+
+				set (value) {
+					this.$store.commit("updateExceptionsSort", value);
+				},
+			},
+		},
+
+		// Methods
+		// =====================================================================
+
+		methods: {
+
+			onAddNewRule () {
+				this.$store.commit("addException");
+			},
+
 		}
 	}
 </script>
@@ -70,19 +104,19 @@
 	// =========================================================================
 
 	.sidebar {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
 		width: 400px;
-		padding: 30px 20px;
+		padding: 30px 0;
 
-		background: #F4F5F6;
+		background: @aside-bg;
 		border-right: 1px solid @border;
 		box-shadow: 2px 0 6px 0 rgba(0,0,0,0.10);
-
-		overflow: auto;
 	}
 
 	.sidebarHeader {
-		padding: 0 10px;
-		margin-bottom: 25px;
+		padding: 0 30px;
 
 		h2 {
 			margin: 0 0 10px;
@@ -101,8 +135,59 @@
 		}
 	}
 
+	.rulesWrap {
+		position: relative;
+		flex-grow: 1;
+		display: flex;
+		overflow: hidden;
+
+		&:before,
+		&:after {
+			content: '';
+			position: absolute;
+			z-index: 2;
+			left: 0;
+			right: 15px;
+
+			display: block;
+			height: 25px;
+		}
+
+		&:before {
+			top: 0;
+			background-image: linear-gradient(
+				to bottom,
+				@aside-bg 0%,
+				fade(@aside-bg, 0) 100%
+			);
+		}
+
+		&:after {
+			bottom: 0;
+			background-image: linear-gradient(
+				to bottom,
+				fade(@aside-bg, 0) 0%,
+				@aside-bg 100%
+			);
+		}
+	}
+
+	.rules {
+		position: relative;
+		z-index: 1;
+
+		width: 100%;
+
+		overflow: auto;
+		padding: 25px 20px;
+	}
+
 	// Sidebar Footer
 	// =========================================================================
+
+	.sidebarFooter {
+		padding: 15px 20px 0;
+	}
 
 	.addRuleButton {
 		display: flex;

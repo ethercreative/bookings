@@ -1,8 +1,13 @@
 <template>
 	<div>
-		<button @click="exceptionsModalOpen = true" type="button">
+		<RRuleBlock
+			:rrule="baseRule"
+			:hideFooter="true"
+		/>
+
+		<Button @click="exceptionsModalOpen = true">
 			Open exceptions modal
-		</button>
+		</Button>
 
 		<ExceptionsModal
 			:open="exceptionsModalOpen"
@@ -13,16 +18,18 @@
 
 <script>
 	import ExceptionsModal from "./field/ExceptionsModal";
+	import RRuleBlock from "./components/RRuleBlock";
+	import Button from "./components/form/Button";
+	import RecursionRule from "./models/RecursionRule";
 
 	export default {
 		name: "field",
 
-		components: {
-			ExceptionsModal,
-		},
+		components: { ExceptionsModal, RRuleBlock, Button },
 
 		data: () => ({
 			exceptionsModalOpen: false,
+			baseRule: new RecursionRule(),
 		}),
 
 		methods: {

@@ -2,15 +2,61 @@
 	<div :class="[$style.exclusionBlockWrap, { [$style.disabled]: disabled }]">
 		<div :class="$style.exclusionBlock">
 			<div>
-				<Label label="Frequency">
-					<Select name="frequency" value="HOURLY">
-						<option value="HOURLY">Hourly</option>
-						<option value="MINUTELY">Minutely</option>
-					</Select>
-				</Label>
+				<Row>
+					<Label label="Frequency">
+						<Select
+							name="frequency"
+							v-model="frequency"
+							:disabled="disabled"
+						>
+							<option
+								v-for="freq in frequencies"
+								:key="freq.value"
+								:value="freq.value"
+							>
+								{{freq.key}}
+							</option>
+						</Select>
+					</Label>
+
+					<Label label="Start Date">
+						[Date Time]
+					</Label>
+				</Row>
+
+				<Row>
+					<Label label="Duration">
+						<Select
+							name="duration"
+							v-model="duration"
+							:disabled="disabled"
+						>
+							<option value="until">Until</option>
+							<option value="count">Count</option>
+							<option value="forever">Forever</option>
+						</Select>
+					</Label>
+
+					<Label label="End Date" v-if="duration === 'until'">
+						[Date Time]
+					</Label>
+
+					<Label label="Count" v-if="duration === 'count'">
+						<Input
+							type="number"
+							:min="1"
+							:required="true"
+							:disabled="disabled"
+							v-model="count"
+						/>
+					</Label>
+				</Row>
 			</div>
 
-			<footer :class="$style.exclusionBlockFooter" v-if="!disabled">
+			<footer
+				:class="$style.exclusionBlockFooter"
+				v-if="!disabled && !hideFooter"
+			>
 				<div
 					:class="[$style.dragHandle, 'bookings--drag-handle']"
 					title="Move this block"
@@ -20,6 +66,7 @@
 					<button
 						type="button"
 						title="Duplicate this block"
+						@click="onDuplicateClick"
 					>
 						Duplicate
 					</button>
@@ -28,6 +75,7 @@
 						type="button"
 						:class="$style.danger"
 						title="Delete this block"
+						@click="onDelete"
 					>
 						Delete
 					</button>
@@ -38,13 +86,94 @@
 </template>
 
 <script>
-	import Label from "./fields/Label";
-	import Select from "./fields/Select";
+	import Row from "./form/Row";
+	import Label from "./form/Label";
+	import Select from "./form/Select";
+	import Input from "./form/Input";
+	import RecursionRule from "../models/RecursionRule";
+	import Frequency from "../const/Frequency";
+	import ExRule from "../models/ExRule";
 
 	export default  {
 		name: "RRuleBlock",
-		props: ["rrule", "disabled"],
-		components: { Label, Select },
+		props: {
+			rrule: RecursionRule,
+			id: String,
+
+			hideFooter: {
+				type: Boolean,
+				default: false,
+			},
+
+			disabled: Boolean,
+		},
+		components: { Row, Label, Select, Input },
+
+		data () {
+			let r;
+
+			if (this.rrule)
+				r = this.rrule;
+
+			if (this.id)
+				r = this.$store.getters.getExceptionById(this.id);
+
+			if (!r)
+				throw new Error("Missing RRule or ID");
+
+			return r.convertToDataObject();
+		},
+
+		computed: {
+			frequencies: () => Frequency.asKeyValueArray(),
+
+			isException () {
+				return this.id && !this.rrule;
+			}
+		},
+
+		mounted () {
+			this.$watch("$data", this.onUpdateRule, { deep: true });
+		},
+
+		methods: {
+
+			/**
+			 * Updates the current rule in Vuex
+			 *
+			 * @param {Object} next
+			 */
+			onUpdateRule (next) {
+				const rule =
+					this.isException
+						? new ExRule(next)
+						: new RecursionRule(next);
+
+				rule.id = this.id;
+
+				this.$store.commit(
+					"updateRule",
+					rule
+				);
+			},
+
+			/**
+			 * Duplicates the current exception
+			 */
+			onDuplicateClick () {
+				this.$store.commit("duplicateExceptionById", this.id);
+			},
+
+			/**
+			 * Deletes the current exception
+			 */
+			onDelete () {
+				// TODO: Better confirmation
+
+				if (confirm("Are you sure?"))
+					this.$store.commit("deleteExceptionById", this.id);
+			}
+		}
 	}
 </script>
 

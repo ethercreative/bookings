@@ -1,21 +1,25 @@
 import Vue from "vue";
+import store from "./store";
 
 Vue.config.productionTip = false;
 
 /**
  * ```js
- * new window.__BookingsUI("field", "#namespacedId");
+ * new window.__BookingsUI("field", "#namespacedId", {});
  * ```
  *
  * @param {string} section
  * @param {string=} id
+ * @param {Object=} options
  * @constructor
  */
-function BookingsUI (section, id = "#app") {
+function BookingsUI (section, id = "#app", options = null) {
 
 	const onImport = App => {
 		new Vue({
-			render: h => h(App.default)
+			render: h => h(App.default),
+			data: { options },
+			store,
 		}).$mount(id);
 	};
 

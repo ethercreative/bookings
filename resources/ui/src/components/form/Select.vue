@@ -3,6 +3,7 @@
 		<select
 			:name="name"
 			:value="value"
+			:disabled="disabled"
 			@change="$emit('input', $event.target.value)"
 		>
 			<slot></slot>
@@ -13,7 +14,11 @@
 <script>
 	export default {
 		name: "Select",
-		props: ["name", "value"],
+		props: {
+			name: String,
+			value: null,
+			disabled: Boolean,
+		},
 	}
 </script>
 
@@ -42,7 +47,8 @@
 		}
 
 		select {
-			display: inline-block;
+			display: block;
+			width: 100%;
 			padding: 9px 35px 9px 15px;
 
 			color: @color;
