@@ -2,7 +2,12 @@
 	<div :class="[$style.exclusionBlockWrap, { [$style.disabled]: disabled }]">
 		<div :class="$style.exclusionBlock">
 			<div>
-				{{data.label}}
+				<Label label="Frequency">
+					<Select name="frequency" value="HOURLY">
+						<option value="HOURLY">Hourly</option>
+						<option value="MINUTELY">Minutely</option>
+					</Select>
+				</Label>
 			</div>
 
 			<footer :class="$style.exclusionBlockFooter" v-if="!disabled">
@@ -33,11 +38,13 @@
 </template>
 
 <script>
-	// TODO: Re-name to ExceptionsBlock
+	import Label from "./fields/Label";
+	import Select from "./fields/Select";
 
 	export default  {
-		name: "ExclusionBlock",
-		props: ["data", "disabled"],
+		name: "RRuleBlock",
+		props: ["rrule", "disabled"],
+		components: { Label, Select },
 	}
 </script>
 
@@ -75,7 +82,7 @@
 		justify-content: space-between;
 		padding: 10px 20px;
 
-		border-top: 1px solid #DADFEA;
+		border-top: 1px solid @border;
 
 		font-size: 0;
 		line-height: 0;

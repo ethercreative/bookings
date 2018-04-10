@@ -8,7 +8,7 @@
 			</header>
 
 
-			<ExclusionBlock
+			<RRuleBlock
 				slot="header"
 				disabled="true"
 				:data="{label: 'Fixed'}"
@@ -22,7 +22,7 @@
 				}"
 			>
 				<transition-group tag="div">
-					<ExclusionBlock
+					<RRuleBlock
 						v-for="element in testList"
 						:key="element.id"
 						:data="element"
@@ -44,12 +44,12 @@
 <script>
 	import Draggable from "vuedraggable";
 	import Modal from "../components/Modal";
-	import ExclusionBlock from "../components/ExclusionBlock";
+	import RRuleBlock from "../components/RRuleBlock";
 
 	export default {
 		name: "ExceptionsModal",
 		props: ["open", "onRequestClose"],
-		components: { Modal, Draggable, ExclusionBlock },
+		components: { Modal, Draggable, RRuleBlock },
 		data () {
 			return {
 				testList: [
