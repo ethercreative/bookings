@@ -28,14 +28,14 @@
 
 				<Row>
 					<!-- Duration -->
-					<Label label="Duration">
+					<Label label="Repeats">
 						<Select
 							name="duration"
 							v-model="duration"
 							:disabled="disabled"
 						>
 							<option value="until">Until</option>
-							<option value="count">Count</option>
+							<option value="count"># Times</option>
 							<option value="forever">Forever</option>
 						</Select>
 					</Label>
