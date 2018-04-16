@@ -22,7 +22,7 @@
 
 					<!-- Start Date -->
 					<Label label="Start Date">
-						[Date Time]
+						<Date />
 					</Label>
 				</Row>
 
@@ -119,6 +119,7 @@
 	import Select from "./form/Select";
 	import Input from "./form/Input";
 	import Lightswitch from "./form/Lightswitch";
+	import Date from "./form/Date";
 	import RecursionRule from "../models/RecursionRule";
 	import Frequency from "../const/Frequency";
 	import ExRule from "../models/ExRule";
@@ -136,7 +137,7 @@
 
 			disabled: Boolean,
 		},
-		components: { Row, Label, Select, Input, Lightswitch },
+		components: { Row, Label, Select, Input, Lightswitch, Date },
 
 		data () {
 			let r;
@@ -176,8 +177,6 @@
 			 * @param {Object} next
 			 */
 			onUpdateRule (next) {
-				// FIXME: ExRule properties are not being by RecursionRule's constructor :(
-
 				const rule =
 					this.isException
 						? new ExRule(next)
@@ -185,7 +184,7 @@
 
 				rule.id = this.id;
 
-				this.$store.commit(
+				this.$store.dispatch(
 					"updateRule",
 					rule
 				);
@@ -195,7 +194,7 @@
 			 * Duplicates the current exception
 			 */
 			onDuplicateClick () {
-				this.$store.commit("duplicateExceptionById", this.id);
+				this.$store.dispatch("duplicateExceptionById", this.id);
 			},
 
 			/**
@@ -205,7 +204,7 @@
 				// TODO: Better confirmation
 
 				if (confirm("Are you sure?"))
-					this.$store.commit("deleteExceptionById", this.id);
+					this.$store.dispatch("deleteExceptionById", this.id);
 			}
 		}
 	}

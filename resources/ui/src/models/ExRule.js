@@ -13,4 +13,26 @@ export default class ExRule extends RecursionRule {
 	 */
 	bookable = false;
 
+	// Constructor
+	// =========================================================================
+
+	constructor (def = {}, overwriteId = false) {
+		super();
+
+		Object.keys(def).map(key => {
+			if (!this.hasOwnProperty(key))
+				return;
+
+			if (key === "id" && overwriteId)
+				return;
+
+			let value = def[key];
+
+			if (key in ["start", "until"])
+				value = new Date(+value);
+
+			this[key] = value;
+		});
+	}
+
 }

@@ -1,9 +1,37 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import API from "../API";
 import RecursionRule from "../models/RecursionRule";
 import ExRule from "../models/ExRule";
 
 Vue.use(Vuex);
+
+// API
+// =========================================================================
+
+/**
+ * Refreshes the calendar data from the API
+ *
+ * @param commit
+ * @param state
+ * @return {Promise<void>}
+ */
+async function refreshCalendar (commit, state) {
+	const body = {
+		baseRule: state.baseRule.convertToDataObject(),
+		exceptions: Object.values(state.exceptions).map(r => r.convertToDataObject()),
+	};
+
+	try {
+		const res = await API.postActionRequest("bookings/api/get-calendar", body);
+		console.log(res);
+	} catch (e) {
+		console.error(e);
+	}
+}
+
+// State
+// =========================================================================
 
 const state = {
 	baseRule: new RecursionRule(),
@@ -15,6 +43,35 @@ const getters = {
 	getExceptionById: (state) => (id) => {
 		return state.exceptions[id];
 	},
+};
+
+const actions = {
+
+	async updateRule ({ commit, state }, payload) {
+		commit("updateRule", payload);
+		await refreshCalendar(commit, state);
+	},
+
+	async addException ({ commit, state }) {
+		commit("addException");
+		await refreshCalendar(commit, state);
+	},
+
+	async updateExceptionsSort ({ commit, state }, payload) {
+		commit("updateExceptionsSort",  payload);
+		await refreshCalendar(commit, state);
+	},
+
+	async duplicateExceptionById ({ commit, state }, payload) {
+		commit("duplicateExceptionById", payload);
+		await refreshCalendar(commit, state);
+	},
+
+	async deleteExceptionById ({ commit, state }, payload) {
+		commit("deleteExceptionById", payload);
+		await refreshCalendar(commit, state);
+	}
+
 };
 
 const mutations = {
@@ -90,6 +147,7 @@ const mutations = {
 export default new Vuex.Store({
 	state,
 	getters,
+	actions,
 	mutations,
 	debug: process.env.NODE_ENV !== "production",
 });

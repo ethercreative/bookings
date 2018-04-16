@@ -79,7 +79,7 @@
 				},
 
 				set (value) {
-					this.$store.commit("updateExceptionsSort", value);
+					this.$store.dispatch("updateExceptionsSort", value);
 				},
 			},
 		},
@@ -90,7 +90,7 @@
 		methods: {
 
 			onAddNewRule () {
-				this.$store.commit("addException");
+				this.$store.dispatch("addException");
 			},
 
 		}

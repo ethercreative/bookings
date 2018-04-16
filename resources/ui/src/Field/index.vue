@@ -13,6 +13,8 @@
 			:open="exceptionsModalOpen"
 			:onRequestClose="onRequestClose"
 		/>
+
+		<portal-target name="modals" multiple />
 	</div>
 </template>
 

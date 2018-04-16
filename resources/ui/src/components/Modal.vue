@@ -1,23 +1,28 @@
 <template>
-	<transition
-		name="fade"
-		@before-enter="onBeforeEnter"
-		@after-enter="onAfterEnter"
-		@after-leave="onAfterLeave"
-	>
-		<div
-			:class="[$style.overlay, { [$style.clear]: clear }]"
-			role="dialog"
-			aria-modal="true"
-
-			v-if="open"
-			@click.self="onRequestClose"
+	<portal to="modals">
+		<transition
+			name="fade"
+			@before-enter="onBeforeEnter"
+			@after-enter="onAfterEnter"
+			@after-leave="onAfterLeave"
 		>
-			<div :class="[$style.modal, { [$style.clear]: clear }]">
-				<slot></slot>
+			<div
+				:class="[$style.overlay, { [$style.clear]: clear }]"
+				role="dialog"
+				aria-modal="true"
+
+				v-if="open"
+				@click.self="onRequestClose"
+			>
+				<div
+					:class="[$style.modal, { [$style.clear]: clear && !parented, [$style.parented]: parented }]"
+					:style="parentedStyles"
+				>
+					<slot></slot>
+				</div>
 			</div>
-		</div>
-	</transition>
+		</transition>
+	</portal>
 </template>
 
 <script>
@@ -37,9 +42,20 @@
 			},
 
 			clear: Boolean,
+			parented: Boolean,
+		},
+
+		data () {
+			return {
+				target: null,
+			};
 		},
 
 		mounted () {
+			if (this.parented) {
+				this.target = this.$parent.$el;
+			}
+
 			// Bind Events
 			document.body.addEventListener("keyup", this.onBodyKeyUp);
 		},
@@ -47,6 +63,20 @@
 		beforeDestroy () {
 			// Unbind Events
 			document.body.removeEventListener("keyup", this.onBodyKeyUp);
+		},
+
+		computed: {
+			parentedStyles () {
+				if (!this.target)
+					return {};
+
+				const box = this.target.getBoundingClientRect();
+
+				return {
+					top: box.bottom + "px",
+					left: (box.right - box.width/2) + "px",
+				};
+			}
 		},
 
 		methods: {
@@ -113,6 +143,15 @@
 	.clear {
 		background-color: transparent;
 		box-shadow: none;
+	}
+
+	.parented {
+		position: fixed;
+
+		width: auto;
+		height: auto;
+
+		transform: translate3d(-50%, 0, 0);
 	}
 </style>
 
