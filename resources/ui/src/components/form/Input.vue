@@ -67,29 +67,5 @@
 </script>
 
 <style module lang="less">
-	@import "../../variables";
-
-	.input {
-		display: block;
-		width: 100%;
-		padding: 9px 0 9px 0;
-
-		color: @color;
-		font-size: 14px;
-		line-height: normal;
-		text-indent: 15px;
-
-		appearance: none;
-		background: none;
-		border: 1px solid @border;
-		border-radius: 3px;
-		outline: none;
-
-		transition: border-color 0.15s ease;
-
-		&:hover,
-		&:focus {
-			border-color: @border-dark;
-		}
-	}
+	@import "Input";
 </style>

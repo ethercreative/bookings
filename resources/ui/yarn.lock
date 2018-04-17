@@ -6983,6 +6983,10 @@ vuedraggable@^2.16.0:
   dependencies:
     sortablejs "^1.7.0"
 
+vuejs-datepicker@^0.9.29:
+  version "0.9.29"
+  resolved "https://registry.yarnpkg.com/vuejs-datepicker/-/vuejs-datepicker-0.9.29.tgz#b17e504a9ae699f590b2fbe07237d5309012083b"
+
 vuex@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.0.1.tgz#e761352ebe0af537d4bb755a9b9dc4be3df7efd2"

@@ -8,6 +8,7 @@
 		>
 			<div
 				:class="[$style.overlay, { [$style.clear]: clear }]"
+				:style="{zIndex:zIndex}"
 				role="dialog"
 				aria-modal="true"
 
@@ -15,7 +16,11 @@
 				@click.self="onRequestClose"
 			>
 				<div
-					:class="[$style.modal, { [$style.clear]: clear && !parented, [$style.parented]: parented }]"
+					:class="[$style.modal, {
+						[$style.clear]: clear && !parented && !shallow,
+						[$style.parented]: parented,
+						[$style.shallow]: shallow,
+					}]"
 					:style="parentedStyles"
 				>
 					<slot></slot>
@@ -27,6 +32,10 @@
 
 <script>
 	import FocusManager from "../helpers/FocusManager";
+
+	// Keeps track of open modals
+	// Used to ensure subsequent modals appear above previous ones.
+	const openModals = {count:0};
 
 	export default {
 		name: "Modal",
@@ -43,11 +52,13 @@
 
 			clear: Boolean,
 			parented: Boolean,
+			shallow: Boolean,
 		},
 
 		data () {
 			return {
 				target: null,
+				zIndex: 100,
 			};
 		},
 
@@ -85,11 +96,15 @@
 			 * @param {KeyboardEvent} e
 			 */
 			onBodyKeyUp: function (e) {
-				if (e.keyCode === 27)
+				// Esc if this is the top modal
+				if (e.keyCode === 27 && this.zIndex - 100 === openModals.count)
 					this.onRequestClose();
 			},
 
 			onBeforeEnter: function () {
+				openModals.count++;
+				this.zIndex = 100 + openModals.count;
+
 				document.body.style.overflow = "hidden";
 			},
 
@@ -98,6 +113,7 @@
 			},
 
 			onAfterLeave: function () {
+				openModals.count--;
 				document.body.style.overflow = "";
 			},
 
@@ -152,6 +168,10 @@
 		height: auto;
 
 		transform: translate3d(-50%, 0, 0);
+	}
+
+	.shallow {
+		box-shadow: 0 15px 60px rgba(0, 0, 0, 0.2);
 	}
 </style>
 
