@@ -49,6 +49,7 @@
 					<ul>
 						<li v-for="h in 12" :key="h">
 							<button
+								type="button"
 								:class="{[$style.active]:isActiveHour(h)}"
 								:disabled="isActiveHour(h)"
 								@click="setHour(h)"
@@ -60,6 +61,7 @@
 					<ul>
 						<li v-for="m in 60" :key="m">
 							<button
+								type="button"
 								:class="{[$style.active]:isActiveMinute(m)}"
 								:disabled="isActiveMinute(m)"
 								@click="setMinute(m)"
@@ -71,6 +73,7 @@
 					<ul>
 						<li>
 							<button
+								type="button"
 								:class="{[$style.active]:isActivePeriod(true)}"
 								:disabled="isActivePeriod(true)"
 								@click="setPeriod(true)"
@@ -80,6 +83,7 @@
 						</li>
 						<li>
 							<button
+								type="button"
 								:class="{[$style.active]:isActivePeriod(false)}"
 								:disabled="isActivePeriod(false)"
 								@click="setPeriod(false)"
