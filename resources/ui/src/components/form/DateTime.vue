@@ -265,7 +265,7 @@
 			width: 100%;
 			padding: 7px 15px;
 
-			font-size: 16px;
+			font-size: 14px;
 
 			cursor: pointer;
 			appearance: none;
