@@ -263,25 +263,30 @@
 		button {
 			display: block;
 			width: 100%;
-			padding: 7px 15px;
+			padding: 5px 13px;
 
 			font-size: 14px;
 
 			cursor: pointer;
 			appearance: none;
 			background: none;
-			border: none;
+			border: 1px solid transparent;
 			border-radius: 0;
 			outline: none;
 
 			transition:
+				border-color 0.15s ease,
 				background-color 0.15s ease,
 				color 0.15s ease;
 
-			&:hover,
+			&:hover {
+				border-color: @craft-primary;
+			}
+
 			&.active {
 				color: #fff;
 				background-color: @craft-primary;
+				border-color: @craft-primary;
 			}
 		}
 	}
