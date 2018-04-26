@@ -6,8 +6,9 @@
 				readonly
 				@focus="openDateModal"
 				ref="dateInput"
-				:value="formatDate(value, 'd/m/Y')"
+				:value="formatDate(internalValue, 'd/m/Y')"
 				:class="$style.input"
+				:disabled="disabled"
 			/>
 
 			<Modal
@@ -19,7 +20,7 @@
 			>
 				<date-picker
 					:inline="true"
-					:value="value"
+					:value="internalValue"
 					@input="onInput"
 					:calendar-class="$style.calendar"
 				/>
@@ -32,8 +33,9 @@
 				readonly
 				@focus="openTimeModal"
 				ref="timeInput"
-				:value="formatDate(value, 'H:i')"
+				:value="formatDate(internalValue, 'H:i')"
 				:class="$style.input"
+				:disabled="disabled"
 			/>
 
 			<Modal
@@ -101,13 +103,16 @@
 		name: "DateTime",
 		components: { Modal, DatePicker },
 
-		data () {
-			const now = new Date();
+		props: {
+			disabled: Boolean,
+			value: Date,
+		},
 
+		data () {
 			return {
 				isDateOpen: false,
 				isTimeOpen: false,
-				value: now,
+				internalValue: this.value || new Date(),
 			};
 		},
 
@@ -132,13 +137,12 @@
 			},
 
 			onInput (value) {
-				this.value = value;
+				this.internalValue = value;
 				this.emitInput();
 			},
 
 			emitInput () {
-				const value = this.value;
-				this.$emit("input", value);
+				this.$emit("input", this.internalValue);
 			},
 
 			// ---
@@ -153,7 +157,7 @@
 			// ---
 
 			isActiveHour (value) {
-				const hours = this.value.getHours();
+				const hours = this.internalValue.getHours();
 
 				if (hours >= 12) return hours === value + 12;
 				return hours === value;
@@ -161,11 +165,11 @@
 
 			isActiveMinute (value) {
 				value -= 1;
-				return this.value.getMinutes() === value;
+				return this.internalValue.getMinutes() === value;
 			},
 
 			isActivePeriod (isAM = false) {
-				const h = this.value.getHours();
+				const h = this.internalValue.getHours();
 				return isAM ? h < 12 : h >= 12;
 			},
 
@@ -177,9 +181,9 @@
 				if (this.isActivePeriod(false))
 					value += 13;
 
-				const next = new Date(this.value);
+				const next = new Date(this.internalValue);
 				next.setHours(value);
-				this.value = next;
+				this.internalValue = next;
 
 				this.emitInput();
 			},
@@ -187,9 +191,9 @@
 			setMinute (value) {
 				value -= 1;
 
-				const next = new Date(this.value);
+				const next = new Date(this.internalValue);
 				next.setMinutes(value);
-				this.value = next;
+				this.internalValue = next;
 
 				this.emitInput();
 			},
@@ -197,14 +201,14 @@
 			setPeriod (isAM = false) {
 				const isPM = this.isActivePeriod(false);
 
-				const next = new Date(this.value);
+				const next = new Date(this.internalValue);
 
 				if (isAM && isPM)
-					next.setHours(this.value.getHours() - 12);
+					next.setHours(this.internalValue.getHours() - 12);
 				else if (!isAM && !isPM)
-					next.setHours(this.value.getHours() + 12);
+					next.setHours(this.internalValue.getHours() + 12);
 
-				this.value = next;
+				this.internalValue = next;
 
 				this.emitInput();
 			},
@@ -239,10 +243,17 @@
 		ul {
 			margin: 0;
 			padding: 10px 0;
-			height: 300px;
+			height: 307px;
 			list-style: none;
 
 			overflow: auto;
+			//noinspection CssInvalidPropertyValue
+			scroll-snap-type: mandatory;
+			scroll-snap-points-y: repeat(33px);
+		}
+
+		li {
+			scroll-snap-align: start;
 		}
 
 		button {
