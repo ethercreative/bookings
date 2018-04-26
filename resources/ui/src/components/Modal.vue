@@ -65,7 +65,7 @@
 
 		mounted () {
 			if (this.parented) {
-				this.target = this.$parent.$el;
+				this.target = this.$el.parentNode;
 			}
 
 			// Bind Events

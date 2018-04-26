@@ -1,17 +1,24 @@
 <template>
-	<label :class="$style.label">
+	<component :is="elem" :class="$style.label">
 		<span>
 			{{label}}
 			<span v-if="required">*</span>
 		</span>
 		<slot></slot>
-	</label>
+	</component>
 </template>
 
 <script>
 	export default {
 		name: "Label",
-		props: ["label", "required"],
+		props: {
+			label: String,
+			required: Boolean,
+			elem: {
+				type: String,
+				default: "label",
+			}
+		},
 	}
 </script>
 

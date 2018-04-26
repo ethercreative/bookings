@@ -21,8 +21,8 @@
 					</Label>
 
 					<!-- Start Date -->
-					<Label label="Start Date">
-						<Date
+					<Label label="Start Date" elem="div">
+						<DateTime
 							name="start"
 							v-model="start"
 							:disabled="disabled"
@@ -45,8 +45,8 @@
 					</Label>
 
 					<!-- Until Date -->
-					<Label label="End Date" v-if="duration === 'until'">
-						<Date
+					<Label label="End Date" v-if="duration === 'until'" elem="div">
+						<DateTime
 							name="until"
 							v-model="until"
 							:disabled="disabled"
@@ -127,7 +127,7 @@
 	import Select from "./form/Select";
 	import Input from "./form/Input";
 	import Lightswitch from "./form/Lightswitch";
-	import Date from "./form/Date";
+	import DateTime from "./form/DateTime";
 	import RecursionRule from "../models/RecursionRule";
 	import Frequency from "../const/Frequency";
 	import ExRule from "../models/ExRule";
@@ -145,7 +145,7 @@
 
 			disabled: Boolean,
 		},
-		components: { Row, Label, Select, Input, Lightswitch, Date },
+		components: { Row, Label, Select, Input, Lightswitch, DateTime },
 
 		data () {
 			let r;
