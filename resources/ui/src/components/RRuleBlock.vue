@@ -21,7 +21,7 @@
 					</Label>
 
 					<!-- Start Date -->
-					<Label label="Start Date" elem="div">
+					<Label label="Start Date / Time" elem="div">
 						<DateTime
 							name="start"
 							v-model="start"
@@ -45,7 +45,7 @@
 					</Label>
 
 					<!-- Until Date -->
-					<Label label="End Date" v-if="duration === 'until'" elem="div">
+					<Label label="End Date / Time" v-if="duration === 'until'" elem="div">
 						<DateTime
 							name="until"
 							v-model="until"
