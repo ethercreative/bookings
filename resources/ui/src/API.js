@@ -1,13 +1,19 @@
+/* global Craft */
+
 export default {
 	async postActionRequest (action, data) {
-		return fetch(`https://dev.craft3/index.php?p=admin/actions/${action}`, {
+		const url = typeof Craft !== "undefined"
+			? Craft.actionUrl
+			: 'https://dev.craft3/index.php?p=actions/';
+
+		const response = await fetch(url + action, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-Requested-With": "XMLHttpRequest",
-			},
-			credentials: "include",
+			headers: new Headers({
+				"Accept": "application/json",
+			}),
 			body: JSON.stringify(data),
-		}).then(r => r.json());
+		});
+
+		return await response.json();
 	}
 };

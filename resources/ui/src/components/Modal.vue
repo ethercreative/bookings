@@ -1,5 +1,5 @@
 <template>
-	<!--<portal to="modals">-->
+	<component :is="noPortal ? 'div' : 'portal'" to="modals">
 		<transition
 			name="fade"
 			@before-enter="onBeforeEnter"
@@ -27,7 +27,7 @@
 				</div>
 			</div>
 		</transition>
-	<!--</portal>-->
+	</component>
 </template>
 
 <script>
@@ -53,6 +53,7 @@
 			clear: Boolean,
 			parented: Boolean,
 			shallow: Boolean,
+			noPortal: Boolean,
 		},
 
 		data () {

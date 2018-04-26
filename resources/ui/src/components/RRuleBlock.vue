@@ -22,7 +22,11 @@
 
 					<!-- Start Date -->
 					<Label label="Start Date">
-						<Date />
+						<Date
+							name="start"
+							v-model="start"
+							:disabled="disabled"
+						/>
 					</Label>
 				</Row>
 
@@ -42,7 +46,11 @@
 
 					<!-- Until Date -->
 					<Label label="End Date" v-if="duration === 'until'">
-						[Date Time]
+						<Date
+							name="until"
+							v-model="until"
+							:disabled="disabled"
+						/>
 					</Label>
 
 					<!-- Count -->

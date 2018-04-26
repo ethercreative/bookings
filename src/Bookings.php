@@ -14,12 +14,15 @@ use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
 use craft\services\Fields;
 use ether\bookings\fields\BookableField;
+use ether\bookings\services\RRuleService;
 use yii\base\Event;
 
 /**
  * @author    Ether Creative
  * @package   Bookings
  * @since     1.0.0-alpha.1
+ *
+ * @property RRuleService $rrule
  */
 class Bookings extends Plugin
 {
@@ -36,11 +39,26 @@ class Bookings extends Plugin
 	{
 		parent::init();
 
+		// Components
+		// ---------------------------------------------------------------------
+
+		$this->setComponents([
+			'rrule' => RRuleService::class,
+		]);
+
+		// Events
+		// ---------------------------------------------------------------------
+
 		Event::on(
 			Fields::class,
 			Fields::EVENT_REGISTER_FIELD_TYPES,
 			[$this, 'onRegisterFieldTypes']
 		);
+
+		// Misc
+		// ---------------------------------------------------------------------
+
+		$this->_registerPoweredByHeader();
 	}
 
 	// Events
@@ -49,6 +67,27 @@ class Bookings extends Plugin
 	public function onRegisterFieldTypes (RegisterComponentTypesEvent $event)
 	{
 		$event->types[] = BookableField::class;
+	}
+
+	// Helpers
+	// =========================================================================
+
+	private function _registerPoweredByHeader()
+	{
+		$craft = \Craft::$app;
+
+		if (!$craft->request->isConsoleRequest) {
+			$headers = $craft->getResponse()->getHeaders();
+			if ($craft->getConfig()->getGeneral()->sendPoweredByHeader) {
+				$original = $headers->get('X-Powered-By');
+				$headers->set(
+					'X-Powered-By',
+					$original . ($original ? ', ' : '') . 'Bookings for Craft'
+				);
+			} else {
+				header_remove('X-Powered-By');
+			}
+		}
 	}
 
 }

@@ -1,5 +1,5 @@
 <template>
-	<Modal :open="open" :onRequestClose="onRequestClose">
+	<Modal :open="open" :onRequestClose="onRequestClose" :no-portal="true">
 		<aside :class="$style.sidebar">
 			<header :class="$style.sidebarHeader">
 				<h2>Bookable Rules</h2>
