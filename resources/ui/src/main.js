@@ -1,10 +1,10 @@
 import "whatwg-fetch";
 import Vue from "vue";
-import PortalVue from "portal-vue";
+// import PortalVue from "portal-vue";
 import store from "./store";
 
 Vue.config.productionTip = false;
-Vue.use(PortalVue);
+// Vue.use(PortalVue);
 
 /**
  * ```js

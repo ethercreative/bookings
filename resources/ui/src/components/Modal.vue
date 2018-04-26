@@ -1,5 +1,5 @@
 <template>
-	<portal to="modals">
+	<!--<portal to="modals">-->
 		<transition
 			name="fade"
 			@before-enter="onBeforeEnter"
@@ -27,7 +27,7 @@
 				</div>
 			</div>
 		</transition>
-	</portal>
+	<!--</portal>-->
 </template>
 
 <script>

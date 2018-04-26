@@ -14,7 +14,7 @@
 			:onRequestClose="onRequestClose"
 		/>
 
-		<portal-target name="modals" multiple />
+		<!--<portal-target name="modals" multiple />-->
 	</div>
 </template>
 
