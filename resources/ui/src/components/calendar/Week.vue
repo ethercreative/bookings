@@ -42,6 +42,7 @@
 	</div>
 </template>-->
 
+<!--suppress JSXNamespaceValidation -->
 <script>
 	// TODO: Convert template ⬆ to JSX ⬇
 
@@ -88,15 +89,96 @@
 			};
 		},
 
+		// Render
+		// =====================================================================
+
 		render () {
 			return (
 				<div className={this.$style.scroller}>
-					hello
+					{this.weeks.map((week, index) => (
+						<div key={index}>
+							{this._renderHeader(week)}
+							{this._renderLabels()}
+							{this._renderCells(week)}
+						</div>
+					))}
 				</div>
 			);
 		},
 
+		// Methods
+		// =====================================================================
+
 		methods: {
+
+			// Render
+			// -----------------------------------------------------------------
+
+			_renderHeader (week) {
+				return (
+					<header className={this.$style.header}>
+						<div>
+							{this.days.map((day, i) => (
+								<span key={i}>
+									{this.getHeader(day, week, i)}
+								</span>
+							))}
+						</div>
+					</header>
+				);
+			},
+
+			_renderLabels () {
+				return (
+					<ul className={this.$style.labels}>
+						{Array.from({length: 23}, (_, i) => {
+							let t = i + 1;
+
+							if (t > 12)
+								t = (t - 12) + " pm";
+							else
+								t = t + " am";
+
+							return (
+								<li key={i}>{t}</li>
+							);
+						})}
+					</ul>
+				);
+			},
+
+			_renderCells (week) {
+				return (
+					<div className={this.$style.cells}>
+						{this.days.map((day, i) => {
+							const [m, d] = this.correctDate(day, week, i);
+
+							if (!this.slots.hasOwnProperty(m) || !this.slots[m].hasOwnProperty(d))
+								return null;
+
+							return this.slots[m][d].map(id => {
+								const slot = this.slots[m].all(id);
+
+								return (
+									<span
+										key={id}
+										style={this.getPosition(slot)}
+										className={this.$style.slot}
+									>
+										<span>
+											Bookable
+											<em>{this.getDuration(slot)}</em>
+										</span>
+									</span>
+								);
+							});
+						})}
+					</div>
+				);
+			},
+
+			// Helpers
+			// -----------------------------------------------------------------
 
 			getHeader (day, week, i) {
 				const [m, d] = this.correctDate(day, week, i);
@@ -135,15 +217,12 @@
 				const h = slot.hour === 24 ? 0 : slot.hour
 					, m = ":" + this.padZero(slot.minute);
 
-				// TODO: Since we don't have duration, this is simply adding 1 to the hour
+				// TODO: Since we don't have duration atm, this is simply adding 1 to the hour
 				const from = this.padZero(h) + m
 					, to   = this.padZero(h + 1) + m;
 
 				return from + " - " + to;
 			},
-
-			// Helpers
-			// -----------------------------------------------------------------
 
 			padZero (value) {
 				if (value < 10) return '0' + value;
