@@ -1,51 +1,5 @@
-<!--<template>
-	<div :class="$style.scroller">
-		<div
-			v-for="(week, index) in weeks"
-			:key="index"
-			:class="$style.group"
-		>
-			<header :class="$style.header">
-				<div>
-					<span v-for="(day, i) in days" :key="day">
-						{{ getHeader(day, week, i) }}
-					</span>
-				</div>
-			</header>
-
-			<ul :class="$style.labels">
-				<li v-for="t in 23" :key="t">
-					{{ t+1 > 12 ? ((t+1) - 12) + " pm" : t+1 + " am" }}
-				</li>
-			</ul>
-
-			<div :class="$style.cells">
-				<div
-					v-for="(day, i) in days"
-					:key="day"
-					v-if="slots.hasOwnProperty(week.beginning.month) && slots[week.beginning.month][week.beginning.day + i]"
-				>
-					<span
-						v-for="slot in slots[week.beginning.month][week.beginning.day + i]"
-						:key="slot"
-						:style="getPosition(slots[week.beginning.month].all[slot])"
-						:class="$style.slot"
-					>
-						<span>
-							Bookable
-							<em>{{ getDuration(slots[week.beginning.month].all[slot]) }}</em>
-						</span>
-					</span>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>-->
-
 <!--suppress JSXNamespaceValidation -->
 <script>
-	// TODO: Convert template ⬆ to JSX ⬇
-
 	import { RecycleList } from "vue-virtual-scroller";
 
 	const MONTH_LENGTHS = [

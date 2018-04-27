@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div :class="$style.wrap">
 		<RRuleBlock
 			:rrule="baseRule"
 			:hideFooter="true"
@@ -42,6 +42,11 @@
 	}
 </script>
 
-<style scoped lang="less">
-	//
+<style module lang="less">
+	.wrap {
+		&,
+		& * {
+			box-sizing: border-box;
+		}
+	}
 </style>
