@@ -32,7 +32,7 @@ export default class RecursionRule {
 	/**
 	 * @type {String}
 	 */
-	duration = "count";
+	repeats = "count";
 
 	/**
 	 * @type {Number|null}
@@ -131,7 +131,7 @@ export default class RecursionRule {
 	convertToRRuleObject () {
 		const data = this.convertToDataObject();
 
-		switch (data.duration) {
+		switch (data.repeats) {
 			case "until":
 				delete data.count;
 				break;

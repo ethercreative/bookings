@@ -29,9 +29,9 @@ class RecursionRule extends Model
 	// -------------------------------------------------------------------------
 
 	/**
-	 * @var string The duration the rule is restricted by (i.e. count, until)
+	 * @var string The repetition the rule is restricted by (i.e. count, until)
 	 */
-	public $duration;
+	public $repeats;
 
 	/**
 	 * @var string The frequency of the rule
@@ -218,10 +218,10 @@ class RecursionRule extends Model
 			'INTERVAL' => $this->interval,
 		];
 
-		if ($this->count && $this->duration === 'count')
+		if ($this->count && $this->repeats === 'count')
 			$rRule['COUNT'] = $this->count;
 
-		if ($this->until && $this->duration === 'until')
+		if ($this->until && $this->repeats === 'until')
 			$rRule['UNTIL'] = $this->until;
 
 		if (!empty($this->byMonth))

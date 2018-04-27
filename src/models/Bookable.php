@@ -71,8 +71,8 @@ class Bookable extends Model
 	public $slotMultiplier = 1;
 
 	/**
-	 * TODO: Is this needed, or is RRule enough?
-	 * @var int The duration of each slot in minutes
+	 * @var int The duration of each slot in the same unit as the base
+	 *          rule's frequency
 	 */
 	public $slotDuration;
 

@@ -315,22 +315,23 @@
 				border-color: @craft-primary !important;
 			}
 
-			// Add border radius to the last sunday / 3rd last month / last year
-			&:nth-last-child(1).sun,
-			&:nth-last-child(2).sun,
-			&:nth-last-child(3).sun,
-			&:nth-last-child(4).sun,
-			&:nth-last-child(5).sun,
-			&:nth-last-child(6).sun,
-			&:nth-last-child(7).sun,
+			// Add border radius to the last monday / 3rd last month / last year
+			&:nth-last-child(1).sun + .day,
+			&:nth-last-child(2).sun + .day,
+			&:nth-last-child(3).sun + .day,
+			&:nth-last-child(4).sun + .day,
+			&:nth-last-child(5).sun + .day,
+			&:nth-last-child(6).sun + .day,
+			&:nth-last-child(7).sun + .day,
+			&:nth-last-child(8).sun + .day,
 			&:nth-last-child(3).month,
 			&:last-child.year {
 				border-radius: 0 0 0 5px;
 			}
 
-			// Add border radius to the last saturday (if it's the last child) /
+			// Add border radius to the last sunday (if it's the last child) /
 			// last month
-			&:last-child.sat,
+			&:last-child.sun,
 			&:last-child.month {
 				border-radius: 0 0 5px 0;
 			}

@@ -31,11 +31,11 @@
 				</Row>
 
 				<Row>
-					<!-- Duration -->
+					<!-- Repeats -->
 					<Label label="Repeats">
 						<Select
-							name="duration"
-							v-model="duration"
+							name="repeats"
+							v-model="repeats"
 							:disabled="disabled"
 						>
 							<option value="until">Until</option>
@@ -45,7 +45,7 @@
 					</Label>
 
 					<!-- Until Date -->
-					<Label label="End Date / Time" v-if="duration === 'until'" elem="div">
+					<Label label="End Date / Time" v-if="repeats === 'until'" elem="div">
 						<DateTime
 							name="until"
 							v-model="until"
@@ -54,7 +54,7 @@
 					</Label>
 
 					<!-- Count -->
-					<Label label="Count" v-if="duration === 'count'">
+					<Label label="Count" v-if="repeats === 'count'">
 						<Input
 							type="number"
 							:min="1"

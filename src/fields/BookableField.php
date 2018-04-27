@@ -56,7 +56,8 @@ class BookableField extends Field
 	public $slotMultiplier = 1;
 
 	/**
-	 * @var int The duration of each slot in minutes
+	 * @var int The duration of each slot in the same unit as the base
+	 *          rule's frequency
 	 */
 	public $slotDuration;
 
