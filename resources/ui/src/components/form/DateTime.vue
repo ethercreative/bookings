@@ -164,7 +164,8 @@
 			isActiveHour (value) {
 				const hours = this.internalValue.getHours();
 
-				if (hours >= 12) return hours === value + 12;
+				if (value === 12 && hours === 0) return true;
+				if (hours > 12) return hours === value + 12;
 				return hours === value;
 			},
 
@@ -175,17 +176,14 @@
 
 			isActivePeriod (isAM = false) {
 				const h = this.internalValue.getHours();
-				return isAM ? h < 12 : h >= 12;
+				return isAM ? h <= 12 && h !== 0 : h > 12 || h === 0;
 			},
 
 			// ---
 
 			setHour (value) {
-				if (value === 12)
-					value = 0;
-
 				if (this.isActivePeriod(false))
-					value += 12;
+					value += value === 12 ? -12 : 12;
 
 				const next = new Date(this.internalValue);
 				next.setHours(value);
