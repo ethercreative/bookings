@@ -26,10 +26,19 @@ async function refreshCalendar (commit, state) {
 		const res = await API.postActionRequest("bookings/api/get-calendar", body);
 
 		const slots = res.slots.reduce((slots, slot) => {
-			// TODO: would be better if we didn't use Date()
-			// Could the server just return the date broken down into
-			// separate parts?
-			slot.date = new Date(slot.date);
+			const d = new Date(slot.date);
+
+			// Convert from UTC to local time
+			// (dropping seconds & milliseconds, since we're not using them)
+			slot.date = new Date(Date.UTC(
+				d.getFullYear(),
+				d.getMonth(),
+				d.getDate(),
+				d.getHours(),
+				d.getMinutes(),
+				0,
+				0
+			));
 
 			slot.day = slot.date.getDay();
 			slot.hour = slot.date.getHours();

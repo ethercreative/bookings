@@ -94,9 +94,9 @@
 
 		render () {
 			return (
-				<div className={this.$style.scroller}>
+				<div class={this.$style.scroller}>
 					{this.weeks.map((week, index) => (
-						<div key={index}>
+						<div key={index} class={this.$style.group}>
 							{this._renderHeader(week)}
 							{this._renderLabels()}
 							{this._renderCells(week)}
@@ -116,7 +116,7 @@
 
 			_renderHeader (week) {
 				return (
-					<header className={this.$style.header}>
+					<header class={this.$style.header}>
 						<div>
 							{this.days.map((day, i) => (
 								<span key={i}>
@@ -130,9 +130,9 @@
 
 			_renderLabels () {
 				return (
-					<ul className={this.$style.labels}>
+					<ul class={this.$style.labels}>
 						{Array.from({length: 23}, (_, i) => {
-							let t = i + 1;
+							let t = i + 2;
 
 							if (t > 12)
 								t = (t - 12) + " pm";
@@ -149,7 +149,7 @@
 
 			_renderCells (week) {
 				return (
-					<div className={this.$style.cells}>
+					<div class={this.$style.cells}>
 						{this.days.map((day, i) => {
 							const [m, d] = this.correctDate(day, week, i);
 
@@ -157,13 +157,13 @@
 								return null;
 
 							return this.slots[m][d].map(id => {
-								const slot = this.slots[m].all(id);
+								const slot = this.slots[m].all[id];
 
 								return (
 									<span
 										key={id}
 										style={this.getPosition(slot)}
-										className={this.$style.slot}
+										class={this.$style.slot}
 									>
 										<span>
 											Bookable
@@ -207,8 +207,10 @@
 			},
 
 			getPosition (slot) {
+				const d = slot.day === 0 ? 7 : slot.day;
+
 				return {
-					left: (14.285714 * slot.day) + "%",
+					left: (14.285714 * (d - 1)) + "%",
 					top: (60 * (slot.hour - 1)) + slot.minute + "px",
 				};
 			},

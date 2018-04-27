@@ -181,10 +181,11 @@
 			// ---
 
 			setHour (value) {
-				value -= 1;
+				if (value === 12)
+					value = 0;
 
 				if (this.isActivePeriod(false))
-					value += 13;
+					value += 12;
 
 				const next = new Date(this.internalValue);
 				next.setHours(value);
