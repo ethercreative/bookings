@@ -1,4 +1,4 @@
-<template>
+<!--<template>
 	<div :class="$style.scroller">
 		<div
 			v-for="(week, index) in weeks"
@@ -8,7 +8,7 @@
 			<header :class="$style.header">
 				<div>
 					<span v-for="(day, i) in days" :key="day">
-						{{ day + ` ${week.beginning.month}/${week.beginning.day + i}` }}
+						{{ getHeader(day, week, i) }}
 					</span>
 				</div>
 			</header>
@@ -40,10 +40,27 @@
 			</div>
 		</div>
 	</div>
-</template>
+</template>-->
 
 <script>
+	// TODO: Convert template ⬆ to JSX ⬇
+
 	import { RecycleList } from "vue-virtual-scroller";
+
+	const MONTH_LENGTHS = [
+		31, // Jan
+		28, // Feb
+		31, // Mar
+		30, // Apr
+		31, // May
+		30, // Jun
+		31, // Jul
+		31, // Aug
+		30, // Sep
+		31, // Oct
+		30, // Nov
+		31, // Dec
+	];
 
 	export default {
 		name: "Week",
@@ -62,16 +79,50 @@
 			return {
 				days,
 				weeks: [
-					{ beginning: { month: 3, day: 25 } },
-					{ beginning: { month: 4, day: 1 } },
-					{ beginning: { month: 4, day: 8 } },
-					{ beginning: { month: 4, day: 15 } },
-					{ beginning: { month: 4, day: 22 } },
+					{ beginning: { year: 2018, month: 3, day: 26 } },
+					{ beginning: { year: 2018, month: 4, day: 2 } },
+					{ beginning: { year: 2018, month: 4, day: 9 } },
+					{ beginning: { year: 2018, month: 4, day: 16 } },
+					{ beginning: { year: 2018, month: 4, day: 23 } },
 				],
 			};
 		},
 
+		render () {
+			return (
+				<div className={this.$style.scroller}>
+					hello
+				</div>
+			);
+		},
+
 		methods: {
+
+			getHeader (day, week, i) {
+				const [m, d] = this.correctDate(day, week, i);
+				return day + ` ${m}/${d}`;
+			},
+
+			correctDate (day, week, i) {
+				const y = week.beginning.year;
+
+				let m = week.beginning.month,
+					d = week.beginning.day + i;
+
+				let l = MONTH_LENGTHS[m - 1];
+
+				// If leap year & is Feb increase month len by 1
+				if ((((y % 4 === 0) && (y % 100 !== 0)) || (y % 400 === 0)) && m === 1)
+					l++;
+
+				// If the date is greater than the month len, wrap to next month
+				if (d > l) {
+					d = 1;
+					m = m === 12 ? 1 : m + 1;
+				}
+
+				return [m, d];
+			},
 
 			getPosition (slot) {
 				return {
