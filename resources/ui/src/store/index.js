@@ -24,7 +24,34 @@ async function refreshCalendar (commit, state) {
 
 	try {
 		const res = await API.postActionRequest("bookings/api/get-calendar", body);
-		console.log(res);
+
+		const slots = res.slots.reduce((slots, slot) => {
+			// TODO: would be better if we didn't use Date()
+			// Could the server just return the date broken down into
+			// separate parts?
+			slot.date = new Date(slot.date);
+
+			const month = slot.date.getMonth() + 1
+				, date = slot.date.getDate()
+				, key = slot.date.getTime();
+
+			slot.day = slot.date.getDay();
+			slot.hour = slot.date.getHours();
+			slot.minute = slot.date.getMinutes();
+
+			if (!slots.hasOwnProperty(month))
+				slots[month] = { all: {} };
+
+			if (!slots[month].hasOwnProperty(date))
+				slots[month][date] = [];
+
+			slots[month].all[key] = slot;
+			slots[month][date].push(key);
+
+			return slots;
+		}, {});
+
+		commit("refreshComputedSlots", slots);
 	} catch (e) {
 		console.error(e);
 	}
@@ -37,6 +64,8 @@ const state = {
 	baseRule: new RecursionRule(),
 	exceptions: {},
 	exceptionsSort: [],
+
+	computedSlots: {},
 };
 
 const getters = {
@@ -141,6 +170,16 @@ const mutations = {
 
 		state.exceptions = nextExceptions;
 		state.exceptionsSort = nextSort;
+	},
+
+	/**
+	 * Sets the computed slots
+	 *
+	 * @param state
+	 * @param slots
+	 */
+	refreshComputedSlots (state, slots) {
+		state.computedSlots = slots;
 	},
 };
 

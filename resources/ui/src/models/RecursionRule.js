@@ -17,7 +17,7 @@ export default class RecursionRule {
 	/**
 	 * @type {String}
 	 */
-	frequency = Frequency.Daily;
+	frequency = Frequency.Hourly;
 
 	/**
 	 * @type {Date}
@@ -32,7 +32,7 @@ export default class RecursionRule {
 	/**
 	 * @type {String}
 	 */
-	duration = "until";
+	duration = "count";
 
 	/**
 	 * @type {Number|null}

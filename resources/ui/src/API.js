@@ -6,14 +6,18 @@ export default {
 			? Craft.actionUrl + "/"
 			: "https://dev.craft3/index.php?p=actions/";
 
-		const response = await fetch(url + action, {
+		const opts = {
 			method: "POST",
 			headers: new Headers({
 				"Accept": "application/json",
 			}),
-			credentials: "include",
 			body: JSON.stringify(data),
-		});
+		};
+
+		if (typeof Craft !== "undefined")
+			opts.credentials = "include";
+
+		const response = await fetch(url + action, opts);
 
 		return await response.json();
 	}

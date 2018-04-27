@@ -10,9 +10,9 @@
 			<div :class="$style.rulesWrap">
 				<div :class="$style.rules">
 					<!-- Base Rule -->
+					<!--:disabled="true"-->
 					<RRuleBlock
 						slot="header"
-						:disabled="true"
 						:rrule="baseRule"
 					/>
 
@@ -49,6 +49,44 @@
 				<Button>Save event rules</Button>
 			</footer>
 		</aside>
+
+		<div :class="$style.main">
+			<header :class="$style.header">
+				<ul :class="$style.tabs">
+					<li>
+						<button
+							type="button"
+							:class="{[$style.active]: activeView === 'week'}"
+							@click="onChangeView('week')"
+						>
+							Week
+						</button>
+					</li>
+					<li>
+						<button
+							type="button"
+							:class="{[$style.active]: activeView === 'month'}"
+							@click="onChangeView('month')"
+						>
+							Month
+						</button>
+					</li>
+					<li>
+						<button
+							type="button"
+							:class="{[$style.active]: activeView === 'year'}"
+							@click="onChangeView('year')"
+						>
+							Year
+						</button>
+					</li>
+				</ul>
+			</header>
+
+			<week v-if="activeView === 'week'" :slots="computedSlots" />
+			<div v-if="activeView === 'month'">Month View TODO</div>
+			<div v-if="activeView === 'year'">Year View TODO</div>
+		</div>
 	</Modal>
 </template>
 
@@ -59,10 +97,18 @@
 	import RRuleBlock from "../components/RRuleBlock";
 	import Button from "../components/form/Button";
 
+	import Week from "../components/calendar/Week";
+
 	export default {
 		name: "ExceptionsModal",
 		props: ["open", "onRequestClose"],
-		components: { Modal, Draggable, RRuleBlock, Button },
+		components: { Modal, Draggable, RRuleBlock, Button, Week },
+
+		data () {
+			return {
+				activeView: "week",
+			};
+		},
 
 		// Computed
 		// =====================================================================
@@ -71,6 +117,7 @@
 			...mapState([
 				"baseRule",
 				"exceptions",
+				"computedSlots",
 			]),
 
 			exceptionsSort: {
@@ -93,6 +140,10 @@
 				this.$store.dispatch("addException");
 			},
 
+			onChangeView (nextView) {
+				this.activeView = nextView;
+			},
+
 		}
 	}
 </script>
@@ -100,10 +151,102 @@
 <style module lang="less">
 	@import "../variables";
 
+	// Main
+	// =========================================================================
+
+	.main {
+		position: relative;
+		z-index: 1;
+
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		flex-shrink: 9999;
+
+		& > div:last-child {
+			height: calc(~"100% - 50px");
+		}
+	}
+
+	// Header
+	// =========================================================================
+
+	.header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		height: 50px;
+
+		background: #F4F5F6;
+		border-bottom: 1px solid @border;
+	}
+
+	.tabs {
+		height: 100%;
+		margin: 0 0 -1px;
+		padding: 0;
+
+		li {
+			display: inline-block;
+			height: 100%;
+		}
+
+		button {
+			position: relative;
+
+			display: flex;
+			height: 100%;
+			margin: 0;
+			padding: 0 25px;
+
+			font-size: 14px;
+
+			appearance: none;
+			background: none;
+			border: none;
+			border-right: 1px solid @border;
+			border-bottom: 1px solid @border;
+			border-radius: 0;
+			cursor: pointer;
+			outline: none;
+
+			transition:
+				background-color 0.15s ease,
+				border-bottom-color 0.15s ease;
+
+			&:hover {
+				background-color: fade(#fff, 50%);
+			}
+
+			&.active {
+				background-color: #fff;
+				border-bottom-color: #fff;
+			}
+
+			// Square off bottom right corner of active tab
+			&:after {
+				content: '';
+				position: absolute;
+				bottom: -1px;
+				right: -1px;
+
+				display: block;
+				width: 1px;
+				height: 1px;
+
+				background-color: @border;
+			}
+		}
+	}
+
 	// Sidebar
 	// =========================================================================
 
 	.sidebar {
+		position: relative;
+		z-index: 2;
+
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
@@ -202,7 +345,7 @@
 
 		appearance: none;
 		background: #EAEDF0;
-		border: 1px solid #DADFEA;
+		border: 1px solid @border;
 		border-radius: 3px;
 
 		cursor: pointer;
