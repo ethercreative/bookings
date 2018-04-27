@@ -31,13 +31,23 @@ async function refreshCalendar (commit, state) {
 			// separate parts?
 			slot.date = new Date(slot.date);
 
-			const month = slot.date.getMonth() + 1
-				, date = slot.date.getDate()
-				, key = slot.date.getTime();
-
 			slot.day = slot.date.getDay();
 			slot.hour = slot.date.getHours();
 			slot.minute = slot.date.getMinutes();
+
+			if (slot.hour === 0) {
+				slot.hour = 24;
+				slot.day--;
+
+				if (slot.day < 1)
+					slot.date.setDate(slot.date.getDate() - 1);
+
+				slot.day = slot.date.getDay();
+			}
+
+			const month = slot.date.getMonth() + 1
+				, date = slot.date.getDate()
+				, key = slot.date.getTime();
 
 			if (!slots.hasOwnProperty(month))
 				slots[month] = { all: {} };

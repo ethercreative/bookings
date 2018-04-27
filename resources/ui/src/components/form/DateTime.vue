@@ -23,6 +23,7 @@
 					:value="internalValue"
 					@input="onInput"
 					:calendar-class="$style.calendar"
+					:monday-first="true"
 				/>
 			</Modal>
 		</label>

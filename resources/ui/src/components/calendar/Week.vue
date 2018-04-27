@@ -62,6 +62,7 @@
 			return {
 				days,
 				weeks: [
+					{ beginning: { month: 3, day: 25 } },
 					{ beginning: { month: 4, day: 1 } },
 					{ beginning: { month: 4, day: 8 } },
 					{ beginning: { month: 4, day: 15 } },
@@ -73,19 +74,21 @@
 		methods: {
 
 			getPosition (slot) {
-				const h = slot.hour === 0 ? 24 : slot.hour;
-				const d = h === 24 ? slot.day - 1 : slot.day;
-
 				return {
-					left: (14.285714 * d) + "%",
-					top: (60 * (h - 1)) + slot.minute + "px",
+					left: (14.285714 * slot.day) + "%",
+					top: (60 * (slot.hour - 1)) + slot.minute + "px",
 				};
 			},
 
 			getDuration (slot) {
-				// TODO: Handle slot duration
+				const h = slot.hour === 24 ? 0 : slot.hour
+					, m = ":" + this.padZero(slot.minute);
 
-				return this.padZero(slot.hour) + ":" + this.padZero(slot.minute);
+				// TODO: Since we don't have duration, this is simply adding 1 to the hour
+				const from = this.padZero(h) + m
+					, to   = this.padZero(h + 1) + m;
+
+				return from + " - " + to;
 			},
 
 			// Helpers
@@ -233,7 +236,7 @@
 		align-items: center;
 		justify-content: center;
 		width: calc(~"14.285714% + 1px");
-		height: 61px; // TODO: Make dynamic based off duration
+		height: 61px; // TODO: Make dynamic based off frequency
 		margin: -1px 0 0 0;
 
 		color: #3FE79E;
