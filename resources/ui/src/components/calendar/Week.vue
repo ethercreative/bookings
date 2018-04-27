@@ -1,6 +1,6 @@
 <!--suppress JSXNamespaceValidation -->
 <script>
-	import { RecycleList } from "vue-virtual-scroller";
+	// import { RecycleList } from "vue-virtual-scroller";
 
 	const MONTH_LENGTHS = [
 		31, // Jan
@@ -19,7 +19,7 @@
 
 	export default {
 		name: "Week",
-		components: { RecycleList },
+		components: { /*RecycleList*/ },
 
 		props: {
 			slots: Object,
