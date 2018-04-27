@@ -98,7 +98,7 @@
 			 */
 			onBodyKeyUp: function (e) {
 				// Esc if this is the top modal
-				if (e.keyCode === 27 && this.zIndex - 100 === openModals.count)
+				if (e.key === "Escape" && this.zIndex - 100 === openModals.count)
 					this.onRequestClose();
 			},
 
