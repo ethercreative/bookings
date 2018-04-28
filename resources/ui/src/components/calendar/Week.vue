@@ -1,6 +1,7 @@
 <!--suppress JSXNamespaceValidation -->
 <script>
 	// import { RecycleList } from "vue-virtual-scroller";
+	import padZero from "../../helpers/padZero";
 
 	const MONTH_LENGTHS = [
 		31, // Jan
@@ -171,18 +172,13 @@
 
 			getDuration (slot) {
 				const h = slot.hour === 24 ? 0 : slot.hour
-					, m = ":" + this.padZero(slot.minute);
+					, m = ":" + padZero(slot.minute);
 
 				// TODO: Since we don't have duration atm, this is simply adding 1 to the hour
-				const from = this.padZero(h) + m
-					, to   = this.padZero(h + 1) + m;
+				const from = padZero(h) + m
+					, to   = padZero(h + 1) + m;
 
 				return from + " - " + to;
-			},
-
-			padZero (value) {
-				if (value < 10) return '0' + value;
-				return value;
 			},
 
 		},
