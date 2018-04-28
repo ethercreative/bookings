@@ -14,9 +14,9 @@
 			<Modal
 				:open="isDateOpen"
 				:on-request-close="onRequestCloseDate"
-				:clear="true"
-				:parented="true"
-				:shallow="true"
+				clear
+				parented
+				shallow
 			>
 				<date-picker
 					:inline="true"
@@ -42,9 +42,9 @@
 			<Modal
 				:open="isTimeOpen"
 				:on-request-close="onRequestCloseTime"
-				:clear="true"
-				:parented="true"
-				:shallow="true"
+				clear
+				parented
+				shallow
 			>
 				<div :class="$style.times">
 					<ul>

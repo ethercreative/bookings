@@ -21,7 +21,7 @@
 					</Label>
 
 					<!-- Start Date -->
-					<Label label="Start Date / Time" elem="div">
+					<Label label="Start Date / Time" elem="div" shrink>
 						<DateTime
 							name="start"
 							v-model="start"
@@ -45,7 +45,12 @@
 					</Label>
 
 					<!-- Until Date -->
-					<Label label="End Date / Time" v-if="repeats === 'until'" elem="div">
+					<Label
+						label="End Date / Time"
+						v-if="repeats === 'until'"
+						elem="div"
+						shrink
+					>
 						<DateTime
 							name="until"
 							v-model="until"
@@ -94,7 +99,10 @@
 				<div
 					:class="[$style.dragHandle, 'bookings--drag-handle']"
 					title="Move this block"
+					v-if="!noDrag"
 				></div>
+				<!-- To maintain the flex layout -->
+				<span v-if="noDrag"></span>
 
 				<div>
 					<!-- Duplicate -->
@@ -144,6 +152,7 @@
 			},
 
 			disabled: Boolean,
+			noDrag: Boolean,
 		},
 		components: { Row, Label, Select, Input, Lightswitch, DateTime },
 

@@ -1,5 +1,5 @@
 <template>
-	<component :is="elem" :class="$style.label">
+	<component :is="elem" :class="[$style.label, {[$style.shrink]: shrink}]">
 		<span>
 			{{label}}
 			<span v-if="required">*</span>
@@ -14,6 +14,7 @@
 		props: {
 			label: String,
 			required: Boolean,
+			shrink: Boolean,
 			elem: {
 				type: String,
 				default: "label",
@@ -43,6 +44,10 @@
 			span {
 				color: @craft-primary;
 			}
+		}
+
+		&.shrink {
+			flex-shrink: 2;
 		}
 	}
 </style>

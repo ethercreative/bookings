@@ -33,7 +33,7 @@
 			content: '';
 			position: absolute;
 			top: 50%;
-			right: 17px;
+			right: 14px;
 
 			width: 8px;
 			height: 8px;
@@ -49,7 +49,7 @@
 		select {
 			display: block;
 			width: 100%;
-			padding: 9px 35px 9px 15px;
+			padding: 9px 33px 9px 15px;
 
 			color: @color;
 			font-size: 14px;

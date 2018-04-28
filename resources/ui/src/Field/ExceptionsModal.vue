@@ -14,6 +14,7 @@
 					<RRuleBlock
 						slot="header"
 						:rrule="baseRule"
+						no-drag
 					/>
 
 					<!-- Exceptions -->

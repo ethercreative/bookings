@@ -86,7 +86,7 @@
 				return (
 					<ul class={this.$style.labels}>
 						{Array.from({length: 23}, (_, i) => {
-							let t = i + 2;
+							let t = i + 1;
 
 							if (t > 12)
 								t = (t - 12) + " pm";
@@ -161,11 +161,11 @@
 			},
 
 			getPosition (slot) {
-				const d = slot.day === 0 ? 7 : slot.day;
+				let d = slot.day === 0 ? 7 : slot.day;
 
 				return {
 					left: (14.285714 * (d - 1)) + "%",
-					top: (60 * (slot.hour - 1)) + slot.minute + "px",
+					top: (60 * slot.hour) + slot.minute + "px",
 				};
 			},
 
@@ -192,6 +192,8 @@
 <style module lang="less">
 	@import "../../variables";
 
+	@rowHeight: 60px;
+
 	.scroller {
 		overflow: auto;
 	}
@@ -199,14 +201,14 @@
 	.group {
 		position: relative;
 		width: 100%;
-		height: 60px * 25;
+		height: @rowHeight * 25;
 	}
 
 	.header,
 	.row {
 		display: flex;
 
-		height: 60px;
+		height: @rowHeight;
 		padding-left: 100px;
 	}
 
@@ -234,7 +236,7 @@
 				align-items: center;
 				justify-content: center;
 				width: 14.285714%;
-				height: 60px;
+				height: @rowHeight;
 
 				color: #8C97B2;
 				font-size: 12px;
@@ -248,7 +250,7 @@
 		position: relative;
 
 		width: calc(~"100% - 100px");
-		height: 100%;
+		height: calc(~"100% - "@rowHeight);
 		margin-left: 100px;
 
 		background:
@@ -286,9 +288,9 @@
 				repeating-linear-gradient(
 					to bottom,
 					transparent 0px,
-					transparent 59px,
-					@border 59px,
-					@border 60px
+					transparent (@rowHeight - 1),
+					@border (@rowHeight - 1),
+					@border @rowHeight
 				);
 		}
 	}
@@ -305,7 +307,7 @@
 		li {
 			display: block;
 			width: 100px;
-			height: 60px;
+			height: @rowHeight;
 			padding-right: 10px;
 
 			color: #8C97B2;
