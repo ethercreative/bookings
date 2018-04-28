@@ -57,6 +57,15 @@
 					<li>
 						<button
 							type="button"
+							:class="{[$style.active]: activeView === 'day'}"
+							@click="onChangeView('day')"
+						>
+							Day
+						</button>
+					</li>
+					<li>
+						<button
+							type="button"
 							:class="{[$style.active]: activeView === 'week'}"
 							@click="onChangeView('week')"
 						>
@@ -84,6 +93,7 @@
 				</ul>
 			</header>
 
+			<div v-if="activeView === 'day'">Day View TODO</div>
 			<week v-if="activeView === 'week'" :slots="computedSlots" />
 			<div v-if="activeView === 'month'">Month View TODO</div>
 			<div v-if="activeView === 'year'">Year View TODO</div>
@@ -173,6 +183,9 @@
 	// =========================================================================
 
 	.header {
+		position: relative;
+		z-index: 3;
+
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -223,10 +236,30 @@
 			&.active {
 				background-color: #fff;
 				border-bottom-color: #fff;
+
+				&:after {
+					content: '';
+					position: absolute;
+					top: 100%;
+					left: -10px;
+					right: -10px;
+
+					display: block;
+					height: 10px;
+					margin-top: 1px;
+
+					background-image: linear-gradient(
+						to bottom,
+						#fff 0%,
+						rgba(255, 255, 255, 0) 100%
+					);
+
+					pointer-events: none;
+				}
 			}
 
 			// Square off bottom right corner of active tab
-			&:after {
+			&:before {
 				content: '';
 				position: absolute;
 				bottom: -1px;
