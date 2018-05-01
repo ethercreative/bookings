@@ -2,6 +2,7 @@
 <script>
 	// import { RecycleList } from "vue-virtual-scroller";
 	import padZero from "../../helpers/padZero";
+	import getNearestWeek from "../../helpers/getNearestWeek";
 
 	const MONTH_LENGTHS = [
 		31, // Jan
@@ -35,14 +36,43 @@
 
 			return {
 				days,
-				weeks: [
-					{ beginning: { year: 2018, month: 3, day: 26 } },
-					{ beginning: { year: 2018, month: 4, day: 2 } },
-					{ beginning: { year: 2018, month: 4, day: 9 } },
-					{ beginning: { year: 2018, month: 4, day: 16 } },
-					{ beginning: { year: 2018, month: 4, day: 23 } },
-				],
 			};
+		},
+
+		// Computed
+		// =====================================================================
+
+		computed: {
+
+			weeks () {
+				// TODO: Return more than one week
+
+				if (!Array.isArray(this.slots) || this.slots.length === 0) {
+					const now = new Date();
+					return [
+						{
+							beginning: getNearestWeek(
+								now.getFullYear(),
+								now.getMonth() + 1,
+								now.getDate()
+							),
+						}
+					];
+				}
+
+				const slot = this.slots[0];
+
+				return [
+					{
+						beginning: getNearestWeek(
+							slot.year,
+							slot.month,
+							slot.day
+						),
+					}
+				];
+			},
+
 		},
 
 		// Render
@@ -155,7 +185,7 @@
 
 				// If the date is greater than the month len, wrap to next month
 				if (d > l) {
-					d = 1;
+					d -= l;
 					m = m === 12 ? 1 : m + 1;
 				}
 

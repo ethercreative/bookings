@@ -227,7 +227,7 @@ class RecursionRule extends Model
 		];
 
 		if ($this->count && $this->repeats === 'count')
-			$rRule['COUNT'] = $this->count;
+			$rRule['COUNT'] = (int) $this->count;
 
 		if ($this->until && $this->repeats === 'until')
 			$rRule['UNTIL'] = $this->until;
@@ -254,6 +254,14 @@ class RecursionRule extends Model
 			$rRule['BYSETPOS'] = $this->bySetPosition;
 
 		return $rRule;
+	}
+
+	/**
+	 * @return RRule
+	 */
+	public function asRRule (): RRule
+	{
+		return new RRule($this->asRRuleArray());
 	}
 
 }

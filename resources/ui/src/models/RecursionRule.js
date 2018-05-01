@@ -148,6 +148,16 @@ export default class RecursionRule {
 				delete data.until;
 		}
 
+		// Ensure dates are UTC strings
+		for (let key in data) {
+			const value = data[key];
+
+			if (!(value instanceof Date))
+				continue;
+
+			data[key] = value.toUTCString();
+		}
+
 		return data;
 	}
 

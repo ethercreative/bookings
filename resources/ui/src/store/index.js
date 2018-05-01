@@ -18,8 +18,8 @@ Vue.use(Vuex);
  */
 async function refreshCalendar (commit, state) {
 	const body = {
-		baseRule: state.baseRule.convertToDataObject(),
-		exceptions: Object.values(state.exceptions).map(r => r.convertToDataObject()),
+		baseRule: state.baseRule.convertToRRuleObject(),
+		exceptions: Object.values(state.exceptions).map(r => r.convertToRRuleObject()),
 	};
 
 	try {
