@@ -116,6 +116,7 @@
 			onAfterLeave: function () {
 				openModals.count--;
 				document.body.style.overflow = "";
+				FocusManager.destroy();
 			},
 
 		}

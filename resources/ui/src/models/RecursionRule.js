@@ -32,7 +32,7 @@ export default class RecursionRule {
 	/**
 	 * @type {Number}
 	 */
-	interval = 1;
+	interval = 0;
 
 	/**
 	 * @type {String}
