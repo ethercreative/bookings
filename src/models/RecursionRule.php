@@ -45,6 +45,14 @@ class RecursionRule extends Model
 	public $start;
 
 	/**
+	 * @var int How long, in frequency, each slot should be. This isn't part of
+	 *          the RRule spec or PHP lib. All it does is increase the interval
+	 *          and by the given amount to get the offsets correct. Everything
+	 *          else is front-end.
+	 */
+	public $duration = 1;
+
+	/**
 	 * @var int The interval between each frequency iteration.
 	 *          For example, when using YEARLY, an interval of 2 means once
 	 *          every two years, but with HOURLY, it means once every two hours.
@@ -215,7 +223,7 @@ class RecursionRule extends Model
 		$rRule = [
 			'FREQ'     => RRule::$frequencies[$this->frequency],
 			'DTSTART'  => $this->start,
-			'INTERVAL' => $this->interval,
+			'INTERVAL' => $this->interval + ($this->duration - 1),
 		];
 
 		if ($this->count && $this->repeats === 'count')

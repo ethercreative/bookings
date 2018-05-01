@@ -2,7 +2,8 @@
 	<div :class="$style.wrap">
 		<RRuleBlock
 			:rrule="baseRule"
-			:hideFooter="true"
+			hideFooter
+			include-duration
 		/>
 
 		<Button @click="exceptionsModalOpen = true">

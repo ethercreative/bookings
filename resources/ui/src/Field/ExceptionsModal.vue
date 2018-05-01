@@ -15,6 +15,7 @@
 						slot="header"
 						:rrule="baseRule"
 						no-drag
+						include-duration
 					/>
 
 					<!-- Exceptions -->
@@ -93,9 +94,20 @@
 				</ul>
 			</header>
 
+			<!-- Day -->
 			<div v-if="activeView === 'day'">Day View TODO</div>
-			<week v-if="activeView === 'week'" :slots="computedSlots" />
+
+			<!-- Week -->
+			<week
+				v-if="activeView === 'week'"
+				:slots="computedSlots"
+				:duration="slotDuration"
+			/>
+
+			<!-- Month -->
 			<div v-if="activeView === 'month'">Month View TODO</div>
+
+			<!-- Year -->
 			<div v-if="activeView === 'year'">Year View TODO</div>
 		</div>
 	</Modal>
@@ -129,6 +141,7 @@
 				"baseRule",
 				"exceptions",
 				"computedSlots",
+				"slotDuration",
 			]),
 
 			exceptionsSort: {

@@ -60,7 +60,7 @@ async function refreshCalendar (commit, state) {
 			return slots;
 		}, {});
 
-		commit("refreshComputedSlots", slots);
+		commit("refreshComputedSlots", { slots, duration: res.duration });
 	} catch (e) {
 		console.error(e);
 	}
@@ -75,6 +75,7 @@ const state = {
 	exceptionsSort: [],
 
 	computedSlots: {},
+	slotDuration: 1,
 };
 
 const getters = {
@@ -187,8 +188,9 @@ const mutations = {
 	 * @param state
 	 * @param slots
 	 */
-	refreshComputedSlots (state, slots) {
+	refreshComputedSlots (state, { slots, duration }) {
 		state.computedSlots = slots;
+		state.slotDuration = duration;
 	},
 };
 

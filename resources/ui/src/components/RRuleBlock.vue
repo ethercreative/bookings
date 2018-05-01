@@ -82,6 +82,17 @@
 						/>
 					</Label>
 
+					<!-- Duration -->
+					<Label label="Duration" v-if="includeDuration">
+						<Input
+							type="number"
+							required
+							:min="1"
+							:disabled="disabled"
+							v-model="duration"
+						/>
+					</Label>
+
 					<!-- Bookable -->
 					<Label label="Bookable" v-if="isException">
 						<Lightswitch
@@ -147,6 +158,10 @@
 			id: String,
 
 			hideFooter: {
+				type: Boolean,
+				default: false,
+			},
+			includeDuration: {
 				type: Boolean,
 				default: false,
 			},

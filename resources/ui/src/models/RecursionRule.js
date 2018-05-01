@@ -25,6 +25,11 @@ export default class RecursionRule {
 	start = new Date();
 
 	/**
+	 * @type {number}
+	 */
+	duration = 1;
+
+	/**
 	 * @type {Number}
 	 */
 	interval = 1;

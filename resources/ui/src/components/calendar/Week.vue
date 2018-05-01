@@ -24,6 +24,7 @@
 
 		props: {
 			slots: Object,
+			duration: Number,
 		},
 
 		data () {
@@ -167,6 +168,9 @@
 				return {
 					left: (14.285714 * (d - 1)) + "%",
 					top: (60 * slot.hour) + slot.minute + "px",
+
+					// TODO: Using `this.duration` assumes frequency is hourly
+					height: (60 * this.duration) + 1 + "px",
 				};
 			},
 
@@ -174,12 +178,12 @@
 				const h = slot.hour === 24 ? 0 : slot.hour
 					, m = ":" + padZero(slot.minute);
 
-				// TODO: Since we don't have duration atm, this is simply adding 1 to the hour
+				// TODO: Using `this.duration` assumes frequency is hourly
 				const from = padZero(h) + m
-					, to   = padZero(h + 1) + m;
+					, to   = padZero(h + this.duration) + m;
 
 				return from + " - " + to;
-			},
+			}
 
 		},
 	};

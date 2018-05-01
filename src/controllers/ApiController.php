@@ -51,6 +51,7 @@ class ApiController extends Controller
 		return $this->asJson([
 			'success' => true,
 			'slots' => $bookable->getAllSlots(),
+			'duration' => (int) $bookable->baseRule->duration,
 		]);
 	}
 

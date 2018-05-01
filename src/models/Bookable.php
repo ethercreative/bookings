@@ -71,12 +71,6 @@ class Bookable extends Model
 	public $slotMultiplier = 1;
 
 	/**
-	 * @var int The duration of each slot in the same unit as the base
-	 *          rule's frequency
-	 */
-	public $slotDuration;
-
-	/**
 	 * @var RecursionRule The base RRule
 	 */
 	public $baseRule;
