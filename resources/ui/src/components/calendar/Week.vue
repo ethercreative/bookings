@@ -1,8 +1,10 @@
 <!--suppress JSXNamespaceValidation -->
 <script>
 	// import { RecycleList } from "vue-virtual-scroller";
+	import Frequency from "../../const/Frequency";
 	import padZero from "../../helpers/padZero";
 	import getNearestWeek from "../../helpers/getNearestWeek";
+	import RecursionRule from "../../models/RecursionRule";
 
 	const MONTH_LENGTHS = [
 		31, // Jan
@@ -26,6 +28,7 @@
 		props: {
 			slots: Object,
 			duration: Number,
+			baseRule: RecursionRule,
 		},
 
 		data () {
@@ -195,22 +198,49 @@
 			getPosition (slot) {
 				let d = slot.day === 0 ? 7 : slot.day;
 
+				// If Minutely or Hourly
+				// (this view shouldn't be visible for other frequencies)
+				let h = this.baseRule.frequency === Frequency.Minutely ? 1 : 60;
+				h *= this.duration;
+
 				return {
 					left: (14.285714 * (d - 1)) + "%",
 					top: (60 * slot.hour) + slot.minute + "px",
-
-					// TODO: Using `this.duration` assumes frequency is hourly
-					height: (60 * this.duration) + 1 + "px",
+					height: h + 1 + "px",
 				};
 			},
 
 			getDuration (slot) {
-				const h = slot.hour === 24 ? 0 : slot.hour
-					, m = ":" + padZero(slot.minute);
+				const h = slot.hour === 24 ? 0 : slot.hour;
 
-				// TODO: Using `this.duration` assumes frequency is hourly
-				const from = padZero(h) + m
-					, to   = padZero(h + this.duration) + m;
+				const from = padZero(h) + ":" + padZero(slot.minute);
+				let to = "";
+
+				if (this.baseRule.frequency === Frequency.Minutely) {
+					let min = slot.minute + this.duration,
+						hr  = slot.hour;
+
+					if (min >= 60) {
+						min -= 60;
+						hr  += 1;
+					}
+
+					if (hr >= 24)
+						hr -= 24;
+
+					to = padZero(hr) + ":" + padZero(min);
+				}
+
+				// Else Hourly
+				// (this view shouldn't be visible for other frequencies)
+				else {
+					let hr  = slot.hour + this.duration;
+
+					if (hr >= 24)
+						hr -= 24;
+
+					to = padZero(hr) + ":" + padZero(slot.minute);
+				}
 
 				return from + " - " + to;
 			}

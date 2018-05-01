@@ -57,7 +57,7 @@ class RecursionRule extends Model
 	 *          For example, when using YEARLY, an interval of 2 means once
 	 *          every two years, but with HOURLY, it means once every two hours.
 	 */
-	public $interval = 1;
+	public $interval = 0;
 
 	/**
 	 * @var int|null The number of slots to generate
@@ -223,7 +223,7 @@ class RecursionRule extends Model
 		$rRule = [
 			'FREQ'     => RRule::$frequencies[$this->frequency],
 			'DTSTART'  => $this->start,
-			'INTERVAL' => $this->interval + ($this->duration - 1),
+			'INTERVAL' => $this->interval + $this->duration,
 		];
 
 		if ($this->count && $this->repeats === 'count')

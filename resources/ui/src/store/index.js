@@ -17,6 +17,9 @@ Vue.use(Vuex);
  * @return {Promise<void>}
  */
 async function refreshCalendar (commit, state) {
+	// TODO: Add validation to RRules when converting
+	// (don't refresh if any rule is invalid)
+
 	const body = {
 		baseRule: state.baseRule.convertToRRuleObject(),
 		exceptions: Object.values(state.exceptions).map(r => r.convertToRRuleObject()),

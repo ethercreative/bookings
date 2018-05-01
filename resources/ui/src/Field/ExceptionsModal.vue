@@ -102,6 +102,7 @@
 				v-if="activeView === 'week'"
 				:slots="computedSlots"
 				:duration="slotDuration"
+				:base-rule="baseRule"
 			/>
 
 			<!-- Month -->
@@ -114,6 +115,8 @@
 </template>
 
 <script>
+	// TODO: Disable Day & Week view if frequency is greater than hourly
+
 	import { mapState } from "vuex";
 	import Draggable from "vuedraggable";
 	import Modal from "../components/Modal";

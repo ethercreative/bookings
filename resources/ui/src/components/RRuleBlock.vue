@@ -75,7 +75,7 @@
 					<Label label="Interval">
 						<Input
 							type="number"
-							:min="1"
+							:min="0"
 							:required="true"
 							:disabled="disabled"
 							v-model="interval"
