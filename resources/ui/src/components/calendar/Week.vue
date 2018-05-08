@@ -93,13 +93,6 @@
 
 							const slot = slots[y][m].all[key];
 
-
-
-							// TODO: Work out if this slot will split
-							// overflow the column (if so, split across as
-							// many columns as possible). The label should
-							// be in the largest part (or last if equal)
-
 							const fullDay = 60 * 24;
 							const fullHeight = (this.baseRule.frequency === Frequency.Minutely ? 1 : 60) * this.duration;
 							const top = (60 * slot.hour) + slot.minute;
@@ -122,7 +115,7 @@
 					}
 				}
 
-				return this.slots;
+				return slots;
 			},
 
 		},
