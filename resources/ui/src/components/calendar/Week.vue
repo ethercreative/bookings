@@ -76,6 +76,55 @@
 				];
 			},
 
+			formattedSlots () {
+				const slots = {...this.slots};
+
+				for (let y in slots) {
+					if (!slots.hasOwnProperty(y))
+						continue;
+
+					for (let m in slots[y]) {
+						if (!slots[y].hasOwnProperty(m))
+							continue;
+
+						for (let key in slots[y][m].all) {
+							if (!slots[y][m].all.hasOwnProperty(key))
+								continue;
+
+							const slot = slots[y][m].all[key];
+
+
+
+							// TODO: Work out if this slot will split
+							// overflow the column (if so, split across as
+							// many columns as possible). The label should
+							// be in the largest part (or last if equal)
+
+							const fullDay = 60 * 24;
+							const fullHeight = (this.baseRule.frequency === Frequency.Minutely ? 1 : 60) * this.duration;
+							const top = (60 * slot.hour) + slot.minute;
+							const heightInclStartOffset = fullHeight + top;
+
+							// If it won't overflow, skip
+							if (heightInclStartOffset <= fullDay)
+								continue;
+
+							const extraWholeChunks = Math.floor(heightInclStartOffset / fullDay) - 1
+								, extraPartialChunkHeight = heightInclStartOffset % fullDay;
+
+							// TODO: Add different position datetimes for slots that have be split
+							// TODO: For each extra whole chunk, add a new slot to the correct y/m/d
+							// TODO: Add an extra slot the day after the final whole chunk with the partial chunk height (convert height to minutes)
+							// TODO: Add `splitTop` & `splitBottom` to chunks accordingly
+
+							console.log(extraWholeChunks, extraPartialChunkHeight);
+						}
+					}
+				}
+
+				return this.slots;
+			},
+
 		},
 
 		// Render
@@ -140,19 +189,25 @@
 				return (
 					<div class={this.$style.cells}>
 						{this.days.map((day, i) => {
-							const [m, d] = this.correctDate(day, week, i);
+							const [y, m, d] = this.correctDate(day, week, i);
 
-							if (!this.slots.hasOwnProperty(m) || !this.slots[m].hasOwnProperty(d))
-								return null;
+							if (
+								!this.formattedSlots.hasOwnProperty(y)
+								|| !this.formattedSlots[y].hasOwnProperty(m)
+								|| !this.formattedSlots[y][m].hasOwnProperty(d)
+							) return null;
 
-							return this.slots[m][d].map(id => {
-								const slot = this.slots[m].all[id];
+							return this.formattedSlots[y][m][d].map(id => {
+								const slot = this.formattedSlots[y][m].all[id];
 
 								return (
 									<span
 										key={id}
 										style={this.getPosition(slot)}
-										class={this.$style.slot}
+										class={[this.$style.slot, {
+											[this.$style['split-top']]: slot.splitTop,
+											[this.$style['split-bottom']]: slot.splitBottom,
+										}]}
 									>
 										<span>
 											Bookable
@@ -170,8 +225,9 @@
 			// -----------------------------------------------------------------
 
 			getHeader (day, week, i) {
-				const [m, d] = this.correctDate(day, week, i);
-				return day + ` ${m}/${d}`;
+				// eslint-disable-next-line no-unused-vars
+				const [y, m, d] = this.correctDate(day, week, i);
+				return day + ` ${d}/${m}`;
 			},
 
 			correctDate (day, week, i) {
@@ -192,7 +248,7 @@
 					m = m === 12 ? 1 : m + 1;
 				}
 
-				return [m, d];
+				return [y, m, d];
 			},
 
 			getPosition (slot) {
@@ -329,6 +385,9 @@
 				@border 30px
 			);
 
+		// TODO: Uncomment me!
+		/*overflow: hidden;*/
+
 		&:before {
 			content: '';
 			position: absolute;
@@ -410,6 +469,48 @@
 			font-size: 14px;
 			font-weight: bold;
 			font-style: normal;
+		}
+
+		&.split-top {
+			border-top: none;
+
+			&:before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+
+				display: block;
+				width: 100%;
+				height: 4px;
+
+				background: repeating-linear-gradient(
+					135deg,
+					transparent, transparent .4em /* black stripe */,
+					#3FE79E 0, #3FE79E .75em /* blue stripe */
+				);
+			}
+		}
+
+		&.split-bottom {
+			border-bottom: none;
+
+			&:after {
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 0;
+
+				display: block;
+				width: 100%;
+				height: 4px;
+
+				background: repeating-linear-gradient(
+					135deg,
+					transparent, transparent .4em /* black stripe */,
+					#3FE79E 0, #3FE79E .75em /* blue stripe */
+				);
+			}
 		}
 	}
 </style>

@@ -47,18 +47,22 @@ async function refreshCalendar (commit, state) {
 			slot.hour = slot.date.getHours();
 			slot.minute = slot.date.getMinutes();
 
-			const month = slot.date.getMonth() + 1
+			const year = slot.date.getFullYear()
+				, month = slot.date.getMonth() + 1
 				, date = slot.date.getDate()
 				, key = slot.date.getTime();
 
-			if (!slots.hasOwnProperty(month))
-				slots[month] = { all: {} };
+			if (!slots.hasOwnProperty(year))
+				slots[year] = {};
 
-			if (!slots[month].hasOwnProperty(date))
-				slots[month][date] = [];
+			if (!slots[year].hasOwnProperty(month))
+				slots[year][month] = { all: {} };
 
-			slots[month].all[key] = slot;
-			slots[month][date].push(key);
+			if (!slots[year][month].hasOwnProperty(date))
+				slots[year][month][date] = [];
+
+			slots[year][month].all[key] = slot;
+			slots[year][month][date].push(key);
 
 			return slots;
 		}, {});
