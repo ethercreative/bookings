@@ -26,6 +26,7 @@
 							name="start"
 							v-model="start"
 							:disabled="disabled"
+							:minute-override="baseMinute"
 						/>
 					</Label>
 				</Row>
@@ -55,6 +56,7 @@
 							name="until"
 							v-model="until"
 							:disabled="disabled"
+							:minute-override="baseMinute"
 						/>
 					</Label>
 
@@ -157,6 +159,8 @@
 			rrule: RecursionRule,
 			id: String,
 
+			baseRule: RecursionRule,
+
 			hideFooter: {
 				type: Boolean,
 				default: false,
@@ -183,6 +187,9 @@
 			if (!r)
 				throw new Error("Missing RRule or ID");
 
+			if (this.baseRule)
+				r.start.setMinutes(this.baseRule.start.getMinutes());
+
 			return {
 				internal_rrule: r,
 				...r.convertToDataObject(),
@@ -194,7 +201,11 @@
 
 			isException () {
 				return this.internal_rrule.constructor === ExRule;
-			}
+			},
+
+			baseMinute () {
+				return this.baseRule ? this.baseRule.start.getMinutes() : null;
+			},
 		},
 
 		mounted () {

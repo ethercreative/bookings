@@ -31,6 +31,7 @@
 								v-for="id in exceptionsSort"
 								:key="id"
 								:id="id"
+								:base-rule="baseRule"
 							/>
 						</transition-group>
 

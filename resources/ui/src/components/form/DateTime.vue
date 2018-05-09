@@ -64,7 +64,7 @@
 							<button
 								type="button"
 								:class="{[$style.active]:isActiveMinute(m)}"
-								:disabled="isActiveMinute(m)"
+								:disabled="isActiveMinute(m) || minuteOverride !== null"
 								@click="setMinute(m)"
 							>
 								{{ padZero(m - 1) }}
@@ -111,6 +111,7 @@
 		props: {
 			disabled: Boolean,
 			value: Date,
+			minuteOverride: Number,
 		},
 
 		data () {
@@ -119,6 +120,14 @@
 				isTimeOpen: false,
 				internalValue: this.value || new Date(),
 			};
+		},
+
+		watch: {
+
+			minuteOverride (value) {
+				this.setMinute(value + 1);
+			},
+
 		},
 
 		methods: {
@@ -278,6 +287,10 @@
 				border-color 0.15s ease,
 				background-color 0.15s ease,
 				color 0.15s ease;
+
+			&:disabled {
+				pointer-events: none;
+			}
 
 			&:hover {
 				border-color: @craft-primary;
