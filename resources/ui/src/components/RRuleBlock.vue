@@ -204,7 +204,7 @@
 			},
 
 			baseMinute () {
-				return this.baseRule && this.baseRule.frequency === Frequency.Hourly
+				return this.baseRule && this.baseRule.frequency !== Frequency.Minutely
 					? this.baseRule.start.getMinutes()
 					: null;
 			},
