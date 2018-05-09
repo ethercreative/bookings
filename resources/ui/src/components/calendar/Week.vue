@@ -500,7 +500,6 @@
 		align-items: center;
 		justify-content: center;
 		width: calc(~"14.285714% + 1px");
-		height: 61px; // TODO: Make dynamic based off frequency
 		margin: -1px 0 0 0;
 
 		color: #3FE79E;
@@ -513,6 +512,8 @@
 
 		background: rgba(63,231,158,0.15);
 		border: 1px solid #3FE79E;
+		border-top-width: 2px;
+		border-bottom-width: 2px;
 
 		span {
 			margin-top: 4px;
