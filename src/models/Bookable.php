@@ -232,27 +232,33 @@ class Bookable extends Model
 
 		$set = new RSet();
 		$previousSet = null;
+		$lastRuleWasException = false;
 
 		$set->addRRule($this->baseRule->asRRuleArray());
 
 		foreach ($this->exRules as $exRule)
 		{
-			if ($exRule->bookable)
+			if (!$exRule->bookable) {
+				$set->addExRule($exRule->asRRuleArray());
+				$lastRuleWasException = true;
+				continue;
+			}
+
+			if ($lastRuleWasException)
 			{
 				if ($previousSet)
-				{
 					$set->addRRule($previousSet);
-					$previousSet = clone $set;
-					$set = new RSet();
-				}
 
-				$set->addRRule($exRule->asRRuleArray());
+				$previousSet = clone $set;
+				$set = new RSet();
 			}
-			else
-			{
-				$set->addExRule($exRule->asRRuleArray());
-			}
+
+			$set->addRRule($exRule->asRRuleArray());
+			$lastRuleWasException = false;
 		}
+
+		if ($previousSet)
+			$set->addRRule($previousSet);
 
 		return $this->_set = $set;
 	}

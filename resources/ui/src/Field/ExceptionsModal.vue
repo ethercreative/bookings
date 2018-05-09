@@ -16,6 +16,7 @@
 						:rrule="baseRule"
 						no-drag
 						include-duration
+						hide-footer
 					/>
 
 					<!-- Exceptions -->
