@@ -21,6 +21,8 @@
 		31, // Dec
 	];
 
+	const FULL_DAY = 60 * 24;
+
 	export default {
 		name: "Week",
 		components: { /*RecycleList*/ },
@@ -93,24 +95,74 @@
 
 							const slot = slots[y][m].all[key];
 
-							const fullDay = 60 * 24;
-							const fullHeight = (this.baseRule.frequency === Frequency.Minutely ? 1 : 60) * this.duration;
+							// Convert the frequency into minutes
+							const numericFreq = this.baseRule.frequency === Frequency.Minutely ? 1 : 60;
+
+							const fullHeight = numericFreq * this.duration;
 							const top = (60 * slot.hour) + slot.minute;
 							const heightInclStartOffset = fullHeight + top;
 
-							// If it won't overflow, skip
-							if (heightInclStartOffset <= fullDay)
+							// If it won't overflow, set position & skip
+							if (heightInclStartOffset <= FULL_DAY) {
+								slots[y][m].all[key] = {
+									...slot,
+									position: this.getPosition(slot.day, slot.hour, slot.minute),
+								};
 								continue;
+							}
 
-							const extraWholeChunks = Math.floor(heightInclStartOffset / fullDay) - 1
-								, extraPartialChunkHeight = heightInclStartOffset % fullDay;
+							// Calculate how many extra days & minutes (chunks)
+							// this slot overflows by.
+							let extraWholeChunks = Math.floor(heightInclStartOffset / FULL_DAY);
+							const extraPartialChunkHeight = heightInclStartOffset % FULL_DAY;
 
-							// TODO: Add different position datetimes for slots that have be split
-							// TODO: For each extra whole chunk, add a new slot to the correct y/m/d
-							// TODO: Add an extra slot the day after the final whole chunk with the partial chunk height (convert height to minutes)
-							// TODO: Add `splitTop` & `splitBottom` to chunks accordingly
+							// 1. Set the position of the original chunk
+							slots[y][m].all[key] = {
+								...slot,
+								position: this.getPosition(
+									slot.day,
+									slot.hour,
+									slot.minute,
+									this.duration + ((FULL_DAY - heightInclStartOffset) / numericFreq)
+								),
+								splitBottom: true,
+							};
 
-							console.log(extraWholeChunks, extraPartialChunkHeight);
+							// 2. Add additional chunks
+							let previousDate = slot.date.getDate();
+							while (extraWholeChunks--) {
+								const [ny, nm, nd] = this.correctDate(y, m, previousDate + 1);
+								const nDate = new Date(ny, nm - 1, nd, slot.hour, slot.minute, 0, 0);
+								const nKey = nDate.getTime();
+
+								if (!slots.hasOwnProperty(ny))
+									slots[ny] = {};
+
+								if (!slots[ny].hasOwnProperty(nm))
+									slots[ny][nm] = { all: {} };
+
+								if (!slots[ny][nm].hasOwnProperty(nd))
+									slots[ny][nm][nd] = [];
+
+								const isPartial = extraWholeChunks === 0 && extraPartialChunkHeight > 0;
+
+								slots[ny][nm].all[nKey] = {
+									...slot,
+									position: this.getPosition(
+										nDate.getDay(),
+										0,
+										0,
+										isPartial ? extraPartialChunkHeight / numericFreq : 24
+									),
+									splitTop: true,
+									splitBottom: !isPartial,
+								};
+
+								if (slots[ny][nm][nd].indexOf(nKey) === -1)
+									slots[ny][nm][nd].push(nKey);
+
+								previousDate = nd;
+							}
 						}
 					}
 				}
@@ -182,7 +234,7 @@
 				return (
 					<div class={this.$style.cells}>
 						{this.days.map((day, i) => {
-							const [y, m, d] = this.correctDate(day, week, i);
+							const [y, m, d] = this.correctDateByWeek(day, week, i);
 
 							if (
 								!this.formattedSlots.hasOwnProperty(y)
@@ -196,7 +248,7 @@
 								return (
 									<span
 										key={id}
-										style={this.getPosition(slot)}
+										style={slot.position}
 										class={[this.$style.slot, {
 											[this.$style['split-top']]: slot.splitTop,
 											[this.$style['split-bottom']]: slot.splitBottom,
@@ -219,16 +271,19 @@
 
 			getHeader (day, week, i) {
 				// eslint-disable-next-line no-unused-vars
-				const [y, m, d] = this.correctDate(day, week, i);
+				const [y, m, d] = this.correctDateByWeek(day, week, i);
 				return day + ` ${d}/${m}`;
 			},
 
-			correctDate (day, week, i) {
-				const y = week.beginning.year;
+			correctDateByWeek (day, week, i) {
+				return this.correctDate(
+					week.beginning.year,
+					week.beginning.month,
+					week.beginning.day + i
+				);
+			},
 
-				let m = week.beginning.month,
-					d = week.beginning.day + i;
-
+			correctDate (y, m, d) {
 				let l = MONTH_LENGTHS[m - 1];
 
 				// If leap year & is Feb increase month len by 1
@@ -244,17 +299,17 @@
 				return [y, m, d];
 			},
 
-			getPosition (slot) {
-				let d = slot.day === 0 ? 7 : slot.day;
+			getPosition (day, hour, minute, duration = this.duration) {
+				let d = day === 0 ? 7 : day;
 
 				// If Minutely or Hourly
 				// (this view shouldn't be visible for other frequencies)
 				let h = this.baseRule.frequency === Frequency.Minutely ? 1 : 60;
-				h *= this.duration;
+				h *= duration;
 
 				return {
 					left: (14.285714 * (d - 1)) + "%",
-					top: (60 * slot.hour) + slot.minute + "px",
+					top: (60 * hour) + minute + "px",
 					height: h + 1 + "px",
 				};
 			},
