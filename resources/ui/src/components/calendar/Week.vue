@@ -50,32 +50,41 @@
 		computed: {
 
 			weeks () {
-				// TODO: Return more than one week
+				const startDate =
+					!Array.isArray(this.slots) || this.slots.length === 0
+						? new Date()
+						: this.slots[0].date;
 
-				if (!Array.isArray(this.slots) || this.slots.length === 0) {
-					const now = new Date();
-					return [
-						{
-							beginning: getNearestWeek(
-								now.getFullYear(),
-								now.getMonth() + 1,
-								now.getDate()
-							),
-						}
-					];
+				const firstWeek = getNearestWeek(
+					startDate.getFullYear(),
+					startDate.getMonth() + 1,
+					startDate.getDate()
+				);
+
+				const weeks = [firstWeek];
+
+				// TODO: i should either:
+				// Until: Encompass the until date
+				// # Times: The end date of the final slot
+				// Forever: Set to 100
+				// Should be capped at 100.
+				let i = 3,
+					prevWeek = firstWeek;
+
+				while (--i) {
+					const [year, month, day] = this.correctDate(
+						prevWeek.year,
+						prevWeek.month,
+						prevWeek.day + 7
+					);
+
+					const week = { year, month, day };
+
+					weeks.push(week);
+					prevWeek = week;
 				}
 
-				const slot = this.slots[0];
-
-				return [
-					{
-						beginning: getNearestWeek(
-							slot.year,
-							slot.month,
-							slot.day
-						),
-					}
-				];
+				return weeks;
 			},
 
 			formattedSlots () {
@@ -277,9 +286,9 @@
 
 			correctDateByWeek (day, week, i) {
 				return this.correctDate(
-					week.beginning.year,
-					week.beginning.month,
-					week.beginning.day + i
+					week.year,
+					week.month,
+					week.day + i
 				);
 			},
 
