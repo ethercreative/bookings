@@ -120,11 +120,6 @@
 								continue;
 							}
 
-							// Calculate how many extra days & minutes (chunks)
-							// this slot overflows by.
-							let extraWholeChunks = Math.floor(heightInclStartOffset / FULL_DAY);
-							const extraPartialChunkHeight = heightInclStartOffset % FULL_DAY;
-
 							// 1. Set the position of the original chunk
 							slots[y][m].all[key] = {
 								...slot,
@@ -138,10 +133,16 @@
 							};
 
 							// 2. Add additional chunks
-							let previousDate = slot.date.getDate();
+
+							// Calculate how many extra days & minutes (chunks)
+							// this slot overflows by.
+							const extraPartialChunkHeight = heightInclStartOffset % FULL_DAY;
+							let extraWholeChunks = Math.floor(heightInclStartOffset / FULL_DAY),
+								previousDate = slot.date.getDate();
+
 							while (extraWholeChunks--) {
 								const [ny, nm, nd] = this.correctDate(y, m, previousDate + 1);
-								const nDate = new Date(ny, nm - 1, nd, slot.hour, slot.minute, 0, 0);
+								const nDate = new Date(ny, nm - 1, nd, 0, 0, 0, 0);
 								const nKey = nDate.getTime();
 
 								if (!slots.hasOwnProperty(ny))

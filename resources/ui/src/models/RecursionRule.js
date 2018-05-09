@@ -104,8 +104,11 @@ export default class RecursionRule {
 
 			let value = def[key];
 
-			if (key in ["start", "until"])
+			if (key in ["start", "until"]) {
 				value = new Date(+value);
+				value.setSeconds(0);
+				value.setMilliseconds(0);
+			}
 
 			this[key] = value;
 		});
@@ -123,6 +126,11 @@ export default class RecursionRule {
 		return Object.keys(this).reduce((obj, key) => {
 			if (key !== "id")
 				obj[key] = this[key];
+
+			if (obj[key] instanceof Date) {
+				obj[key].setSeconds(0);
+				obj[key].setMilliseconds(0);
+			}
 
 			return obj;
 		}, {});
