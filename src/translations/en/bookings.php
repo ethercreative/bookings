@@ -21,4 +21,5 @@
  */
 return [
 	'Bookable' => 'Bookable',
+	'Bookable Type' => 'Bookable Type',
 ];

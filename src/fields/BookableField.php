@@ -33,6 +33,8 @@ class BookableField extends Field
 	// -------------------------------------------------------------------------
 
 	/**
+	 * TODO: is this needed? Why not just use $acceptsRange?
+	 *
 	 * @var string The type of bookable
 	 * @see BookableType
 	 */
