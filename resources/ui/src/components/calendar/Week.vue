@@ -22,6 +22,7 @@
 
 		props: {
 			slots: Object,
+			exceptions: Object,
 			duration: Number,
 			baseRule: RecursionRule,
 		},
@@ -70,8 +71,192 @@
 			},
 
 			formattedSlots () {
-				const slots = {...this.slots};
+				return {
+					slots: this.formatSlots({ ...this.slots }),
+					exceptions: this.formatSlots({ ...this.exceptions }),
+				};
+			},
 
+		},
+
+		// Render
+		// =====================================================================
+
+		render () {
+			return (
+				<div class={this.$style.scroller}>
+					{this.weeks.map((week, index) => (
+						<div key={index} class={this.$style.group}>
+							{this._renderHeader(week)}
+							{this._renderLabels()}
+							{this._renderCells(week)}
+						</div>
+					))}
+				</div>
+			);
+		},
+
+		// Methods
+		// =====================================================================
+
+		methods: {
+
+			// Render
+			// -----------------------------------------------------------------
+
+			_renderHeader (week) {
+				return (
+					<header class={this.$style.header}>
+						<div>
+							{DAYS.map((day, i) => (
+								<span key={i}>
+									{this.getHeader(day, week, i)}
+								</span>
+							))}
+						</div>
+					</header>
+				);
+			},
+
+			_renderLabels () {
+				return (
+					<ul class={this.$style.labels}>
+						{Array.from({length: 23}, (_, i) => {
+							let t = i + 1;
+
+							if (t > 12)
+								t = (t - 12) + " pm";
+							else
+								t = t + " am";
+
+							return (
+								<li key={i}>{t}</li>
+							);
+						})}
+					</ul>
+				);
+			},
+
+			_renderCells (week) {
+				return (
+					<div class={this.$style.cells}>
+						{DAYS.map((day, i) => {
+							const [y, m, d] = this.correctDateByWeek(week, i);
+
+							if (!slotExists(this.formattedSlots.slots, y, m, d))
+								return null;
+
+							return this.formattedSlots.slots[y][m][d].map(id => {
+								const slot = this.formattedSlots.slots[y][m].all[id];
+
+								return (
+									<span
+										key={id}
+										style={slot.position}
+										class={[this.$style.slot, {
+											[this.$style['split-top']]: slot.splitTop,
+											[this.$style['split-bottom']]: slot.splitBottom,
+										}]}
+									>
+										<span>
+											Bookable
+											<em>{this.getDuration(slot)}</em>
+										</span>
+									</span>
+								);
+							});
+						})}
+
+						{DAYS.map((day, i) => {
+							const [y, m, d] = this.correctDateByWeek(week, i);
+
+							if (!slotExists(this.formattedSlots.exceptions, y, m, d))
+								return null;
+
+							return this.formattedSlots.exceptions[y][m][d].map(id => {
+								const slot = this.formattedSlots.exceptions[y][m].all[id];
+
+								return (
+									<span
+										key={id}
+										style={slot.position}
+										class={this.$style.exception}
+									/>
+								);
+							});
+						})}
+					</div>
+				);
+			},
+
+			// Helpers
+			// -----------------------------------------------------------------
+
+			getHeader (day, week, i) {
+				// eslint-disable-next-line no-unused-vars
+				const [y, m, d] = this.correctDateByWeek(week, i);
+				return day + ` ${d}/${m}`;
+			},
+
+			correctDateByWeek (week, i) {
+				return correctDate(
+					week.year,
+					week.month,
+					week.day + i
+				);
+			},
+
+			getPosition (day, hour, minute, duration = this.duration) {
+				let d = day === 0 ? 7 : day;
+
+				// If Minutely or Hourly
+				// (this view shouldn't be visible for other frequencies)
+				let h = this.baseRule.frequency === Frequency.Minutely ? 1 : 60;
+				h *= duration;
+
+				return {
+					left: (14.285714 * (d - 1)) + "%",
+					top: (60 * hour) + minute + "px",
+					height: h + 1 + "px",
+				};
+			},
+
+			getDuration (slot) {
+				const h = slot.hour === 24 ? 0 : slot.hour;
+
+				const from = padZero(h) + ":" + padZero(slot.minute);
+				let to = "";
+
+				if (this.baseRule.frequency === Frequency.Minutely) {
+					let min = slot.minute + this.duration,
+						hr  = slot.hour;
+
+					if (min >= 60) {
+						min -= 60;
+						hr  += 1;
+					}
+
+					if (hr >= 24)
+						hr -= 24;
+
+					to = padZero(hr) + ":" + padZero(min);
+				}
+
+				// Else Hourly
+				// (this view shouldn't be visible for other frequencies)
+				else {
+					let hr  = slot.hour + this.duration;
+
+					if (hr >= 24)
+						hr -= 24;
+
+					to = padZero(hr) + ":" + padZero(slot.minute);
+				}
+
+				return from + " - " + to;
+			},
+
+			formatSlots (slots) {
 				for (let y in slots) {
 					if (!slots.hasOwnProperty(y))
 						continue;
@@ -160,166 +345,6 @@
 				}
 
 				return slots;
-			},
-
-		},
-
-		// Render
-		// =====================================================================
-
-		render () {
-			return (
-				<div class={this.$style.scroller}>
-					{this.weeks.map((week, index) => (
-						<div key={index} class={this.$style.group}>
-							{this._renderHeader(week)}
-							{this._renderLabels()}
-							{this._renderCells(week)}
-						</div>
-					))}
-				</div>
-			);
-		},
-
-		// Methods
-		// =====================================================================
-
-		methods: {
-
-			// Render
-			// -----------------------------------------------------------------
-
-			_renderHeader (week) {
-				return (
-					<header class={this.$style.header}>
-						<div>
-							{DAYS.map((day, i) => (
-								<span key={i}>
-									{this.getHeader(day, week, i)}
-								</span>
-							))}
-						</div>
-					</header>
-				);
-			},
-
-			_renderLabels () {
-				return (
-					<ul class={this.$style.labels}>
-						{Array.from({length: 23}, (_, i) => {
-							let t = i + 1;
-
-							if (t > 12)
-								t = (t - 12) + " pm";
-							else
-								t = t + " am";
-
-							return (
-								<li key={i}>{t}</li>
-							);
-						})}
-					</ul>
-				);
-			},
-
-			_renderCells (week) {
-				return (
-					<div class={this.$style.cells}>
-						{DAYS.map((day, i) => {
-							const [y, m, d] = this.correctDateByWeek(week, i);
-
-							if (!slotExists(this.formattedSlots, y, m, d))
-								return null;
-
-							return this.formattedSlots[y][m][d].map(id => {
-								const slot = this.formattedSlots[y][m].all[id];
-
-								return (
-									<span
-										key={id}
-										style={slot.position}
-										class={[this.$style.slot, {
-											[this.$style['split-top']]: slot.splitTop,
-											[this.$style['split-bottom']]: slot.splitBottom,
-										}]}
-									>
-										<span>
-											Bookable
-											<em>{this.getDuration(slot)}</em>
-										</span>
-									</span>
-								);
-							});
-						})}
-					</div>
-				);
-			},
-
-			// Helpers
-			// -----------------------------------------------------------------
-
-			getHeader (day, week, i) {
-				// eslint-disable-next-line no-unused-vars
-				const [y, m, d] = this.correctDateByWeek(week, i);
-				return day + ` ${d}/${m}`;
-			},
-
-			correctDateByWeek (week, i) {
-				return correctDate(
-					week.year,
-					week.month,
-					week.day + i
-				);
-			},
-
-			getPosition (day, hour, minute, duration = this.duration) {
-				let d = day === 0 ? 7 : day;
-
-				// If Minutely or Hourly
-				// (this view shouldn't be visible for other frequencies)
-				let h = this.baseRule.frequency === Frequency.Minutely ? 1 : 60;
-				h *= duration;
-
-				return {
-					left: (14.285714 * (d - 1)) + "%",
-					top: (60 * hour) + minute + "px",
-					height: h + 1 + "px",
-				};
-			},
-
-			getDuration (slot) {
-				const h = slot.hour === 24 ? 0 : slot.hour;
-
-				const from = padZero(h) + ":" + padZero(slot.minute);
-				let to = "";
-
-				if (this.baseRule.frequency === Frequency.Minutely) {
-					let min = slot.minute + this.duration,
-						hr  = slot.hour;
-
-					if (min >= 60) {
-						min -= 60;
-						hr  += 1;
-					}
-
-					if (hr >= 24)
-						hr -= 24;
-
-					to = padZero(hr) + ":" + padZero(min);
-				}
-
-				// Else Hourly
-				// (this view shouldn't be visible for other frequencies)
-				else {
-					let hr  = slot.hour + this.duration;
-
-					if (hr >= 24)
-						hr -= 24;
-
-					to = padZero(hr) + ":" + padZero(slot.minute);
-				}
-
-				return from + " - " + to;
 			}
 
 		},
@@ -452,6 +477,15 @@
 					@border @rowHeight
 				);
 		}
+	}
+
+	.exception {
+		position: absolute;
+
+		display: block;
+		width: 100% / 7;
+
+		background-color: fade(@craft-primary, 10%);
 	}
 
 	.slot {

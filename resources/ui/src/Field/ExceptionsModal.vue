@@ -113,6 +113,7 @@
 			<week
 				v-if="activeView === 'week'"
 				:slots="computedSlots"
+				:exceptions="computedExceptions"
 				:duration="slotDuration"
 				:base-rule="baseRule"
 			/>
