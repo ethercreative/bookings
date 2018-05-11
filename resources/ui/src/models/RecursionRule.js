@@ -1,4 +1,4 @@
-import Frequency from "../const/Frequency";
+import Frequency from "../enums/Frequency";
 import uuid from "../helpers/uuid";
 
 export default class RecursionRule {

@@ -150,7 +150,7 @@
 	import Lightswitch from "./form/Lightswitch";
 	import DateTime from "./form/DateTime";
 	import RecursionRule from "../models/RecursionRule";
-	import Frequency from "../const/Frequency";
+	import Frequency from "../enums/Frequency";
 	import ExRule from "../models/ExRule";
 
 	export default  {

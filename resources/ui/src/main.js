@@ -19,11 +19,14 @@ Vue.use(PortalVue);
 function BookingsUI (section, id = "#app", options = null) {
 
 	const onImport = App => {
-		new Vue({
+		const vm = new Vue({
 			render: h => h(App.default),
 			data: { options },
 			store,
-		}).$mount(id);
+		}).$mount();
+
+		// Mount as a child of the parent (not replacing it)
+		document.querySelector(id).appendChild(vm.$el);
 	};
 
 	switch (section) {

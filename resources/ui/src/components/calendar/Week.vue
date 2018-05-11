@@ -1,7 +1,7 @@
 <!--suppress JSXNamespaceValidation -->
 <script>
 	// import { RecycleList } from "vue-virtual-scroller";
-	import Frequency from "../../const/Frequency";
+	import Frequency from "../../enums/Frequency";
 	import padZero from "../../helpers/padZero";
 	import getNearestWeek from "../../helpers/getNearestWeek";
 	import RecursionRule from "../../models/RecursionRule";

@@ -23,7 +23,7 @@ abstract class BookableType extends Enum
 	// Constants
 	// =========================================================================
 
-	const Single = 'single';
-	const Recurring = 'recurring';
+	const FIXED    = 'fixed';
+	const FLEXIBLE = 'flexible';
 
 }

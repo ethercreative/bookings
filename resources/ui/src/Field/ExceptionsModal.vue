@@ -1,5 +1,5 @@
 <template>
-	<Modal :open="open" :onRequestClose="onRequestClose" :no-portal="true">
+	<Modal :open="open" :onRequestClose="close" :no-portal="true">
 		<aside :class="$style.sidebar">
 			<header :class="$style.sidebarHeader">
 				<h2>Bookable Rules</h2>
@@ -126,8 +126,6 @@
 </template>
 
 <script>
-	// TODO: Disable Day & Week view if frequency is greater than hourly
-
 	import { mapState } from "vuex";
 	import Draggable from "vuedraggable";
 	import Modal from "../components/Modal";
@@ -136,11 +134,11 @@
 
 	import Day from "../components/calendar/Day";
 	import Week from "../components/calendar/Week";
-	import Frequency from "../const/Frequency";
+	import Frequency from "../enums/Frequency";
 
 	export default {
 		name: "ExceptionsModal",
-		props: ["open", "onRequestClose"],
+		props: ["open", "close"],
 		components: { Modal, Draggable, RRuleBlock, Button, Day, Week },
 
 		data () {
