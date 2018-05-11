@@ -423,8 +423,8 @@
 				to bottom,
 				transparent 0px,
 				transparent 29px,
-				@border 29px,
-				@border 30px
+				fade(@border, 50%) 29px,
+				fade(@border, 50%) 30px
 			);
 		overflow: hidden;
 

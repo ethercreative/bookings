@@ -104,6 +104,7 @@
 			<day
 				v-if="activeView === 'day'"
 				:slots="computedSlots"
+				:exceptions="computedExceptions"
 				:duration="slotDuration"
 				:base-rule="baseRule"
 			/>
@@ -143,7 +144,7 @@
 
 		data () {
 			return {
-				activeView: "day",
+				activeView: "week",
 				Frequency,
 			};
 		},
@@ -156,6 +157,7 @@
 				"baseRule",
 				"exceptions",
 				"computedSlots",
+				"computedExceptions",
 				"slotDuration",
 			]),
 

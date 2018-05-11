@@ -50,6 +50,7 @@ class ApiController extends Controller
 		return $this->asJson([
 			'success' => true,
 			'slots' => $bookable->getAllSlots(),
+			'exceptions' => $bookable->invert()->getAllSlots(),
 			'duration' => (int) $bookable->baseRule->duration,
 		]);
 	}
@@ -73,6 +74,21 @@ class ApiController extends Controller
 	{
 		if (!array_key_exists($handle, $json))
 			throw new BadRequestHttpException('Request missing required body param');
+
+		return $json[$handle];
+	}
+
+	/**
+	 * @param array  $json
+	 * @param string $handle
+	 * @param bool   $fallback
+	 *
+	 * @return bool
+	 */
+	private function _getJsonParam ($json, $handle, $fallback = false)
+	{
+		if (!array_key_exists($handle, $json))
+			return $fallback;
 
 		return $json[$handle];
 	}

@@ -35,6 +35,7 @@
 
 		props: {
 			slots: Object,
+			exceptions: Object,
 			duration: Number,
 			baseRule: RecursionRule,
 		},
@@ -79,8 +80,177 @@
 			},
 
 			formattedSlots () {
-				const slots = {...this.slots};
+				return {
+					slots: this.formatSlots({ ...this.slots }),
+					exceptions: this.formatSlots({ ...this.exceptions }),
+				};
+			},
 
+		},
+
+		// Render
+		// =====================================================================
+
+		render () {
+			return (
+				<div class={this.$style.scroller}>
+					{this.days.map((day, index) => (
+						<div key={index} class={this.$style.group}>
+							{this._renderHeader(day)}
+							{this._renderLabels()}
+							{this._renderCells(day)}
+						</div>
+					))}
+				</div>
+			);
+		},
+
+		// Methods
+		// =====================================================================
+
+		methods: {
+
+			// Render
+			// -----------------------------------------------------------------
+
+			_renderHeader (day) {
+				return (
+					<header class={this.$style.header}>
+						<div>
+							{TIMES.map((time, i) => (
+								<span key={i}>
+									{i === 0 && (
+										<span>{this.getHeader(day)}</span>
+									)}
+									{time}
+								</span>
+							))}
+						</div>
+					</header>
+				);
+			},
+
+			_renderLabels () {
+				return (
+					<ul class={this.$style.labels}>
+						{Array.from({length: 23}, (_, i) => {
+							let t = i + 1;
+
+							if (t > 12)
+								t = (t - 12) + " pm";
+							else
+								t = t + " am";
+
+							return (
+								<li key={i}>{t}</li>
+							);
+						})}
+					</ul>
+				);
+			},
+
+			_renderCells (day) {
+				return (
+					<div class={this.$style.cells}>
+						{TIMES.map((time, i) => {
+							const [y, m, d] = this.correctDateByDay(day, i);
+
+							if (!slotExists(this.formattedSlots.slots, y, m, d))
+								return null;
+
+							return this.formattedSlots.slots[y][m][d].map(id => {
+								const slot = this.formattedSlots.slots[y][m].all[id];
+
+								return (
+									<span
+										key={id}
+										style={slot.position}
+										class={[this.$style.slot, {
+											[this.$style['split-left']]: slot.splitLeft,
+											[this.$style['split-right']]: slot.splitRight,
+										}]}
+									>
+										<span>
+											Bookable
+											<em>{this.getDuration(slot)}</em>
+										</span>
+									</span>
+								);
+							});
+						})}
+
+						{TIMES.map((time, i) => {
+							const [y, m, d] = this.correctDateByDay(day, i);
+
+							if (!slotExists(this.formattedSlots.exceptions, y, m, d))
+								return null;
+
+							return this.formattedSlots.exceptions[y][m][d].map(id => {
+								const slot = this.formattedSlots.exceptions[y][m].all[id];
+
+								return (
+									<span
+										key={id}
+										style={slot.position}
+										class={this.$style.exception}
+									/>
+								);
+							});
+						})}
+					</div>
+				);
+			},
+
+			// Helpers
+			// -----------------------------------------------------------------
+
+			getHeader (day) {
+				// eslint-disable-next-line no-unused-vars
+				const [y, m, d] = this.correctDateByDay(day, 0);
+				return d + " " + MONTHS[m - 1];
+			},
+
+			correctDateByDay (day, i) {
+				return correctDate(
+					day.year,
+					day.month,
+					day.day + i
+				);
+			},
+
+			getPosition (hour, minutes, duration = this.duration) {
+				return {
+					top: (hour * 60) + "px",
+					left: ((minutes / 60) * 100) + "%",
+					// This assumes frequency === minutely, view should be
+					// disabled for other frequencies
+					width: ((duration / 60) * 100) + "%",
+				};
+			},
+
+			getDuration (slot) {
+				const h = slot.hour === 24 ? 0 : slot.hour;
+
+				const from = padZero(h) + ":" + padZero(slot.minute);
+				let to = "";
+
+				let min = slot.minute + this.duration,
+					hr  = slot.hour;
+
+				if (min >= 60) {
+					min -= 60;
+					hr  += 1;
+				}
+
+				if (hr >= 24)
+					hr -= 24;
+
+				to = padZero(hr) + ":" + padZero(min);
+
+				return from + " - " + to;
+			},
+
+			formatSlots (slots) {
 				for (let y in slots) {
 					if (!slots.hasOwnProperty(y))
 						continue;
@@ -181,151 +351,6 @@
 
 		},
 
-		// Render
-		// =====================================================================
-
-		render () {
-			return (
-				<div class={this.$style.scroller}>
-					{this.days.map((day, index) => (
-						<div key={index} class={this.$style.group}>
-							{this._renderHeader(day)}
-							{this._renderLabels()}
-							{this._renderCells(day)}
-						</div>
-					))}
-				</div>
-			);
-		},
-
-		// Methods
-		// =====================================================================
-
-		methods: {
-
-			// Render
-			// -----------------------------------------------------------------
-
-			_renderHeader (day) {
-				return (
-					<header class={this.$style.header}>
-						<div>
-							{TIMES.map((time, i) => (
-								<span key={i}>
-									{i === 0 && (
-										<span>{this.getHeader(day)}</span>
-									)}
-									{time}
-								</span>
-							))}
-						</div>
-					</header>
-				);
-			},
-
-			_renderLabels () {
-				return (
-					<ul class={this.$style.labels}>
-						{Array.from({length: 23}, (_, i) => {
-							let t = i + 1;
-
-							if (t > 12)
-								t = (t - 12) + " pm";
-							else
-								t = t + " am";
-
-							return (
-								<li key={i}>{t}</li>
-							);
-						})}
-					</ul>
-				);
-			},
-
-			_renderCells (day) {
-				return (
-					<div class={this.$style.cells}>
-						{TIMES.map((time, i) => {
-							const [y, m, d] = this.correctDateByDay(day, i);
-
-							if (!slotExists(this.formattedSlots, y, m, d))
-								return null;
-
-							return this.formattedSlots[y][m][d].map(id => {
-								const slot = this.formattedSlots[y][m].all[id];
-
-								return (
-									<span
-										key={id}
-										style={slot.position}
-										class={[this.$style.slot, {
-											[this.$style['split-left']]: slot.splitLeft,
-											[this.$style['split-right']]: slot.splitRight,
-										}]}
-									>
-										<span>
-											Bookable
-											<em>{this.getDuration(slot)}</em>
-										</span>
-									</span>
-								);
-							});
-						})}
-					</div>
-				);
-			},
-
-			// Helpers
-			// -----------------------------------------------------------------
-
-			getHeader (day) {
-				// eslint-disable-next-line no-unused-vars
-				const [y, m, d] = this.correctDateByDay(day, 0);
-				return d + " " + MONTHS[m - 1];
-			},
-
-			correctDateByDay (day, i) {
-				return correctDate(
-					day.year,
-					day.month,
-					day.day + i
-				);
-			},
-
-			getPosition (hour, minutes, duration = this.duration) {
-				return {
-					top: (hour * 60) + "px",
-					left: ((minutes / 60) * 100) + "%",
-					// This assumes frequency === minutely, view should be
-					// disabled for other frequencies
-					width: ((duration / 60) * 100) + "%",
-				};
-			},
-
-			getDuration (slot) {
-				const h = slot.hour === 24 ? 0 : slot.hour;
-
-				const from = padZero(h) + ":" + padZero(slot.minute);
-				let to = "";
-
-				let min = slot.minute + this.duration,
-					hr  = slot.hour;
-
-				if (min >= 60) {
-					min -= 60;
-					hr  += 1;
-				}
-
-				if (hr >= 24)
-					hr -= 24;
-
-				to = padZero(hr) + ":" + padZero(min);
-
-				return from + " - " + to;
-			},
-
-		},
-
 	};
 </script>
 
@@ -419,18 +444,25 @@
 
 		background:
 			repeating-linear-gradient(
-				to right,
+				to bottom,
 				transparent 0px,
 				transparent 3px,
 				#fff 3px,
 				#fff 6px
 			),
 			repeating-linear-gradient(
-				to bottom,
+				to right,
 				transparent 0px,
-				transparent 29px,
-				@border 29px,
-				@border 30px
+				transparent calc(100% / 6~" - 1px"),
+				#fff calc(100% / 6~" - 1px"),
+				#fff 100% / 6
+			),
+			repeating-linear-gradient(
+				to right,
+				transparent 0px,
+				transparent calc(100% / 60~" - 1px"),
+				fade(@border, 50%) calc(100% / 60~" - 1px"),
+				fade(@border, 50%) 100% / 60
 			);
 		overflow: hidden;
 
@@ -458,6 +490,15 @@
 					@border @rowHeight
 				);
 		}
+	}
+
+	.exception {
+		position: absolute;
+
+		display: block;
+		height: @rowHeight;
+
+		background-color: fade(@craft-primary, 10%);
 	}
 
 	.slot {

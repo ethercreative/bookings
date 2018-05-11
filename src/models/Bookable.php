@@ -86,6 +86,12 @@ class Bookable extends Model
 	/** @var RSet|null */
 	private $_set;
 
+	/** @var RSet|null */
+	private $_invertedSet;
+
+	/** @var bool */
+	private $_useInverted = false;
+
 	// Methods
 	// =========================================================================
 
@@ -105,13 +111,27 @@ class Bookable extends Model
 	}
 
 	/**
+	 * Will tell the bookable to use the inverted set
+	 *
+	 * ```php
+	 * $myBookable->invert()->getAllSlots();
+	 * ```
+	 *
+	 * @return Bookable
+	 */
+	public function invert (): Bookable {
+		$this->_useInverted = true;
+		return $this;
+	}
+
+	/**
 	 * Gets all slots as an array (to a hard max of 1000)
 	 *
 	 * @return array
 	 */
 	public function getAllSlots (): array
 	{
-		return $this->getSet()->getOccurrences(1000);
+		return $this->_getSet()->getOccurrences(1000);
 	}
 
 	/**
@@ -124,7 +144,7 @@ class Bookable extends Model
 	 */
 	public function getAllSlotsAsIterable ()
 	{
-		return $this->getSet();
+		return $this->_getSet();
 	}
 
 	/**
@@ -146,7 +166,7 @@ class Bookable extends Model
 		$baseStart = $this->baseRule->start;
 		$baseUntil = $this->baseRule->until;
 
-		$set = clone $this->getSet();
+		$set = clone $this->_getSet();
 
 		// If the start time is after the base start time, exclude all slots
 		// between those two times
@@ -201,7 +221,7 @@ class Bookable extends Model
 
 		$baseStart = $this->baseRule->start;
 
-		$set = clone $this->getSet();
+		$set = clone $this->_getSet();
 
 		// If the start time is after the base start time, exclude all slots
 		// between those two times
@@ -225,8 +245,11 @@ class Bookable extends Model
 	 *
 	 * @return RSet
 	 */
-	private function getSet (): RSet
+	private function _getSet (): RSet
 	{
+		if ($this->_useInverted)
+			return $this->_getInvertedSet();
+
 		if ($this->_set)
 			return $this->_set;
 
@@ -238,6 +261,8 @@ class Bookable extends Model
 
 		foreach ($this->exRules as $exRule)
 		{
+			$exRule->duration = $this->baseRule->duration;
+
 			if (!$exRule->bookable) {
 				$set->addExRule($exRule->asRRuleArray());
 				$lastRuleWasException = true;
@@ -261,6 +286,52 @@ class Bookable extends Model
 			$set->addRRule($previousSet);
 
 		return $this->_set = $set;
+	}
+
+	/**
+	 * Builds the recurrence set, but the base rule is ignored and exRules are
+	 * made bookable while rRules are made exclusions.
+	 *
+	 * This is used exclusively for the UI, to help visualise exceptions.
+	 *
+	 * @return RSet
+	 */
+	private function _getInvertedSet (): RSet
+	{
+		if ($this->_invertedSet)
+			return $this->_invertedSet;
+
+		$set = new RSet();
+		$previousSet = null;
+		$lastRuleWasException = false;
+
+		foreach ($this->exRules as $exRule)
+		{
+			$exRule->duration = $this->baseRule->duration;
+
+			if ($exRule->bookable) {
+				$set->addExRule($exRule->asRRuleArray());
+				$lastRuleWasException = true;
+				continue;
+			}
+
+			if ($lastRuleWasException)
+			{
+				if ($previousSet)
+					$set->addRRule($previousSet);
+
+				$previousSet = clone $set;
+				$set = new RSet();
+			}
+
+			$set->addRRule($exRule->asRRuleArray());
+			$lastRuleWasException = false;
+		}
+
+		if ($previousSet)
+			$set->addRRule($previousSet);
+
+		return $this->_invertedSet = $set;
 	}
 
 }
