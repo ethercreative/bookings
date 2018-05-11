@@ -501,7 +501,7 @@
 		background: linear-gradient(
 			to right,
 			fade(@craft-primary, 10%),
-			fade(@craft-primary, 0%)
+			fade(@craft-primary, 1%)
 		);
 	}
 
