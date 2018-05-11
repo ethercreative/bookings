@@ -498,7 +498,11 @@
 		display: block;
 		height: @rowHeight;
 
-		background-color: fade(@craft-primary, 10%);
+		background: linear-gradient(
+			to right,
+			fade(@craft-primary, 10%),
+			fade(@craft-primary, 0%)
+		);
 	}
 
 	.slot {
