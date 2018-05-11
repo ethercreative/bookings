@@ -62,6 +62,7 @@
 							type="button"
 							:class="{[$style.active]: activeView === 'day'}"
 							@click="onChangeView('day')"
+							:disabled="!allowedFrequencies([Frequency.Minutely])"
 						>
 							Day
 						</button>
@@ -71,6 +72,7 @@
 							type="button"
 							:class="{[$style.active]: activeView === 'week'}"
 							@click="onChangeView('week')"
+							:disabled="!allowedFrequencies([Frequency.Hourly])"
 						>
 							Week
 						</button>
@@ -80,6 +82,7 @@
 							type="button"
 							:class="{[$style.active]: activeView === 'month'}"
 							@click="onChangeView('month')"
+							:disabled="!allowedFrequencies([Frequency.Daily, Frequency.Weekly])"
 						>
 							Month
 						</button>
@@ -89,6 +92,7 @@
 							type="button"
 							:class="{[$style.active]: activeView === 'year'}"
 							@click="onChangeView('year')"
+							:disabled="!allowedFrequencies([Frequency.Monthly, Frequency.Yearly])"
 						>
 							Year
 						</button>
@@ -132,6 +136,7 @@
 
 	import Day from "../components/calendar/Day";
 	import Week from "../components/calendar/Week";
+	import Frequency from "../const/Frequency";
 
 	export default {
 		name: "ExceptionsModal",
@@ -141,6 +146,7 @@
 		data () {
 			return {
 				activeView: "day",
+				Frequency,
 			};
 		},
 
@@ -166,6 +172,34 @@
 			},
 		},
 
+		// Watch
+		// =====================================================================
+
+		watch: {
+			baseRule (value) {
+				switch (value.frequency) {
+					case Frequency.Minutely:
+						if (this.activeView !== "day")
+							this.activeView = "day";
+						break;
+					case Frequency.Hourly:
+						if (this.activeView !== "week")
+							this.activeView = "week";
+						break;
+					case Frequency.Daily:
+					case Frequency.Weekly:
+						if (this.activeView !== "month")
+							this.activeView = "month";
+						break;
+					case Frequency.Monthly:
+					case Frequency.Yearly:
+						if (this.activeView !== "year")
+							this.activeView = "year";
+						break;
+				}
+			},
+		},
+
 		// Methods
 		// =====================================================================
 
@@ -177,6 +211,10 @@
 
 			onChangeView (nextView) {
 				this.activeView = nextView;
+			},
+
+			allowedFrequencies (freqs) {
+				return freqs.indexOf(this.baseRule.frequency) !== -1;
 			},
 
 		}
@@ -253,7 +291,11 @@
 				background-color 0.15s ease,
 				border-bottom-color 0.15s ease;
 
-			&:hover {
+			&:disabled {
+				pointer-events: none;
+			}
+
+			&:hover:not(:disabled):not(.active) {
 				background-color: fade(#fff, 50%);
 			}
 
