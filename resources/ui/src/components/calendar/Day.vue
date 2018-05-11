@@ -1,24 +1,37 @@
 <!--suppress JSXNamespaceValidation -->
 <script>
-	// import { RecycleList } from "vue-virtual-scroller";
-	import Frequency from "../../const/Frequency";
-	import padZero from "../../helpers/padZero";
-	import getNearestWeek from "../../helpers/getNearestWeek";
 	import RecursionRule from "../../models/RecursionRule";
 	import correctDate from "../../helpers/correctDate";
 	import slotExists from "../../helpers/slotExists";
 	import getFirstSlot from "../../helpers/getFirstSlot";
+	import padZero from "../../helpers/padZero";
 
-	const DAYS = [
-		"Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
-		"Saturday", "Sunday"
+	const MONTHS = [
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December",
 	];
 
-	const FULL_DAY = 60 * 24;
+	const TIMES = [
+		"10 mins",
+		"20 mins",
+		"30 mins",
+		"40 mins",
+		"50 mins",
+		"60 mins",
+	];
 
 	export default {
-		name: "Week",
-		components: { /*RecycleList*/ },
+		name: "Day",
 
 		props: {
 			slots: Object,
@@ -31,42 +44,38 @@
 
 		computed: {
 
-			weeks () {
+			days () {
 				const startDate = getFirstSlot(
 					this.slots,
 					{ date: new Date() }
 				).date;
 
-				const firstWeek = getNearestWeek(
-					startDate.getFullYear(),
-					startDate.getMonth() + 1,
-					startDate.getDate()
-				);
+				const firstDay = {
+					year: startDate.getFullYear(),
+					month: startDate.getMonth() + 1,
+					day: startDate.getDate(),
+				};
 
-				const weeks = [firstWeek];
+				const days = [firstDay];
 
-				// TODO: i should either:
-				// Until: Encompass the until date
-				// # Times: The end date of the final slot
-				// Forever: Set to 100
-				// Should be capped at 100.
+				// TODO: Make i dynamic
 				let i = 3,
-					prevWeek = firstWeek;
+					prevDay = firstDay;
 
 				while (--i) {
 					const [year, month, day] = correctDate(
-						prevWeek.year,
-						prevWeek.month,
-						prevWeek.day + 7
+						prevDay.year,
+						prevDay.month,
+						prevDay.day + 1
 					);
 
-					const week = { year, month, day };
+					const d = { year, month, day };
 
-					weeks.push(week);
-					prevWeek = week;
+					days.push(d);
+					prevDay = d;
 				}
 
-				return weeks;
+				return days;
 			},
 
 			formattedSlots () {
@@ -86,18 +95,14 @@
 
 							const slot = slots[y][m].all[key];
 
-							// Convert the frequency into minutes
-							const numericFreq = this.baseRule.frequency === Frequency.Minutely ? 1 : 60;
-
-							const fullHeight = numericFreq * this.duration;
-							const top = (60 * slot.hour) + slot.minute;
-							const heightInclStartOffset = fullHeight + top;
+							const fullWidth = this.duration;
+							const widthInclStartOffset = fullWidth + slot.minute;
 
 							// If it won't overflow, set position & skip
-							if (heightInclStartOffset <= FULL_DAY) {
+							if (widthInclStartOffset <= 60) {
 								slots[y][m].all[key] = {
 									...slot,
-									position: this.getPosition(slot.day, slot.hour, slot.minute),
+									position: this.getPosition(slot.hour, slot.minute),
 								};
 								continue;
 							}
@@ -106,26 +111,38 @@
 							slots[y][m].all[key] = {
 								...slot,
 								position: this.getPosition(
-									slot.day,
 									slot.hour,
 									slot.minute,
-									this.duration + ((FULL_DAY - heightInclStartOffset) / numericFreq)
+									this.duration + (60 - widthInclStartOffset)
 								),
-								splitBottom: true,
+								splitRight: true,
 							};
 
 							// 2. Add additional chunks
 
-							// Calculate how many extra days & minutes (chunks)
+							// Calculate how many extra hours & minutes (chunks)
 							// this slot overflows by.
-							const extraPartialChunkHeight = heightInclStartOffset % FULL_DAY;
-							let extraWholeChunks = Math.floor(heightInclStartOffset / FULL_DAY),
-								previousDate = slot.date.getDate();
+							const extraPartialChunkWidth = widthInclStartOffset % 60;
+							let extraWholeChunks = Math.floor(widthInclStartOffset / 60),
+								previousDate = slot.date,
+								previousHour = slot.date.getHours();
+
+							if (widthInclStartOffset === 120)
+								extraWholeChunks--;
 
 							while (extraWholeChunks--) {
-								const [ny, nm, nd] = correctDate(y, m, previousDate + 1);
-								const nDate = new Date(ny, nm - 1, nd, 0, 0, 0, 0);
+								const nDate = new Date(
+									previousDate.getFullYear(),
+									previousDate.getMonth(),
+									previousDate.getDate(),
+									previousHour + 1,
+									0, 0, 0
+								);
 								const nKey = nDate.getTime();
+
+								const ny = nDate.getFullYear()
+									, nm = nDate.getMonth() + 1
+									, nd = nDate.getDate();
 
 								if (!slots.hasOwnProperty(ny))
 									slots[ny] = {};
@@ -136,24 +153,24 @@
 								if (!slots[ny][nm].hasOwnProperty(nd))
 									slots[ny][nm][nd] = [];
 
-								const isPartial = extraWholeChunks === 0 && extraPartialChunkHeight > 0;
+								const isPartial = extraWholeChunks === 0 && extraPartialChunkWidth > 0;
 
 								slots[ny][nm].all[nKey] = {
 									...slot,
 									position: this.getPosition(
-										nDate.getDay(),
+										nDate.getHours(),
 										0,
-										0,
-										isPartial ? extraPartialChunkHeight / numericFreq : 24
+										isPartial ? extraPartialChunkWidth : 60
 									),
-									splitTop: true,
-									splitBottom: !isPartial,
+									splitLeft: true,
+									splitRight: extraWholeChunks !== 0,
 								};
 
 								if (slots[ny][nm][nd].indexOf(nKey) === -1)
 									slots[ny][nm][nd].push(nKey);
 
-								previousDate = nd;
+								previousDate = nDate;
+								previousHour = nDate.getHours();
 							}
 						}
 					}
@@ -170,11 +187,11 @@
 		render () {
 			return (
 				<div class={this.$style.scroller}>
-					{this.weeks.map((week, index) => (
+					{this.days.map((day, index) => (
 						<div key={index} class={this.$style.group}>
-							{this._renderHeader(week)}
+							{this._renderHeader(day)}
 							{this._renderLabels()}
-							{this._renderCells(week)}
+							{this._renderCells(day)}
 						</div>
 					))}
 				</div>
@@ -189,13 +206,16 @@
 			// Render
 			// -----------------------------------------------------------------
 
-			_renderHeader (week) {
+			_renderHeader (day) {
 				return (
 					<header class={this.$style.header}>
 						<div>
-							{DAYS.map((day, i) => (
+							{TIMES.map((time, i) => (
 								<span key={i}>
-									{this.getHeader(day, week, i)}
+									{i === 0 && (
+										<span>{this.getHeader(day)}</span>
+									)}
+									{time}
 								</span>
 							))}
 						</div>
@@ -222,11 +242,11 @@
 				);
 			},
 
-			_renderCells (week) {
+			_renderCells (day) {
 				return (
 					<div class={this.$style.cells}>
-						{DAYS.map((day, i) => {
-							const [y, m, d] = this.correctDateByWeek(week, i);
+						{TIMES.map((time, i) => {
+							const [y, m, d] = this.correctDateByDay(day, i);
 
 							if (!slotExists(this.formattedSlots, y, m, d))
 								return null;
@@ -239,8 +259,8 @@
 										key={id}
 										style={slot.position}
 										class={[this.$style.slot, {
-											[this.$style['split-top']]: slot.splitTop,
-											[this.$style['split-bottom']]: slot.splitBottom,
+											[this.$style['split-left']]: slot.splitLeft,
+											[this.$style['split-right']]: slot.splitRight,
 										}]}
 									>
 										<span>
@@ -258,32 +278,27 @@
 			// Helpers
 			// -----------------------------------------------------------------
 
-			getHeader (day, week, i) {
+			getHeader (day) {
 				// eslint-disable-next-line no-unused-vars
-				const [y, m, d] = this.correctDateByWeek(week, i);
-				return day + ` ${d}/${m}`;
+				const [y, m, d] = this.correctDateByDay(day, 0);
+				return d + " " + MONTHS[m - 1];
 			},
 
-			correctDateByWeek (week, i) {
+			correctDateByDay (day, i) {
 				return correctDate(
-					week.year,
-					week.month,
-					week.day + i
+					day.year,
+					day.month,
+					day.day + i
 				);
 			},
 
-			getPosition (day, hour, minute, duration = this.duration) {
-				let d = day === 0 ? 7 : day;
-
-				// If Minutely or Hourly
-				// (this view shouldn't be visible for other frequencies)
-				let h = this.baseRule.frequency === Frequency.Minutely ? 1 : 60;
-				h *= duration;
-
+			getPosition (hour, minutes, duration = this.duration) {
 				return {
-					left: (14.285714 * (d - 1)) + "%",
-					top: (60 * hour) + minute + "px",
-					height: h + 1 + "px",
+					top: (hour * 60) + "px",
+					left: ((minutes / 60) * 100) + "%",
+					// This assumes frequency === minutely, view should be
+					// disabled for other frequencies
+					width: ((duration / 60) * 100) + "%",
 				};
 			},
 
@@ -293,36 +308,24 @@
 				const from = padZero(h) + ":" + padZero(slot.minute);
 				let to = "";
 
-				if (this.baseRule.frequency === Frequency.Minutely) {
-					let min = slot.minute + this.duration,
-						hr  = slot.hour;
+				let min = slot.minute + this.duration,
+					hr  = slot.hour;
 
-					if (min >= 60) {
-						min -= 60;
-						hr  += 1;
-					}
-
-					if (hr >= 24)
-						hr -= 24;
-
-					to = padZero(hr) + ":" + padZero(min);
+				if (min >= 60) {
+					min -= 60;
+					hr  += 1;
 				}
 
-				// Else Hourly
-				// (this view shouldn't be visible for other frequencies)
-				else {
-					let hr  = slot.hour + this.duration;
+				if (hr >= 24)
+					hr -= 24;
 
-					if (hr >= 24)
-						hr -= 24;
-
-					to = padZero(hr) + ":" + padZero(slot.minute);
-				}
+				to = padZero(hr) + ":" + padZero(min);
 
 				return from + " - " + to;
-			}
+			},
 
 		},
+
 	};
 </script>
 
@@ -359,25 +362,28 @@
 		div {
 			width: 100%;
 
-			background: repeating-linear-gradient(
-				to right,
-				@border 0%,
-				@border calc(~"0% + 1px"),
-				transparent calc(~"0% + 1px"),
-				transparent 100% / 7
-			);
+			border-left: 1px solid @border;
 
-			span {
+			> span {
 				display: inline-flex;
 				align-items: center;
-				justify-content: center;
-				width: 100% / 7;
+				justify-content: flex-end;
+				width: 100% / 6;
 				height: @rowHeight;
+				padding: 0 10px;
 
 				color: #8C97B2;
 				font-size: 12px;
-				text-align: center;
 				text-transform: uppercase;
+
+				> span {
+					font-weight: bold;
+					text-transform: none;
+				}
+
+				&:first-child {
+					justify-content: space-between;
+				}
 			}
 		}
 	}
@@ -442,7 +448,7 @@
 					@border 0%,
 					@border calc(~"0% + 1px"),
 					transparent calc(~"0% + 1px"),
-					transparent 100% / 7
+					transparent 100% / 6
 				),
 				repeating-linear-gradient(
 					to bottom,
@@ -460,8 +466,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: calc(100% / 7 ~" + 1px");
-		margin: -1px 0 0 0;
+		height: @rowHeight + 1;
+		margin: -1px 0 0;
 
 		color: #3FE79E;
 		font-size: 9px;
@@ -473,8 +479,8 @@
 
 		background: rgba(63,231,158,0.15);
 		border: 1px solid #3FE79E;
-		border-top-width: 2px;
-		border-bottom-width: 2px;
+		border-left-width: 2px;
+		border-right-width: 2px;
 
 		span {
 			margin-top: 4px;
@@ -490,8 +496,8 @@
 			font-style: normal;
 		}
 
-		&.split-top {
-			border-top: none;
+		&.split-left {
+			border-left: none;
 
 			&:before {
 				content: '';
@@ -500,8 +506,8 @@
 				left: 0;
 
 				display: block;
-				width: 100%;
-				height: 4px;
+				width: 4px;
+				height: 100%;
 
 				background: repeating-linear-gradient(
 					135deg,
@@ -511,18 +517,18 @@
 			}
 		}
 
-		&.split-bottom {
-			border-bottom: none;
+		&.split-right {
+			border-right: none;
 
 			&:after {
 				content: '';
 				position: absolute;
-				bottom: 0;
-				left: 0;
+				top: 0;
+				right: 0;
 
 				display: block;
-				width: 100%;
-				height: 4px;
+				width: 4px;
+				height: 100%;
 
 				background: repeating-linear-gradient(
 					135deg,

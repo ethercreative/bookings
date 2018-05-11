@@ -97,7 +97,12 @@
 			</header>
 
 			<!-- Day -->
-			<div v-if="activeView === 'day'">Day View TODO</div>
+			<day
+				v-if="activeView === 'day'"
+				:slots="computedSlots"
+				:duration="slotDuration"
+				:base-rule="baseRule"
+			/>
 
 			<!-- Week -->
 			<week
@@ -125,16 +130,17 @@
 	import RRuleBlock from "../components/RRuleBlock";
 	import Button from "../components/form/Button";
 
+	import Day from "../components/calendar/Day";
 	import Week from "../components/calendar/Week";
 
 	export default {
 		name: "ExceptionsModal",
 		props: ["open", "onRequestClose"],
-		components: { Modal, Draggable, RRuleBlock, Button, Week },
+		components: { Modal, Draggable, RRuleBlock, Button, Day, Week },
 
 		data () {
 			return {
-				activeView: "week",
+				activeView: "day",
 			};
 		},
 
