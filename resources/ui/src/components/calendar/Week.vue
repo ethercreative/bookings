@@ -21,6 +21,11 @@
 		31, // Dec
 	];
 
+	const DAYS = [
+		"Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+		"Saturday", "Sunday"
+	];
+
 	const FULL_DAY = 60 * 24;
 
 	export default {
@@ -31,17 +36,6 @@
 			slots: Object,
 			duration: Number,
 			baseRule: RecursionRule,
-		},
-
-		data () {
-			const days = [
-				"Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
-				"Saturday", "Sunday"
-			];
-
-			return {
-				days,
-			};
 		},
 
 		// Computed
@@ -211,7 +205,7 @@
 				return (
 					<header class={this.$style.header}>
 						<div>
-							{this.days.map((day, i) => (
+							{DAYS.map((day, i) => (
 								<span key={i}>
 									{this.getHeader(day, week, i)}
 								</span>
@@ -243,7 +237,7 @@
 			_renderCells (week) {
 				return (
 					<div class={this.$style.cells}>
-						{this.days.map((day, i) => {
+						{DAYS.map((day, i) => {
 							const [y, m, d] = this.correctDateByWeek(day, week, i);
 
 							if (
@@ -303,7 +297,9 @@
 				// If the date is greater than the month len, wrap to next month
 				if (d > l) {
 					d -= l;
-					m = m === 12 ? 1 : m + 1;
+					const wrapYear = m === 12;
+					m = wrapYear ? 1 : m + 1;
+					wrapYear && y++;
 				}
 
 				return [y, m, d];
