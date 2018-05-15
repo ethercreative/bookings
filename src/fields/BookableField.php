@@ -10,8 +10,11 @@ namespace ether\bookings\fields;
 
 use craft\base\ElementInterface;
 use craft\base\Field;
+use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Html;
+use ether\bookings\Bookings;
 use ether\bookings\enums\BookableType;
+use ether\bookings\models\Bookable;
 use ether\bookings\models\ExRule;
 use ether\bookings\models\RecursionRule;
 use ether\bookings\web\assets\ui\UIAsset;
@@ -105,7 +108,7 @@ class BookableField extends Field
 	}
 
 	/**
-	 * @param                       $value
+	 * @param Bookable              $value
 	 * @param ElementInterface|null $element
 	 *
 	 * @return string
@@ -115,15 +118,54 @@ class BookableField extends Field
 		$view = \Craft::$app->view;
 
 		$id           = $view->formatInputId($this->id);
+		$handle       = $view->namespaceInputName($this->handle);
 		$namespacedId = $view->namespaceInputId($id);
 
+		$value = json_encode($value->asArray());
+
 		$view->registerAssetBundle(UIAsset::class);
-		$view->registerJs("new window.__BookingsUI('field', '#$namespacedId', { handle: '{$this->handle}' })");
+		$view->registerJs("new window.__BookingsUI('field', '#$namespacedId', { handle: '$handle', value: $value })");
 
 		return Html::encodeParams(
 			'<div id="{id}"></div>',
 			[ 'id' => $this->id ]
 		);
+	}
+
+	/**
+	 * @param                       $value
+	 * @param ElementInterface|null $element
+	 *
+	 * @return \ether\bookings\models\Bookable|mixed
+	 */
+	public function normalizeValue ($value, ElementInterface $element = null)
+	{
+		return Bookings::getInstance()->field->getField($this, $element, $value);
+	}
+
+	/**
+	 * @param ElementQueryInterface $query
+	 * @param                       $value
+	 *
+	 * @return bool|false|null
+	 */
+	public function modifyElementsQuery (ElementQueryInterface $query, $value)
+	{
+		Bookings::getInstance()->field->modifyElementsQuery($query, $value);
+		return null;
+	}
+
+	// Public Methods: Events
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @param ElementInterface $element
+	 * @param bool             $isNew
+	 */
+	public function afterElementSave (ElementInterface $element, bool $isNew)
+	{
+		Bookings::getInstance()->field->saveField($this, $element);
+		parent::afterElementSave($element, $isNew);
 	}
 
 }

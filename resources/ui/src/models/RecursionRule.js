@@ -95,7 +95,7 @@ export default class RecursionRule {
 	constructor (def = {}, overwriteId = false) {
 		this.id = uuid();
 
-		Object.keys(def).map(key => {
+		def && Object.keys(def).map(key => {
 			if (!this.hasOwnProperty(key))
 				return;
 
@@ -104,8 +104,8 @@ export default class RecursionRule {
 
 			let value = def[key];
 
-			if (key in ["start", "until"]) {
-				value = new Date(+value);
+			if (~["start", "until"].indexOf(key)) {
+				value = new Date(value);
 				value.setSeconds(0);
 				value.setMilliseconds(0);
 			}

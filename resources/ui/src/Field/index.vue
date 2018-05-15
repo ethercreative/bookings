@@ -12,21 +12,28 @@
 
 		components: { ExceptionsModal, RRuleBlock, Button, CraftFieldHeading },
 
-		data: () => ({
-			exceptionsModalOpen: false,
-			bookableType: BookableType.FIXED,
-		}),
+		data () {
+			return {
+				exceptionsModalOpen: false,
+				internal_bookableType: this.bookableType,
+			};
+		},
 
 		computed: {
 			...mapState([
 				"baseRule",
 				"exceptions",
+				"exceptionsSort",
 				"slotDuration",
+				"bookableType",
 			]),
 		},
 
 		beforeCreate () {
-			this.$store.dispatch("refresh");
+			this.$store.dispatch(
+				"setDefaultState",
+				this.$parent.$data.options.value
+			);
 		},
 
 		// Render
@@ -127,7 +134,7 @@
 						name={this.$parent.$data.options.handle}
 						value={JSON.stringify({
 							baseRule: this.baseRule,
-							exceptions: this.exceptions,
+							exceptions: this.exceptionsSort.map(id => this.exceptions[id]),
 							slotDuration: this.slotDuration,
 							bookableType: this.bookableType,
 						})}
@@ -153,12 +160,23 @@
 					<button
 						type="button"
 						class={cls.join(" ")}
-						onClick={() => { this.bookableType = type; }}
+						onClick={() => { this.onBookableTypeClick(type); }}
 					>
 						{icon}
 						<strong>{name}</strong>
 						<span>{instructions}</span>
 					</button>
+				);
+			},
+
+			// Events
+			// -----------------------------------------------------------------
+
+			onBookableTypeClick (type) {
+				this.internal_bookableType = type;
+				this.$store.dispatch(
+					"updateBookableType",
+					type
 				);
 			},
 

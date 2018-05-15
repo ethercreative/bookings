@@ -95,6 +95,21 @@ class Bookable extends Model
 	// Methods
 	// =========================================================================
 
+	public function __construct (array $attributes = [], array $config = [])
+	{
+		parent::__construct($attributes, $config);
+
+		if (array_key_exists('exceptions', $attributes))
+		{
+			$this->exRules = array_map(
+				function ($ex) {
+					return new ExRule($ex);
+				},
+				$attributes['exceptions']
+			);
+		}
+	}
+
 	// Methods: Public
 	// -------------------------------------------------------------------------
 
@@ -108,6 +123,20 @@ class Bookable extends Model
 		];
 
 		return $rules;
+	}
+
+	/**
+	 * Returns the bookable as an array for use in the field type
+	 *
+	 * @return array
+	 */
+	public function asArray ()
+	{
+		return [
+			'baseRule' => $this->baseRule,
+			'exceptions' => $this->exRules,
+			'bookableType' => $this->bookableType,
+		];
 	}
 
 	/**

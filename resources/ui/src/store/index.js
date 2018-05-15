@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import API from "../API";
 import RecursionRule from "../models/RecursionRule";
 import ExRule from "../models/ExRule";
+import BookableType from "../enums/BookableType";
 
 Vue.use(Vuex);
 
@@ -94,6 +95,7 @@ const state = {
 	baseRule: new RecursionRule(),
 	exceptions: {},
 	exceptionsSort: [],
+	bookableType: BookableType.FIXED,
 
 	computedSlots: {},
 	computedExceptions: {},
@@ -108,8 +110,13 @@ const getters = {
 
 const actions = {
 
-	async refresh ({ commit, state }) {
+	async setDefaultState ({ commit, state }, payload) {
+		payload && commit("setDefaultState", payload);
 		await refreshCalendar(commit, state);
+	},
+
+	async updateBookableType ({ commit }, payload) {
+		commit("updateBookableType", payload);
 	},
 
 	async updateRule ({ commit, state }, payload) {
@@ -140,6 +147,38 @@ const actions = {
 };
 
 const mutations = {
+
+	/**
+	 * Sets the default state of the store
+	 *
+	 * @param state
+	 * @param baseRule
+	 * @param exceptions
+	 * @param bookableType
+	 */
+	setDefaultState (state, { baseRule, exceptions, bookableType }) {
+		const exceptionsSort = [];
+
+		state.baseRule = new RecursionRule(baseRule);
+		state.exceptions = exceptions.reduce((a, b) => {
+			const ex = new ExRule(b);
+			a[ex.id] = ex;
+			exceptionsSort.push(ex.id);
+			return a;
+		}, {});
+		state.exceptionsSort = exceptionsSort;
+		state.bookableType = bookableType || BookableType.FIXED;
+	},
+
+	/**
+	 * Updates the bookable type
+	 *
+	 * @param state
+	 * @param bookableType
+	 */
+	updateBookableType (state, bookableType) {
+		state.bookableType = bookableType;
+	},
 
 	/**
 	 * Updates the given rule
@@ -216,6 +255,7 @@ const mutations = {
 		state.computedExceptions = exceptions;
 		state.slotDuration = duration;
 	},
+
 };
 
 export default new Vuex.Store({

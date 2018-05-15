@@ -144,8 +144,32 @@
 		components: { Modal, Draggable, RRuleBlock, Button, Day, Week },
 
 		data () {
+			let activeView;
+
+			// FIXME
+			const freq = this.baseRule ? this.baseRule.frequency : Frequency.Hourly;
+
+			switch (freq) {
+				case Frequency.Yearly:
+				case Frequency.Monthly:
+					activeView = "year";
+					break;
+				case Frequency.Weekly:
+				case Frequency.Daily:
+					activeView = "month";
+					break;
+				case Frequency.Hourly:
+					activeView = "week";
+					break;
+				case Frequency.Minutely:
+					activeView = "day";
+					break;
+				default:
+					activeView = "week";
+			}
+
 			return {
-				activeView: "week",
+				activeView,
 				Frequency,
 			};
 		},

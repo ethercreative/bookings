@@ -14,7 +14,7 @@ use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
 use craft\services\Fields;
 use ether\bookings\fields\BookableField;
-use ether\bookings\services\RRuleService;
+use ether\bookings\services\FieldService;
 use yii\base\Event;
 
 /**
@@ -22,7 +22,7 @@ use yii\base\Event;
  * @package   Bookings
  * @since     1.0.0-alpha.1
  *
- * @property RRuleService $rrule
+ * @property FieldService $field
  */
 class Bookings extends Plugin
 {
@@ -43,7 +43,7 @@ class Bookings extends Plugin
 		// ---------------------------------------------------------------------
 
 		$this->setComponents([
-			'rrule' => RRuleService::class,
+			'field' => FieldService::class,
 		]);
 
 		// Events
