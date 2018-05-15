@@ -118,7 +118,7 @@ class BookableField extends Field
 		$namespacedId = $view->namespaceInputId($id);
 
 		$view->registerAssetBundle(UIAsset::class);
-		$view->registerJs("new window.__BookingsUI('field', '#$namespacedId')");
+		$view->registerJs("new window.__BookingsUI('field', '#$namespacedId', { handle: '{$this->handle}' })");
 
 		return Html::encodeParams(
 			'<div id="{id}"></div>',

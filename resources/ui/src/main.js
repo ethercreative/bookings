@@ -41,6 +41,6 @@ function BookingsUI (section, id = "#app", options = null) {
 }
 
 if (process.env.NODE_ENV === "development")
-	new BookingsUI("dev");
+	new BookingsUI("dev", "#app", { handle: "fieldHandle" });
 
 window.__BookingsUI = BookingsUI;

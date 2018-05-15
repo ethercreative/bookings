@@ -173,7 +173,11 @@
 			disabled: Boolean,
 			noDrag: Boolean,
 		},
+
 		components: { Row, Label, Select, Input, Lightswitch, DateTime },
+
+		unwatchData: () => {},
+		wasInternalUpdate: false,
 
 		data () {
 			let r;
@@ -211,7 +215,27 @@
 		},
 
 		mounted () {
-			this.$watch("$data", this.onUpdateRule, { deep: true });
+			this.unwatchData = this.$watch("$data", this.onUpdateRule, { deep: true });
+		},
+
+		watch: {
+			rrule: function (next) {
+				if (this.wasInternalUpdate) {
+					this.wasInternalUpdate = false;
+					return;
+				}
+
+				this.unwatchData();
+
+				const r = next.convertToDataObject();
+
+				this.internal_rrule = next;
+				for (let key in r)
+					if (r.hasOwnProperty(key) && this.hasOwnProperty(key))
+						this[key] = r[key];
+
+				this.unwatchData = this.$watch("$data", this.onUpdateRule, { deep: true });
+			},
 		},
 
 		methods: {
@@ -222,6 +246,8 @@
 			 * @param {Object} next
 			 */
 			onUpdateRule (next) {
+				this.wasInternalUpdate = true;
+
 				const rule =
 					this.isException
 						? new ExRule(next)

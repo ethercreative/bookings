@@ -1,10 +1,10 @@
 <!--suppress JSXNamespaceValidation -->
 <script>
+	import { mapState } from "vuex";
 	import ExceptionsModal from "./ExceptionsModal";
 	import RRuleBlock from "../components/RRuleBlock";
 	import CraftFieldHeading from "../components/CraftFieldHeading";
 	import Button from "../components/form/Button";
-	import RecursionRule from "../models/RecursionRule";
 	import BookableType from "../enums/BookableType";
 
 	export default {
@@ -13,12 +13,21 @@
 		components: { ExceptionsModal, RRuleBlock, Button, CraftFieldHeading },
 
 		data: () => ({
-			BookableType,
-
 			exceptionsModalOpen: false,
-			baseRule: new RecursionRule(),
 			bookableType: BookableType.FIXED,
 		}),
+
+		computed: {
+			...mapState([
+				"baseRule",
+				"exceptions",
+				"slotDuration",
+			]),
+		},
+
+		beforeCreate () {
+			this.$store.dispatch("refresh");
+		},
 
 		// Render
 		// =====================================================================
@@ -35,7 +44,7 @@
 						{this._renderTypeButton(
 							BookableType.FIXED,
 							"Fixed Slots",
-							"The user can book a single slot at a time. Convenient for concerts, cookery classes, etc.",
+							"The user can book a single slot at a time.\r\nConvenient for concerts, cookery classes, etc.",
 							(
 								<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg">
 									<g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
@@ -55,7 +64,7 @@
 						{this._renderTypeButton(
 							BookableType.FLEXIBLE,
 							"Flexible Slots",
-							"The user can book a range of slots. Handy for hotels, hardware hire, etc.",
+							"The user can book a range of slots.\r\nHandy for hotels, hardware hire, etc.",
 							(
 								<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg">
 									<g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
@@ -112,6 +121,17 @@
 					/>
 
 					<portal-target name="modals" multiple />
+
+					<input
+						type="hidden"
+						name={this.$parent.$data.options.handle}
+						value={JSON.stringify({
+							baseRule: this.baseRule,
+							exceptions: this.exceptions,
+							slotDuration: this.slotDuration,
+							bookableType: this.bookableType,
+						})}
+					/>
 				</div>
 			);
 		},
@@ -224,6 +244,7 @@
 			letter-spacing: 0;
 			text-align: center;
 			line-height: 18px;
+			white-space: pre;
 		}
 
 		&:focus,

@@ -108,6 +108,10 @@ const getters = {
 
 const actions = {
 
+	async refresh ({ commit, state }) {
+		await refreshCalendar(commit, state);
+	},
+
 	async updateRule ({ commit, state }, payload) {
 		commit("updateRule", payload);
 		await refreshCalendar(commit, state);
