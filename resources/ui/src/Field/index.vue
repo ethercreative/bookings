@@ -189,8 +189,6 @@
 
 	.wrap {
 		position: relative;
-
-		margin-top: @spacer;
 		padding-top: @spacer;
 
 		&:before {

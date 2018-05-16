@@ -9,6 +9,6 @@ class WebpackBuiltFiles {
     'vendor' => 'js/vendor.112de38b.js',
   ];
   static $cssFiles = [
-    'app' => 'css/app.0856fb9c.css',
+    'app' => 'css/app.5a9d3def.css',
   ];
 }

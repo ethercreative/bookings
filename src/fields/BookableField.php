@@ -76,6 +76,11 @@ class BookableField extends Field
 	 */
 	public $exRules = [];
 
+	// Properties: Craft
+	// -------------------------------------------------------------------------
+
+	public $translationMethod = self::TRANSLATION_METHOD_NONE;
+
 	// Public Methods
 	// =========================================================================
 
@@ -90,6 +95,11 @@ class BookableField extends Field
 	public static function hasContentColumn (): bool
 	{
 		return false;
+	}
+
+	public static function supportedTranslationMethods (): array
+	{
+		return [self::TRANSLATION_METHOD_NONE];
 	}
 
 	// Public Methods: Instance
