@@ -20,6 +20,8 @@
  * @since     1.0.0-alpha.1
  */
 return [
+	'Bookings' => 'Bookings',
 	'Bookable' => 'Bookable',
 	'Bookable Type' => 'Bookable Type',
+	'You don’t have permission to access to any of the Bookings sub-sections. Please contact an admin.' => 'You don’t have permission to access to any of the Bookings sub-sections. Please contact an admin.',
 ];

@@ -10,6 +10,7 @@ namespace ether\bookings\migrations;
 
 use craft\db\Migration;
 use ether\bookings\records\BookableRecord;
+use ether\bookings\records\BookingRecord;
 
 
 /**
@@ -25,11 +26,13 @@ class Install extends Migration
 	public function safeUp ()
 	{
 		$this->_createBookablesTable();
+		$this->_createBookingsTable();
 	}
 
 	public function safeDown ()
 	{
 		$this->dropTableIfExists(BookableRecord::$tableName);
+		$this->dropTableIfExists(BookingRecord::$tableName);
 	}
 
 	// Private Methods
@@ -37,6 +40,9 @@ class Install extends Migration
 
 	private function _createBookablesTable ()
 	{
+		if ($this->db->tableExists(BookableRecord::$tableName))
+			return;
+
 		$this->createTable(
 			BookableRecord::$tableName,
 			[
@@ -82,6 +88,42 @@ class Install extends Migration
 			'CASCADE',
 			'CASCADE'
 		);
+	}
+
+	private function _createBookingsTable ()
+	{
+		if ($this->db->tableExists(BookingRecord::$tableName))
+			return;
+
+		$this->createTable(
+			BookingRecord::$tableName,
+			[
+				'id' => $this->primaryKey(),
+
+				'slot' => $this->timestamp()->notNull(),
+
+				'dateCreated' => $this->dateTime()->notNull(),
+				'dateUpdated' => $this->dateTime()->notNull(),
+				'uid'         => $this->uid()->notNull(),
+			]
+		);
+
+		// FKs
+
+		// TODO: Create a separate file/method that will perform the migrations
+		// to link the bookings to Commerce orders (so it can be used on install
+		// of Bookings or Commerce).
+
+		$this->addForeignKey(
+			$this->db->getForeignKeyName(BookingRecord::$tableName, 'id'),
+			BookingRecord::$tableName,
+			'id',
+			'{{%elements}}',
+			'id',
+			'CASCADE',
+			null
+		);
+
 	}
 
 }
