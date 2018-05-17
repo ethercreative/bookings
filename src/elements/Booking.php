@@ -37,11 +37,18 @@ class Booking extends Element
 	/** @var int - The field this booking is bound to */
 	public $fieldId;
 
-	/** @var int - The element this booking is bound to */
+	// TODO: Is this the bookings field or the bookable field (if we're doing that)?
+
+	/** @var int - The element this booking is bound to (i.e. entry, product, etc.) */
 	public $elementId;
 
 	/** @var int - The order this booking belongs to (if Commerce is used) */
 	public $orderId;
+
+	/** @var int - The customer this booking belongs to (if Commerce is used) */
+	public $customerId;
+
+	// TODO: How are we going to store customer data if not using commerce, email?
 
 	/** @var \DateTime - The slot that was booked */
 	public $slot;
