@@ -48,13 +48,22 @@ class Booking extends Element
 	/** @var int - The customer this booking belongs to (if Commerce is used) */
 	public $customerId;
 
-	// TODO: How are we going to store customer data if not using commerce, email?
+	/** @var string - The customers email (always required) */
+	public $customerEmail;
+
+	// TODO: Custom fields (like an order)
 
 	/** @var \DateTime - The slot that was booked */
-	public $slot;
+	public $slotStart;
+
+	/** @var \DateTime - The end slot that was booked (if booking is flexible) */
+	public $slotEnd;
 
 	/** @var \DateTime - The time the booking was placed */
 	public $dateBooked;
+
+	/** @var \DateTime|null - The time this booking reservation will expire (if null, this is a complete booking) */
+	public $reservationExpiry = null;
 
 	// Public Methods
 	// =========================================================================

@@ -24,4 +24,9 @@ return [
 	'Bookable' => 'Bookable',
 	'Bookable Type' => 'Bookable Type',
 	'You don’t have permission to access to any of the Bookings sub-sections. Please contact an admin.' => 'You don’t have permission to access to any of the Bookings sub-sections. Please contact an admin.',
+
+	'Bookings Settings' => 'Bookings Settings',
+	'General' => 'General',
+	'General Settings' => 'General Settings',
+	'Booking Fields' => 'Booking Fields',
 ];

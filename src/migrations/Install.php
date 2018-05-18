@@ -9,8 +9,11 @@
 namespace ether\bookings\migrations;
 
 use craft\db\Migration;
+use craft\records\FieldLayout;
+use ether\bookings\elements\Booking;
 use ether\bookings\records\BookableRecord;
 use ether\bookings\records\BookingRecord;
+use ether\bookings\records\BookingSettingsRecord;
 
 
 /**
@@ -27,12 +30,15 @@ class Install extends Migration
 	{
 		$this->_createBookablesTable();
 		$this->_createBookingsTable();
+
+		$this->_createBookingSettingsTable();
 	}
 
 	public function safeDown ()
 	{
 		$this->dropTableIfExists(BookableRecord::$tableName);
 		$this->dropTableIfExists(BookingRecord::$tableName);
+		$this->dropTableIfExists(BookingSettingsRecord::$tableName);
 	}
 
 	// Private Methods
@@ -100,7 +106,7 @@ class Install extends Migration
 			[
 				'id' => $this->primaryKey(),
 
-				'slot' => $this->timestamp()->notNull(),
+				// TODO: ...
 
 				'dateCreated' => $this->dateTime()->notNull(),
 				'dateUpdated' => $this->dateTime()->notNull(),
@@ -123,6 +129,70 @@ class Install extends Migration
 			'CASCADE',
 			null
 		);
+
+	}
+
+	private function _createBookingSettingsTable ()
+	{
+		if ($this->db->tableExists(BookingSettingsRecord::$tableName))
+			return;
+
+		$this->createTable(
+			BookingSettingsRecord::$tableName,
+			[
+				'id' => $this->primaryKey(),
+
+				'name'          => $this->string()->notNull(),
+				'handle'        => $this->string()->notNull(),
+				'fieldLayoutId' => $this->integer(),
+
+				'dateCreated' => $this->dateTime()->notNull(),
+				'dateUpdated' => $this->dateTime()->notNull(),
+				'uid'         => $this->uid(),
+			]
+		);
+
+		// Indexes
+
+		$this->createIndex(
+			null,
+			BookingSettingsRecord::$tableName,
+			'handle',
+			true
+		);
+
+		$this->createIndex(
+			null,
+			BookingSettingsRecord::$tableName,
+			'fieldLayoutId',
+			false
+		);
+
+		// FKs
+
+		$this->addForeignKey(
+			null,
+			BookingSettingsRecord::$tableName,
+			['fieldLayoutId'],
+			FieldLayout::tableName(),
+			['id'],
+			'SET NULL'
+		);
+
+		// Pre-populate default data
+
+		$this->insert(
+			FieldLayout::tableName(),
+			['type' => Booking::class]
+		);
+		$data = [
+			'name' => 'Default Booking',
+			'handle' => 'defaultBooking',
+			'fieldLayoutId' => $this->db->getLastInsertID(FieldLayout::tableName())
+		];
+		$this->insert(BookingSettingsRecord::tableName(), $data);
+
+		// TODO: Add additional booking settings for each booking field created?
 
 	}
 

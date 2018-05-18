@@ -1,0 +1,37 @@
+{% extends "_layouts/cp" %}
+{#{% set title = "Bookings Settings"|t('bookings') %}#}
+{% set selectedSubnavItem = 'settings' %}
+
+{% set crumbs = [
+	{ label: "Bookings"|t('bookings'), url: url('bookings') },
+	{ label: "Settings"|t('app'), url: url('bookings/settings') }
+] %}
+
+
+{% set navItems = {
+	'general': { title: "General Settings"|t('bookings') },
+	'bookingsettings': { title: "Booking Fields"|t('bookings') },
+} %}
+
+{% if selectedItem is not defined %}
+	{% set selectedItem = craft.app.request.getSegment(3) %}
+{% endif %}
+
+{% set docTitle = navItems[selectedItem].title~' - '~title %}
+
+
+{% block sidebar %}
+	<nav>
+		<ul>
+			{% for id, item in navItems %}
+				{% if item.heading is defined %}
+					<li class="heading"><span>{{ item.heading }}</span></li>
+				{% else %}
+					<li>
+						<a href="{{ url('bookings/settings/'~id) }}"{% if id == selectedItem %} class="sel"{% endif %}>{{ item.title }}</a>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	</nav>
+{% endblock %}

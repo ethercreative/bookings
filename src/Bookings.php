@@ -127,6 +127,9 @@ class Bookings extends Plugin
 	public function onRegisterCpUrlRules (RegisterUrlRulesEvent $event)
 	{
 		$event->rules['bookings'] = 'bookings/cp/index';
+
+		// Settings
+		$event->rules['bookings/settings/bookingsettings'] = 'bookings/booking-settings/edit';
 	}
 
 	public function onRegisterUserPermissions (RegisterUserPermissionsEvent $event)
