@@ -26,6 +26,8 @@ class BookingSettingsController extends Controller
 {
 
 	/**
+	 * Init
+	 *
 	 * @throws \yii\web\ForbiddenHttpException
 	 */
 	public function init ()
@@ -35,6 +37,13 @@ class BookingSettingsController extends Controller
 		parent::init();
 	}
 
+	/**
+	 * Render the settings edit
+	 *
+	 * @param array $variables
+	 *
+	 * @return Response
+	 */
 	public function actionEdit (array $variables = []): Response
 	{
 		$variables['bookingSettings'] =
@@ -47,6 +56,8 @@ class BookingSettingsController extends Controller
 	}
 
 	/**
+	 * Save the settings
+	 *
 	 * @throws \yii\web\BadRequestHttpException
 	 * @throws \yii\db\Exception
 	 */
@@ -71,12 +82,18 @@ class BookingSettingsController extends Controller
 		// Save it
 		if (Bookings::getInstance()->bookingSettings->saveBookingSettings($bookingSettings)) {
 			$craft->getSession()->setNotice(
-				\Craft::t('bookings', 'Booking settings saved.')
+				\Craft::t(
+					'bookings',
+					'Booking settings saved.'
+				)
 			);
 			$this->redirectToPostedUrl($bookingSettings);
 		} else {
 			$craft->getSession()->setError(
-				\Craft::t('commerce', 'Couldn’t save booking settings.')
+				\Craft::t(
+					'bookings',
+					'Couldn’t save booking settings.'
+				)
 			);
 		}
 
