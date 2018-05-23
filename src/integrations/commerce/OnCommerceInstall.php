@@ -39,9 +39,8 @@ class OnCommerceInstall
 	private function _addForeignKeysToBookingsTable ()
 	{
 		$db = \Craft::$app->db;
-		$cmd = $db->createCommand();
 
-		$cmd->addForeignKey(
+		$db->createCommand()->addForeignKey(
 			$db->getForeignKeyName(BookingRecord::$tableName, 'orderId'),
 			BookingRecord::$tableName,
 			'orderId',
@@ -49,9 +48,9 @@ class OnCommerceInstall
 			'id',
 			'CASCADE',
 			null
-		);
+		)->execute();
 
-		$cmd->addForeignKey(
+		$db->createCommand()->addForeignKey(
 			$db->getForeignKeyName(BookingRecord::$tableName, 'customerId'),
 			BookingRecord::$tableName,
 			'customerId',
@@ -59,9 +58,7 @@ class OnCommerceInstall
 			'id',
 			'SET NULL',
 			null
-		);
-
-		$cmd->execute();
+		)->execute();
 	}
 
 }

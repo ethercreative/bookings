@@ -38,6 +38,9 @@ class Booking extends Element
 	/** @var int - The element this booking is bound to (i.e. entry, product, etc.) */
 	public $elementId;
 
+	/** @var int - The user this booking is bound to (if the user was logged in at the time of booking) */
+	public $userId;
+
 	/** @var int - The order this booking belongs to (if Commerce is used) */
 	public $orderId;
 
@@ -100,6 +103,53 @@ class Booking extends Element
 			return $bookingSettings->getFieldLayout();
 
 		return null;
+	}
+
+	// Attributes
+	// -------------------------------------------------------------------------
+
+	public function datetimeAttributes (): array
+	{
+		$attributes = parent::datetimeAttributes();
+
+		$attributes[] = 'slotStart';
+		$attributes[] = 'slotEnd';
+		$attributes[] = 'dateBooked';
+		$attributes[] = 'reservationExpiry';
+
+		return $attributes;
+	}
+
+	public function attributes (): array
+	{
+		$attributes = parent::attributes();
+
+		$attributes[] = 'shortNumber';
+		$attributes[] = 'email';
+
+		return $attributes;
+	}
+
+	// Validation
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @return array
+	 * @throws \yii\base\InvalidConfigException
+	 */
+	public function rules ()
+	{
+		$rules = parent::rules();
+
+		$rules[] = [
+			['fieldId', 'elementId', 'userId', 'orderId', 'customerId'],
+			'number',
+			'integerOnly' => true
+		];
+
+		$rules[] = [['customerEmail'], 'email'];
+
+		return $rules;
 	}
 
 	// Helpers

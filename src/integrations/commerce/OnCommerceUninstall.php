@@ -43,19 +43,16 @@ class OnCommerceUninstall
 	private function _removeForeignKeysFromBookingsTable ()
 	{
 		$db = \Craft::$app->db;
-		$cmd = $db->createCommand();
 
-		$cmd->dropForeignKey(
+		$db->createCommand()->dropForeignKey(
 			$db->getForeignKeyName(BookingRecord::$tableName, 'orderId'),
 			BookingRecord::$tableName
-		);
+		)->execute();
 
-		$cmd->dropForeignKey(
+		$db->createCommand()->dropForeignKey(
 			$db->getForeignKeyName(BookingRecord::$tableName, 'customerId'),
 			BookingRecord::$tableName
-		);
-
-		$cmd->execute();
+		)->execute();
 	}
 
 }
