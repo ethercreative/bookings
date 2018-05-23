@@ -296,6 +296,8 @@ class Booking extends Element
 		// Or will deleting the element do that?
 		// It won't (will only set the element relation to null): https://github.com/craftcms/commerce/blob/develop/src/migrations/Install.php#L939
 
+		// $order->removeLineItem($item)? // Will this delete the line item? // Yes
+
 		if (!\Craft::$app->elements->deleteElement($this))
 		{
 			\Craft::error(
