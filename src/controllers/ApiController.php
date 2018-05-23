@@ -11,9 +11,16 @@ use yii\web\BadRequestHttpException;
 class ApiController extends Controller
 {
 
-	// TODO: Don't allow anon in production
-	protected $allowAnonymous = true;
+	protected $allowAnonymous = false;
 	public $enableCsrfValidation = false;
+
+	public function __construct ()
+	{
+		parent::__construct(...func_get_args());
+
+		// Allow anon when in plugin development
+		$this->allowAnonymous = getenv('ETHER_ENVIRONMENT');
+	}
 
 	// Actions
 	// =========================================================================
@@ -25,11 +32,13 @@ class ApiController extends Controller
 	 */
 	public function actionGetCalendar ()
 	{
-		// TODO: Don't allow noCORS in production
-		\Craft::$app->getResponse()->getHeaders()->set(
-			'Access-Control-Allow-Origin',
-			'*'
-		);
+		if ($this->allowAnonymous) {
+			\Craft::$app->getResponse()->getHeaders()->set(
+				'Access-Control-Allow-Origin',
+				'*'
+			);
+		}
+
 		$this->requireAcceptsJson();
 		$this->requirePostRequest();
 

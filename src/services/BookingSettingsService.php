@@ -66,7 +66,7 @@ class BookingSettingsService extends Component
 	 *
 	 * @param $handle
 	 *
-	 * @return BookingSettings|null
+	 * @return BookingSettings
 	 */
 	public function getOrderSettingsByHandle ($handle)
 	{
@@ -75,7 +75,7 @@ class BookingSettingsService extends Component
 			->one();
 
 		if (!$result)
-			return null;
+			return new BookingSettings();
 
 		$bookingSettings = new BookingSettings($result);
 		$this->_bookingSettingsById[$bookingSettings->id] = $bookingSettings;
