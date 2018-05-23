@@ -106,10 +106,12 @@ class Install extends Migration
 			[
 				'id' => $this->primaryKey(),
 
+				'isCompleted'       => $this->boolean(),
 				'number'            => $this->string(32),
 				'fieldId'           => $this->integer()->notNull(),
 				'elementId'         => $this->integer()->notNull(),
 				'userId'            => $this->integer(),
+				'lineItemId'        => $this->integer(),
 				'orderId'           => $this->integer(),
 				'customerId'        => $this->integer(),
 				'customerEmail'     => $this->string(),

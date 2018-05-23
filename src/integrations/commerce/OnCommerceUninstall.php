@@ -34,7 +34,7 @@ class OnCommerceUninstall
 
 	private function _removeCommerceBookings ()
 	{
-		BookingRecord::deleteAll('orderId IS NOT NULL');
+		BookingRecord::deleteAll('lineItemId IS NOT NULL');
 	}
 
 	/**
@@ -43,6 +43,11 @@ class OnCommerceUninstall
 	private function _removeForeignKeysFromBookingsTable ()
 	{
 		$db = \Craft::$app->db;
+
+		$db->createCommand()->dropForeignKey(
+			$db->getForeignKeyName(BookingRecord::$tableName, 'lineItemId'),
+			BookingRecord::$tableName
+		)->execute();
 
 		$db->createCommand()->dropForeignKey(
 			$db->getForeignKeyName(BookingRecord::$tableName, 'orderId'),

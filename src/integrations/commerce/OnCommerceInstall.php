@@ -41,6 +41,16 @@ class OnCommerceInstall
 		$db = \Craft::$app->db;
 
 		$db->createCommand()->addForeignKey(
+			$db->getForeignKeyName(BookingRecord::$tableName, 'lineItemId'),
+			BookingRecord::$tableName,
+			'lineItemId',
+			'{{%commerce_lineitems}}',
+			'id',
+			'CASCADE',
+			null
+		)->execute();
+
+		$db->createCommand()->addForeignKey(
 			$db->getForeignKeyName(BookingRecord::$tableName, 'orderId'),
 			BookingRecord::$tableName,
 			'orderId',

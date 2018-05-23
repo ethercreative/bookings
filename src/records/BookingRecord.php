@@ -16,6 +16,21 @@ use yii\db\ActiveQueryInterface;
 /**
  * Class BookingRecord
  *
+ * @property int $id
+ * @property bool $isCompleted
+ * @property string $number
+ * @property int $fieldId
+ * @property int $elementId
+ * @property int $userId
+ * @property int $lineItemId
+ * @property int $orderId
+ * @property int $customerId
+ * @property string $customerEmail
+ * @property \DateTime $slotStart
+ * @property \DateTime $slotEnd
+ * @property \DateTime $dateBooked
+ * @property \DateTime $reservationExpiry
+ *
  * @author  Ether Creative
  * @package ether\bookings\records
  * @since   1.0.0

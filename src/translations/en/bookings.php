@@ -33,4 +33,7 @@ return [
 	'Booking settings saved.' => 'Booking settings saved.',
 	'Couldn’t save booking settings.' => 'Couldn’t save booking settings.',
 	'No booking settings exists with the ID "{id}"' => 'No booking settings exists with the ID "{id}"',
+
+	'Couldn\'t mark booking {number} as complete. Booking save failed during completion with errors: {errors}' => 'Couldn\'t mark booking {number} as complete. Booking save failed during completion with errors: {errors}',
+	'Couldn\'t expire booking {number} as complete. Booking deletion failed during expiration with errors: {errors}' => 'Couldn\'t expire booking {number} as complete. Booking deletion failed during expiration with errors: {errors}',
 ];

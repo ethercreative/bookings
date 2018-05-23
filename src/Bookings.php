@@ -22,6 +22,7 @@ use craft\services\UserPermissions;
 use craft\web\UrlManager;
 use ether\bookings\fields\BookableField;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
+use ether\bookings\integrations\commerce\OnOrderEvent;
 use ether\bookings\services\BookingSettingsService;
 use ether\bookings\services\FieldService;
 use yii\base\Event;
@@ -93,6 +94,24 @@ class Bookings extends Plugin
 			Plugins::EVENT_BEFORE_UNINSTALL_PLUGIN,
 			[$this, 'onPluginUninstall']
 		);
+
+		/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+		if (class_exists(\craft\commerce\elements\Order::class))
+		{
+			/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+			Event::on(
+				\craft\commerce\elements\Order::class,
+				\craft\commerce\elements\Order::EVENT_AFTER_ADD_LINE_ITEM,
+				[new OnOrderEvent, 'onAddLineItem']
+			);
+
+			/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+			Event::on(
+				\craft\commerce\elements\Order::class,
+				\craft\commerce\elements\Order::EVENT_BEFORE_COMPLETE_ORDER,
+				[new OnOrderEvent, 'onComplete']
+			);
+		}
 
 		// Misc
 		// ---------------------------------------------------------------------
