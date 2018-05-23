@@ -11,14 +11,17 @@
 namespace ether\bookings;
 
 use craft\base\Plugin;
+use craft\events\PluginEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\helpers\UrlHelper;
 use craft\services\Fields;
+use craft\services\Plugins;
 use craft\services\UserPermissions;
 use craft\web\UrlManager;
 use ether\bookings\fields\BookableField;
+use ether\bookings\integrations\commerce\OnCommerceUninstall;
 use ether\bookings\services\BookingSettingsService;
 use ether\bookings\services\FieldService;
 use yii\base\Event;
@@ -77,6 +80,18 @@ class Bookings extends Plugin
 			UserPermissions::class,
 			UserPermissions::EVENT_REGISTER_PERMISSIONS,
 			[$this, 'onRegisterUserPermissions']
+		);
+
+		Event::on(
+			Plugins::class,
+			Plugins::EVENT_AFTER_INSTALL_PLUGIN,
+			[$this, 'onPluginInstall']
+		);
+
+		Event::on(
+			Plugins::class,
+			Plugins::EVENT_BEFORE_UNINSTALL_PLUGIN,
+			[$this, 'onPluginUninstall']
 		);
 
 		// Misc
@@ -141,6 +156,27 @@ class Bookings extends Plugin
 			'bookings-manageBookings' => ['label' => \Craft::t('bookings', 'Manage Bookings')],
 			'bookings-manageSettings' => ['label' => \Craft::t('bookings', 'Manage Settings')],
 		];
+	}
+
+	public function onPluginInstall (PluginEvent $event)
+	{
+		if ($event->plugin->getHandle() === 'Commerce')
+			new OnCommerceInstall();
+	}
+
+	public function onPluginUninstall (PluginEvent $event)
+	{
+		if ($event->plugin->getHandle() === 'Commerce')
+			new OnCommerceUninstall();
+	}
+
+	// Events: Internal
+	// -------------------------------------------------------------------------
+
+	protected function afterInstall ()
+	{
+		if (\Craft::$app->plugins->isPluginInstalled('commerce'))
+			new OnCommerceInstall();
 	}
 
 	// Helpers

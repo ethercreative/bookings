@@ -47,7 +47,7 @@ class BookingSettingsController extends Controller
 	public function actionEdit (array $variables = []): Response
 	{
 		$variables['bookingSettings'] =
-			Bookings::getInstance()->bookingSettings->getOrderSettingsByHandle('defaultBooking');
+			Bookings::getInstance()->bookingSettings->getBookingSettingsByHandle('defaultBooking');
 
 		return $this->renderTemplate(
 			'bookings/settings/bookingsettings/_edit',

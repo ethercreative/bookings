@@ -12,13 +12,13 @@ use craft\base\Field;
 
 
 /**
- * Class BookableTypeField
+ * Class BookableVariantField
  *
  * @author  Ether Creative
  * @package ether\bookings\fields
  * @since   1.0.0
  */
-class BookableTypeField extends Field
+class BookableVariantField extends Field
 {
 
 	// Public Methods
@@ -29,7 +29,7 @@ class BookableTypeField extends Field
 
 	public static function displayName (): string
 	{
-		return \Craft::t('bookings', 'Bookable Type');
+		return \Craft::t('bookings', 'Bookable Variant');
 	}
 
 	public static function hasContentColumn (): bool

@@ -73,7 +73,7 @@ class Install extends Migration
 			true
 		);
 
-		// Relations
+		// FKs
 
 		$this->addForeignKey(
 			null,
@@ -106,7 +106,16 @@ class Install extends Migration
 			[
 				'id' => $this->primaryKey(),
 
-				// TODO: ...
+				'number'            => $this->string(32),
+				'fieldId'           => $this->integer()->notNull(),
+				'elementId'         => $this->integer()->notNull(),
+				'orderId'           => $this->integer(),
+				'customerId'        => $this->integer(),
+				'customerEmail'     => $this->string(),
+				'slotStart'         => $this->dateTime()->notNull(),
+				'slotEnd'           => $this->dateTime(),
+				'dateBooked'        => $this->dateTime(),
+				'reservationExpiry' => $this->dateTime(),
 
 				'dateCreated' => $this->dateTime()->notNull(),
 				'dateUpdated' => $this->dateTime()->notNull(),
@@ -114,16 +123,43 @@ class Install extends Migration
 			]
 		);
 
+		// Indexes
+
+		$this->createIndex(
+			null,
+			BookableRecord::$tableName,
+			['fieldId', 'elementId'],
+			true
+		);
+
 		// FKs
 
-		// TODO: Create a separate file/method that will perform the migrations
-		// to link the bookings to Commerce orders (so it can be used on install
-		// of Bookings or Commerce).
+		// NOTE: Commerce related FKs are managed in OnCommerceInstall
 
 		$this->addForeignKey(
 			$this->db->getForeignKeyName(BookingRecord::$tableName, 'id'),
 			BookingRecord::$tableName,
 			'id',
+			'{{%elements}}',
+			'id',
+			'CASCADE',
+			null
+		);
+
+		$this->addForeignKey(
+			$this->db->getForeignKeyName(BookingRecord::$tableName, 'fieldId'),
+			BookingRecord::$tableName,
+			'fieldId',
+			'{{%fields}}',
+			'id',
+			'CASCADE',
+			'CASCADE'
+		);
+
+		$this->addForeignKey(
+			$this->db->getForeignKeyName(BookingRecord::$tableName, 'elementId'),
+			BookingRecord::$tableName,
+			'elementId',
 			'{{%elements}}',
 			'id',
 			'CASCADE',

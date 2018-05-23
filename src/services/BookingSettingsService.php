@@ -24,7 +24,7 @@ use ether\bookings\records\BookingSettingsRecord;
 class BookingSettingsService extends Component
 {
 
-	// TODO: Down the line, each field will have its own booking settings, that will extend from the default
+	// TODO: Down the line, each field will have its own booking settings (that will extend from the default?)
 
 	// Properties
 	// =========================================================================
@@ -68,7 +68,7 @@ class BookingSettingsService extends Component
 	 *
 	 * @return BookingSettings
 	 */
-	public function getOrderSettingsByHandle ($handle)
+	public function getBookingSettingsByHandle ($handle)
 	{
 		$result = $this->_createBookingSettingsQuery()
 			->where(compact('handle'))

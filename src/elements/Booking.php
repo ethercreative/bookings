@@ -9,6 +9,8 @@
 namespace ether\bookings\elements;
 
 use craft\base\Element;
+use craft\helpers\UrlHelper;
+use ether\bookings\Bookings;
 
 
 /**
@@ -24,20 +26,14 @@ class Booking extends Element
 	// Properties
 	// =========================================================================
 
-	// TODO: Finish adding properties to this then add them to the Install migration
-
-	// TODO: Do we want our own Commerce-esque customer system, or should we just use JSON?
-
 	/** @inheritdoc */
 	public $id;
 
 	/** @var string - A unique identifier for this booking */
 	public $number;
 
-	/** @var int - The field this booking is bound to */
+	/** @var int - The **Bookable Variant** field this booking is bound to */
 	public $fieldId;
-
-	// TODO: Is this the bookings field or the bookable field (if we're doing that)?
 
 	/** @var int - The element this booking is bound to (i.e. entry, product, etc.) */
 	public $elementId;
@@ -50,8 +46,6 @@ class Booking extends Element
 
 	/** @var string - The customers email (always required) */
 	public $customerEmail;
-
-	// TODO: Custom fields (like an order)
 
 	/** @var \DateTime - The slot that was booked */
 	public $slotStart;
@@ -77,11 +71,35 @@ class Booking extends Element
 	}
 
 	/**
+	 * @return bool
+	 */
+	public static function hasContent (): bool
+	{
+		return true;
+	}
+
+	/**
 	 * @inheritdoc
 	 */
 	public function __toString()
 	{
 		return $this->getShortNumber();
+	}
+
+	/**
+	 * TODO: Allow each field to have its own Booking field layout
+	 *
+	 * @return \craft\models\FieldLayout|null
+	 */
+	public function getFieldLayout ()
+	{
+		$bookingSettings =
+			Bookings::getInstance()->bookingSettings->getBookingSettingsByHandle('defaultBooking');
+
+		if ($bookingSettings)
+			return $bookingSettings->getFieldLayout();
+
+		return null;
 	}
 
 	// Helpers
@@ -93,6 +111,14 @@ class Booking extends Element
 	public function getShortNumber(): string
 	{
 		return substr($this->number, 0, 7);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCpEditUrl(): string
+	{
+		return UrlHelper::cpUrl('bookings/bookings/' . $this->id);
 	}
 
 }
