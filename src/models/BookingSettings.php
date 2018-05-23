@@ -10,12 +10,16 @@ namespace ether\bookings\models;
 
 use craft\behaviors\FieldLayoutBehavior;
 use craft\helpers\UrlHelper;
+use craft\models\FieldLayout;
 use ether\bookings\base\Model;
 use ether\bookings\elements\Booking;
 
 
 /**
  * Class BookingSettings
+ *
+ * @method FieldLayout getFieldLayout
+ * @method setFieldLayout(FieldLayout $fieldLayout)
  *
  * @author  Ether Creative
  * @package ether\bookings\models

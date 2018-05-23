@@ -29,4 +29,8 @@ return [
 	'General' => 'General',
 	'General Settings' => 'General Settings',
 	'Booking Fields' => 'Booking Fields',
+
+	'Booking settings saved.' => 'Booking settings saved.',
+	'Couldn’t save booking settings.' => 'Couldn’t save booking settings.',
+	'No booking settings exists with the ID "{id}"' => 'No booking settings exists with the ID "{id}"',
 ];

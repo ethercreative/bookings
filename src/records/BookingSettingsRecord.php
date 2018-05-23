@@ -16,6 +16,10 @@ use yii\db\ActiveQueryInterface;
 /**
  * Class BookingSettingsRecord
  *
+ * @property string $name
+ * @property string $handle
+ * @property int    $fieldLayoutId
+ *
  * @author  Ether Creative
  * @package ether\bookings\records
  * @since   1.0.0

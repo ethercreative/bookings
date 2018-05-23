@@ -9,6 +9,9 @@
 namespace ether\bookings\controllers;
 
 use craft\web\Controller;
+use ether\bookings\Bookings;
+use ether\bookings\elements\Booking;
+use ether\bookings\models\BookingSettings;
 use yii\web\Response;
 
 
@@ -34,7 +37,9 @@ class BookingSettingsController extends Controller
 
 	public function actionEdit (array $variables = []): Response
 	{
-//		$variables['orderSettings'] = Plugin::getInstance()->getOrderSettings()->getOrderSettingByHandle('order');
+		$variables['bookingSettings'] =
+			Bookings::getInstance()->bookingSettings->getOrderSettingsByHandle('defaultBooking');
+
 		return $this->renderTemplate(
 			'bookings/settings/bookingsettings/_edit',
 			$variables
@@ -43,34 +48,39 @@ class BookingSettingsController extends Controller
 
 	/**
 	 * @throws \yii\web\BadRequestHttpException
+	 * @throws \yii\db\Exception
 	 */
 	public function actionSave ()
 	{
 		$this->requirePostRequest();
 
-		\Craft::dd("TODO");
+		$craft = \Craft::$app;
 
-//		$orderSettings = new OrderSettingsModel();
-//
-//		// Shared attributes
-//		$orderSettings->id = Craft::$app->getRequest()->getBodyParam('orderSettingsId');
-//		$orderSettings->name = 'Order';
-//		$orderSettings->handle = 'order';
-//
-//		// Set the field layout
-//		$fieldLayout = Craft::$app->getFields()->assembleLayoutFromPost();
-//		$fieldLayout->type = Order::class;
-//		$orderSettings->setFieldLayout($fieldLayout);
-//
-//		// Save it
-//		if (Plugin::getInstance()->getOrderSettings()->saveOrderSetting($orderSettings)) {
-//			Craft::$app->getSession()->setNotice(Craft::t('commerce', 'Order settings saved.'));
-//			$this->redirectToPostedUrl($orderSettings);
-//		} else {
-//			Craft::$app->getSession()->setError(Craft::t('commerce', 'Couldn’t save order settings.'));
-//		}
-//
-//		Craft::$app->getUrlManager()->setRouteParams(['orderSettings' => $orderSettings]);
+		$bookingSettings = new BookingSettings();
+
+		// Shared attributes
+		$bookingSettings->id = $craft->getRequest()->getBodyParam('bookingSettingsId');
+		$bookingSettings->name = 'Default Booking';
+		$bookingSettings->handle = 'defaultBooking';
+
+		// Set the field layout
+		$fieldLayout = $craft->getFields()->assembleLayoutFromPost();
+		$fieldLayout->type = Booking::class;
+		$bookingSettings->setFieldLayout($fieldLayout);
+
+		// Save it
+		if (Bookings::getInstance()->bookingSettings->saveBookingSettings($bookingSettings)) {
+			$craft->getSession()->setNotice(
+				\Craft::t('bookings', 'Booking settings saved.')
+			);
+			$this->redirectToPostedUrl($bookingSettings);
+		} else {
+			$craft->getSession()->setError(
+				\Craft::t('commerce', 'Couldn’t save booking settings.')
+			);
+		}
+
+		$craft->getUrlManager()->setRouteParams(['bookingSettings' => $bookingSettings]);
 	}
 
 }

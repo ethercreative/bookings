@@ -24,6 +24,8 @@ use ether\bookings\records\BookingSettingsRecord;
 class BookingSettingsService extends Component
 {
 
+	// TODO: Down the line, each field will have its own booking settings, that will extend from the default
+
 	// Properties
 	// =========================================================================
 
@@ -38,7 +40,7 @@ class BookingSettingsService extends Component
 	 * @param int $bookingSettingsId
 	 * @return BookingSettings|null
 	 */
-	public function getOrderSettingById($bookingSettingsId)
+	public function getOrderSettingById ($bookingSettingsId)
 	{
 		if (
 			null === $this->_bookingSettingsById
@@ -59,9 +61,103 @@ class BookingSettingsService extends Component
 		return $this->_bookingSettingsById[$bookingSettingsId];
 	}
 
-	// TODO: https://github.com/craftcms/commerce/blob/develop/src/services/OrderSettings.php
-	// TODO: Finish making bookingsettings
-	// TODO: Down the line, each field will have its own booking settings, that will extend from the default
+	/**
+	 * Get booking settings by their handle
+	 *
+	 * @param $handle
+	 *
+	 * @return BookingSettings|null
+	 */
+	public function getOrderSettingsByHandle ($handle)
+	{
+		$result = $this->_createBookingSettingsQuery()
+			->where(compact('handle'))
+			->one();
+
+		if (!$result)
+			return null;
+
+		$bookingSettings = new BookingSettings($result);
+		$this->_bookingSettingsById[$bookingSettings->id] = $bookingSettings;
+
+		return $bookingSettings;
+	}
+
+	/**
+	 * Saves the Booking Settings
+	 *
+	 * @param BookingSettings $bookingSettings
+	 * @param bool            $runValidation
+	 *
+	 * @return bool
+	 * @throws \yii\db\Exception
+	 * @throws \Exception
+	 */
+	public function saveBookingSettings (
+		BookingSettings $bookingSettings,
+		bool $runValidation = true
+	): bool {
+		if ($bookingSettings->id)
+		{
+			$bookingSettingsRecord = BookingSettingsRecord::findOne(
+				$bookingSettings->id
+			);
+
+			if (!$bookingSettingsRecord)
+				throw new \Exception(\Craft::t(
+					'bookings',
+					'No booking settings exists with the ID "{id}"',
+					['id' => $bookingSettings->id]
+				));
+		}
+		else
+		{
+			$bookingSettingsRecord = new BookingSettingsRecord();
+		}
+
+		if ($runValidation && !$bookingSettings->validate())
+		{
+			\Craft::info(
+				'Booking Settings not saved due to validation error.',
+				__METHOD__
+			);
+
+			return false;
+		}
+
+		$bookingSettingsRecord->name = $bookingSettings->name;
+		$bookingSettingsRecord->handle = $bookingSettings->handle;
+
+		$db = \Craft::$app->db;
+		$transaction = $db->beginTransaction();
+
+		try {
+			// Save the layout
+			$fieldLayout = $bookingSettings->getFieldLayout();
+			\Craft::$app->fields->saveLayout($fieldLayout);
+
+			// Update layout ID on settings
+			$bookingSettings->fieldLayoutId = $fieldLayout->id;
+			$bookingSettingsRecord->fieldLayoutId = $fieldLayout->id;
+
+			// Save
+			$bookingSettingsRecord->save(false);
+
+			// Save the record ID to the model
+			if (!$bookingSettings->id)
+				$bookingSettings->id = $bookingSettingsRecord->id;
+
+			// Update the cache
+			$this->_bookingSettingsById[$bookingSettings->id] = $bookingSettings;
+
+			$transaction->commit();
+		} catch (\Exception $e) {
+			$transaction->rollBack();
+			throw $e;
+		}
+
+		return true;
+	}
 
 	// Helpers
 	// =========================================================================
@@ -71,7 +167,7 @@ class BookingSettingsService extends Component
 	 *
 	 * @return Query
 	 */
-	private function _createBookingSettingsQuery(): Query
+	private function _createBookingSettingsQuery (): Query
 	{
 		return (new Query())
 			->select([
