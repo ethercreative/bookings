@@ -294,6 +294,7 @@ class Booking extends Element
 	{
 		// TODO: If using commerce, remove the line item this was bound to
 		// Or will deleting the element do that?
+		// It won't (will only set the element relation to null): https://github.com/craftcms/commerce/blob/develop/src/migrations/Install.php#L939
 
 		if (!\Craft::$app->elements->deleteElement($this))
 		{
