@@ -12,6 +12,7 @@ use craft\base\Element;
 use craft\helpers\Db;
 use craft\helpers\UrlHelper;
 use ether\bookings\Bookings;
+use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\records\BookingRecord;
 
 
@@ -153,6 +154,16 @@ class Booking extends Element
 	/** @var \DateTime|null - The time this booking reservation will expire (if null, this is a complete booking) */
 	public $reservationExpiry = null;
 
+	// Private Properties
+	// -------------------------------------------------------------------------
+
+	private $_field;
+	private $_element;
+	private $_user;
+	private $_lineItem;
+	private $_order;
+	private $_customer;
+
 	// Public Methods
 	// =========================================================================
 
@@ -178,22 +189,6 @@ class Booking extends Element
 	public function __toString()
 	{
 		return $this->getShortNumber();
-	}
-
-	/**
-	 * TODO: Allow each field to have its own Booking field layout
-	 *
-	 * @return \craft\models\FieldLayout|null
-	 */
-	public function getFieldLayout ()
-	{
-		$bookingSettings =
-			Bookings::getInstance()->bookingSettings->getBookingSettingsByHandle('defaultBooking');
-
-		if ($bookingSettings)
-			return $bookingSettings->getFieldLayout();
-
-		return null;
 	}
 
 	// Attributes
@@ -292,11 +287,8 @@ class Booking extends Element
 	 */
 	public function expireBooking (): bool
 	{
-		// TODO: If using commerce, remove the line item this was bound to
-		// Or will deleting the element do that?
-		// It won't (will only set the element relation to null): https://github.com/craftcms/commerce/blob/develop/src/migrations/Install.php#L939
-
-		// $order->removeLineItem($item)? // Will this delete the line item? // Yes
+		if ($this->orderId && $this->lineItemId)
+			$this->getOrder()->removeLineItem($this->getLineItem());
 
 		if (!\Craft::$app->elements->deleteElement($this))
 		{
@@ -340,17 +332,17 @@ class Booking extends Element
 				throw new \Exception('Invalid booking ID: ' . $this->id);
 		}
 
-		$record->isCompleted = $this->isCompleted;
-		$record->number = $this->number;
-		$record->fieldId = $this->fieldId;
-		$record->elementId = $this->elementId;
-		$record->userId = $this->userId;
-		$record->lineItemId = $this->lineItemId;
-		$record->orderId = $this->orderId;
-		$record->customerId = $this->customerId;
+		$record->isCompleted   = $this->isCompleted;
+		$record->number        = $this->number;
+		$record->fieldId       = $this->fieldId;
+		$record->elementId     = $this->elementId;
+		$record->userId        = $this->userId;
+		$record->lineItemId    = $this->lineItemId;
+		$record->orderId       = $this->orderId;
+		$record->customerId    = $this->customerId;
 		$record->customerEmail = $this->customerEmail;
-		$record->slotEnd = $this->slotEnd;
-		$record->dateBooked = $this->dateBooked;
+		$record->slotEnd       = $this->slotEnd;
+		$record->dateBooked    = $this->dateBooked;
 
 		if ($isNew && !$this->isCompleted)
 			$record->reservationExpiry = Db::prepareDateForDb(new \DateTime());
@@ -372,8 +364,24 @@ class Booking extends Element
 			$this->trigger(self::EVENT_AFTER_BOOKING_COMPLETED);
 	}
 
-	// Helpers
-	// =========================================================================
+	// Getters
+	// -------------------------------------------------------------------------
+
+	/**
+	 * TODO: Allow each field to have its own Booking field layout
+	 *
+	 * @return \craft\models\FieldLayout|null
+	 */
+	public function getFieldLayout ()
+	{
+		$bookingSettings =
+			Bookings::getInstance()->bookingSettings->getBookingSettingsByHandle('defaultBooking');
+
+		if ($bookingSettings)
+			return $bookingSettings->getFieldLayout();
+
+		return null;
+	}
 
 	/**
 	 * @return string
@@ -389,6 +397,90 @@ class Booking extends Element
 	public function getCpEditUrl(): string
 	{
 		return UrlHelper::cpUrl('bookings/bookings/' . $this->id);
+	}
+
+	/**
+	 * @return \craft\base\FieldInterface|null
+	 */
+	public function getField ()
+	{
+		if ($this->_field)
+			return $this->_field;
+
+		$field = \Craft::$app->fields->getFieldById($this->fieldId);
+
+		return $this->_field = $field;
+	}
+
+	/**
+	 * @return \craft\base\ElementInterface|null
+	 */
+	public function getElement ()
+	{
+		if ($this->_element)
+			return $this->_element;
+
+		$element = \Craft::$app->elements->getElementById($this->elementId);
+
+		return $this->_element = $element;
+	}
+
+	/**
+	 * @return \craft\elements\User|null
+	 */
+	public function getUser ()
+	{
+		if ($this->_user)
+			return $this->_user;
+
+		$user = \Craft::$app->users->getUserById($this->userId);
+
+		return $this->_user = $user;
+	}
+
+	/**
+	 * @return \craft\commerce\models\LineItem|null
+	 */
+	public function getLineItem ()
+	{
+		if ($this->_lineItem)
+			return $this->_lineItem;
+
+		/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+		if ($this->lineItemId && class_exists(\craft\commerce\models\LineItem::class))
+			return $this->_lineItem = CommerceGetters::getLineItemById($this->lineItemId);
+
+		return null;
+	}
+
+	/**
+	 * @return \craft\commerce\elements\Order|null
+	 */
+	public function getOrder ()
+	{
+		if ($this->_order)
+			return $this->_order;
+
+		/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+		if ($this->orderId && class_exists(\craft\commerce\elements\Order::class))
+			return $this->_order = CommerceGetters::getOrderById($this->orderId);
+
+		return null;
+	}
+
+	/**
+	 * @return \craft\commerce\models\Customer|null
+	 */
+	public function getCustomer ()
+	{
+		if ($this->_customer)
+			return $this->_customer;
+
+		/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+		if ($this->customerId && class_exists(\craft\commerce\models\Customer::class))
+			return $this->_customer = CommerceGetters::getCustomerById($this->customerId);
+
+		return null;
 	}
 
 }
