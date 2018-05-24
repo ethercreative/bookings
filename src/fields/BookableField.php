@@ -10,11 +10,15 @@ namespace ether\bookings\fields;
 
 use craft\base\ElementInterface;
 use craft\base\Field;
+use craft\behaviors\FieldLayoutBehavior;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Html;
+use craft\models\FieldLayout;
 use ether\bookings\Bookings;
+use ether\bookings\elements\Booking;
 use ether\bookings\enums\BookableType;
 use ether\bookings\models\Bookable;
+use ether\bookings\models\BookableFieldSettings;
 use ether\bookings\models\ExRule;
 use ether\bookings\models\RecursionRule;
 use ether\bookings\web\assets\ui\UIAsset;
@@ -169,27 +173,45 @@ class BookableField extends Field
 	// -------------------------------------------------------------------------
 
 	/**
+	 * @return BookableFieldSettings
+	 */
+	public function getFieldSettings (): BookableFieldSettings
+	{
+		return Bookings::getInstance()->field->getSettings($this);
+	}
+
+	/**
 	 * @return null|string
 	 * @throws \Twig_Error_Loader
 	 * @throws \yii\base\Exception
 	 */
 	public function getSettingsHtml ()
 	{
-		// TODO: Get bookable field settings
-		$bookableSettings = null;
+		$settings = $this->getFieldSettings();
 
 		return \Craft::$app->view->renderTemplate(
 			'bookings/field/_settings',
-			compact('bookableSettings')
+			compact('settings')
 		);
 	}
 
 	// Public Methods: Events
 	// -------------------------------------------------------------------------
 
+	/**
+	 * @param bool $isNew
+	 *
+	 * @throws \yii\db\Exception
+	 */
 	public function afterSave (bool $isNew)
 	{
-		// TODO: Custom settings save
+		$settings = $this->getFieldSettings();
+
+		$fieldLayout = \Craft::$app->getFields()->assembleLayoutFromPost();
+		$fieldLayout->type = Booking::class;
+		$settings->setFieldLayout($fieldLayout);
+
+		Bookings::getInstance()->field->saveSettings($this, $settings);
 
 		parent::afterSave($isNew);
 	}

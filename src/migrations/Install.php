@@ -9,8 +9,6 @@
 namespace ether\bookings\migrations;
 
 use craft\db\Migration;
-use craft\records\FieldLayout;
-use ether\bookings\elements\Booking;
 use ether\bookings\records\BookableRecord;
 use ether\bookings\records\BookingRecord;
 use ether\bookings\records\BookableFieldSettingsRecord;
@@ -30,6 +28,7 @@ class Install extends Migration
 	{
 		$this->_createBookablesTable();
 		$this->_createBookingsTable();
+		$this->_createBookableFieldSettingsTable();
 	}
 
 	public function safeDown ()
@@ -175,6 +174,58 @@ class Install extends Migration
 			'id',
 			'CASCADE',
 			null
+		);
+
+	}
+
+	private function _createBookableFieldSettingsTable ()
+	{
+		if ($this->db->tableExists(BookableFieldSettingsRecord::$tableName))
+			return;
+
+		$this->createTable(
+			BookableFieldSettingsRecord::$tableName,
+			[
+				'id'          => $this->primaryKey(),
+
+				'fieldId'       => $this->integer()->notNull(),
+				'fieldLayoutId' => $this->integer(),
+
+				'dateCreated' => $this->dateTime()->notNull(),
+				'dateUpdated' => $this->dateTime()->notNull(),
+				'uid'         => $this->uid()->notNull(),
+			]
+		);
+
+		// Indexes
+
+		$this->createIndex(
+			null,
+			BookableRecord::$tableName,
+			['fieldId'],
+			true
+		);
+
+		// FKs
+
+		$this->addForeignKey(
+			null,
+			BookableFieldSettingsRecord::$tableName,
+			['fieldId'],
+			'{{%fields}}',
+			['id'],
+			'CASCADE',
+			'CASCADE'
+		);
+
+		$this->addForeignKey(
+			null,
+			BookableFieldSettingsRecord::$tableName,
+			['fieldLayoutId'],
+			'{{%fieldlayouts}}',
+			['id'],
+			'CASCADE',
+			'CASCADE'
 		);
 
 	}

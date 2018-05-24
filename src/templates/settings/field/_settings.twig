@@ -1,7 +1,0 @@
-{% if bookingSettings.id %}
-	<input type="hidden" name="bookingSettingsId" value="{{ bookingSettings.id }}">
-{% endif %}
-
-{% include "_includes/fieldlayoutdesigner" with {
-	fieldLayout: bookingSettings.getFieldLayout(),
-} only %}

@@ -15,6 +15,8 @@ use craft\elements\db\ElementQuery;
 use craft\elements\db\ElementQueryInterface;
 use ether\bookings\fields\BookableField;
 use ether\bookings\models\Bookable;
+use ether\bookings\models\BookableFieldSettings;
+use ether\bookings\records\BookableFieldSettingsRecord;
 use ether\bookings\records\BookableRecord;
 
 
@@ -27,6 +29,9 @@ use ether\bookings\records\BookableRecord;
  */
 class FieldService extends Component
 {
+
+	// Field
+	// =========================================================================
 
 	/**
 	 * Gets the field
@@ -149,6 +154,66 @@ class FieldService extends Component
 			"{$tableName} {$tableAlias}",
 			$on
 		);
+	}
+
+	// Settings
+	// =========================================================================
+
+	public function getSettings (BookableField $field)
+	{
+		$record = BookableFieldSettingsRecord::findOne([
+			'fieldId' => $field->id,
+		]);
+
+		return $record
+			? new BookableFieldSettings($record)
+			: new BookableFieldSettings();
+	}
+
+	/**
+	 * @param BookableField         $field
+	 * @param BookableFieldSettings $settings
+	 *
+	 * @throws \yii\db\Exception
+	 * @throws \Exception
+	 */
+	public function saveSettings (BookableField $field, BookableFieldSettings $settings)
+	{
+		if ($settings->id) {
+			$record = BookableFieldSettingsRecord::findOne([
+				'id' => $settings->id,
+			]);
+		} else {
+			$record = new BookableFieldSettingsRecord();
+			$record->fieldId = $field->id;
+		}
+
+		// TODO: Validate settings model
+
+		$db = \Craft::$app->getDb();
+		$transaction = $db->beginTransaction();
+
+		try {
+			// Save the new one
+			$fieldLayout = $settings->getFieldLayout();
+			\Craft::$app->getFields()->saveLayout($fieldLayout);
+
+			// Update the Order record/model with the new layout ID
+			$settings->fieldLayoutId = $fieldLayout->id;
+			$record->fieldLayoutId = $fieldLayout->id;
+
+			// Save it!
+			$record->save(false);
+
+			// Now that we have a calendar ID, save it on the model
+			if (!$settings->id)
+				$settings->id = $record->id;
+
+			$transaction->commit();
+		} catch (\Exception $e) {
+			$transaction->rollBack();
+			throw $e;
+		}
 	}
 
 }
