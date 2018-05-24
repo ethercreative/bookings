@@ -205,6 +205,8 @@ class BookableField extends Field
 	 */
 	public function afterSave (bool $isNew)
 	{
+		// FIXME: Craft is trying to save the field layout before this point :(
+
 		$settings = $this->getFieldSettings();
 
 		$fieldLayout = \Craft::$app->getFields()->assembleLayoutFromPost();
