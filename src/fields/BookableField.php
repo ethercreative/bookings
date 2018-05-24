@@ -165,8 +165,34 @@ class BookableField extends Field
 		return null;
 	}
 
+	// Public Methods: Settings
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @return null|string
+	 * @throws \Twig_Error_Loader
+	 * @throws \yii\base\Exception
+	 */
+	public function getSettingsHtml ()
+	{
+		// TODO: Get bookable field settings
+		$bookableSettings = null;
+
+		return \Craft::$app->view->renderTemplate(
+			'bookings/field/_settings',
+			compact('bookableSettings')
+		);
+	}
+
 	// Public Methods: Events
 	// -------------------------------------------------------------------------
+
+	public function afterSave (bool $isNew)
+	{
+		// TODO: Custom settings save
+
+		parent::afterSave($isNew);
+	}
 
 	/**
 	 * @param ElementInterface $element

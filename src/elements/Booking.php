@@ -13,6 +13,7 @@ use craft\helpers\Db;
 use craft\helpers\UrlHelper;
 use ether\bookings\Bookings;
 use ether\bookings\integrations\commerce\CommerceGetters;
+use ether\bookings\integrations\commerce\CommerceValidators;
 use ether\bookings\records\BookingRecord;
 
 
@@ -228,14 +229,77 @@ class Booking extends Element
 		$rules = parent::rules();
 
 		$rules[] = [
-			['fieldId', 'elementId', 'userId', 'orderId', 'customerId'],
+			['fieldId', 'elementId', 'customerEmail', 'slotStart'],
+			'required'
+		];
+
+		$rules[] = [
+			['fieldId', 'elementId', 'userId', 'lineItemId', 'orderId', 'customerId'],
 			'number',
 			'integerOnly' => true
 		];
 
 		$rules[] = [['customerEmail'], 'email'];
 
+		$rules[] = [
+			['lineItemId', 'orderId', 'customerId'],
+			'validateCommerceProperties',
+		];
+
 		return $rules;
+	}
+
+	/**
+	 * Validates the commerce specific properties
+	 *
+	 * @param string $attribute
+	 */
+	public function validateCommerceProperties ($attribute)
+	{
+		// Only allow if commerce is installed
+		if (!$this->_commerceInstalled())
+		{
+			$this->addError(
+				$attribute,
+				\Craft::t(
+					'bookings',
+					'{attribute} must not be set when Commerce is not installed.',
+					compact('attribute')
+				)
+			);
+
+			return;
+		}
+
+		// Only allow if element is purchasable
+		if (!$this->_elementIsPurchasable())
+		{
+			$this->addError(
+				$attribute,
+				\Craft::t(
+					'bookings',
+					'{attribute} must not be set when the element being booked is not a Commerce Purchasable.',
+					compact('attribute')
+				)
+			);
+
+			return;
+		}
+
+		// Ensure they are either all set or that none are set
+		if (
+			($this->lineItemId || $this->orderId || $this->customerId)
+			&& !($this->lineItemId && $this->orderId && $this->customerId)
+		) {
+			$this->addError(
+				$attribute,
+				\Craft::t(
+					'bookings',
+					'{attribute} is required.',
+					compact('attribute')
+				)
+			);
+		}
 	}
 
 	// Actions
@@ -375,7 +439,7 @@ class Booking extends Element
 	public function getFieldLayout ()
 	{
 		$bookingSettings =
-			Bookings::getInstance()->bookingSettings->getBookingSettingsByHandle('defaultBooking');
+			Bookings::getInstance()->bookingSettings->getBookableFieldSettingsByHandle('defaultBooking');
 
 		if ($bookingSettings)
 			return $bookingSettings->getFieldLayout();
@@ -481,6 +545,29 @@ class Booking extends Element
 			return $this->_customer = CommerceGetters::getCustomerById($this->customerId);
 
 		return null;
+	}
+
+	// Helpers
+	// =========================================================================
+
+	/**
+	 * @return bool
+	 */
+	private function _commerceInstalled (): bool
+	{
+		return \Craft::$app->plugins->isPluginInstalled('commerce');
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function _elementIsPurchasable (): bool
+	{
+		/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+		if (class_exists(\craft\commerce\base\Purchasable::class))
+			return CommerceValidators::isElementPurchasable($this->getElement());
+
+		return false;
 	}
 
 }

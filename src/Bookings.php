@@ -164,9 +164,6 @@ class Bookings extends Plugin
 	public function onRegisterCpUrlRules (RegisterUrlRulesEvent $event)
 	{
 		$event->rules['bookings'] = 'bookings/cp/index';
-
-		// Settings
-		$event->rules['bookings/settings/bookingsettings'] = 'bookings/booking-settings/edit';
 	}
 
 	public function onRegisterUserPermissions (RegisterUserPermissionsEvent $event)
@@ -177,12 +174,22 @@ class Bookings extends Plugin
 		];
 	}
 
+	/**
+	 * @param PluginEvent $event
+	 *
+	 * @throws \yii\db\Exception
+	 */
 	public function onPluginInstall (PluginEvent $event)
 	{
 		if ($event->plugin->getHandle() === 'Commerce')
 			new OnCommerceInstall();
 	}
 
+	/**
+	 * @param PluginEvent $event
+	 *
+	 * @throws \yii\db\Exception
+	 */
 	public function onPluginUninstall (PluginEvent $event)
 	{
 		if ($event->plugin->getHandle() === 'Commerce')
@@ -192,6 +199,9 @@ class Bookings extends Plugin
 	// Events: Internal
 	// -------------------------------------------------------------------------
 
+	/**
+	 * @throws \yii\db\Exception
+	 */
 	protected function afterInstall ()
 	{
 		if (\Craft::$app->plugins->isPluginInstalled('commerce'))

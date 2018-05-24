@@ -28,12 +28,11 @@ return [
 	'Bookings Settings' => 'Bookings Settings',
 	'General' => 'General',
 	'General Settings' => 'General Settings',
-	'Booking Fields' => 'Booking Fields',
-
-	'Booking settings saved.' => 'Booking settings saved.',
-	'Couldn’t save booking settings.' => 'Couldn’t save booking settings.',
-	'No booking settings exists with the ID "{id}"' => 'No booking settings exists with the ID "{id}"',
 
 	'Couldn\'t mark booking {number} as complete. Booking save failed during completion with errors: {errors}' => 'Couldn\'t mark booking {number} as complete. Booking save failed during completion with errors: {errors}',
 	'Couldn\'t expire booking {number} as complete. Booking deletion failed during expiration with errors: {errors}' => 'Couldn\'t expire booking {number} as complete. Booking deletion failed during expiration with errors: {errors}',
+
+	'{attribute} must not be set when Commerce is not installed.' => '{attribute} must not be set when Commerce is not installed.',
+	'{attribute} must not be set when the element being booked is not a Commerce Purchasable.' => '{attribute} must not be set when the element being booked is not a Commerce Purchasable.',
+	'{attribute} is required.' => '{attribute} is required.',
 ];

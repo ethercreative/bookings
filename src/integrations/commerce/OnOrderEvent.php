@@ -35,7 +35,13 @@ class OnOrderEvent
 		/** @var bool $isNew */
 		$isNew = $event->isNew;
 
-		// TODO: If new and has BookingVariant field create a new Booking and set the reservationExpiry
+
+		if (!$isNew)
+		{
+			// TODO: Delete existing booking (if exists)
+		}
+
+		// TODO: Create booking
 	}
 
 	public function onComplete (Event $event)
