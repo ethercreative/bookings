@@ -10,6 +10,7 @@ namespace ether\bookings\services;
 
 use craft\base\Component;
 use ether\bookings\elements\Booking;
+use ether\bookings\records\BookableRecord;
 use ether\bookings\records\BookingRecord;
 
 
@@ -22,6 +23,13 @@ use ether\bookings\records\BookingRecord;
  */
 class BookingService extends Component
 {
+
+	// TODO: Need a way to clear expired bookings as soon as they expire...
+	// Could have a cron running every minute to clear expired bookings.
+	// Every time a booking is populated, we could check to see if it has
+	// expired and remove it accordingly?
+	// This would probably require us having a single function responsible for
+	// populating Booking models from records.
 
 	// Public
 	// =========================================================================
@@ -50,6 +58,27 @@ class BookingService extends Component
 	}
 
 	/**
+	 * Populates Booking model(s) from the given record(s)
+	 *
+	 * IMPORTANT: This function MUST ALWAYS be used when populating Bookings
+	 * from the DB
+	 *
+	 * @param BookableRecord|BookableRecord[] $records
+	 *
+	 * @return Booking|Booking[]
+	 */
+	public function populate ($records)
+	{
+		if (is_array($records))
+			return array_filter(
+				array_map([$this, 'populateBookingOrExpire'], $records)
+			);
+
+		/** @noinspection PhpParamsInspection */
+		return $this->populateBookingOrExpire($records);
+	}
+
+	/**
 	 * Ensures the given slot times do not conflict with existing slots
 	 *
 	 * @param \DateTime|string      $start
@@ -66,23 +95,22 @@ class BookingService extends Component
 		if ($end && !$end instanceof \DateTime)
 			$end = new \DateTime($end);
 
-		$start = $start->getTimestamp();
+		$start = $start->format('c');
 
 		if ($end)
-			$end = $end->getTimestamp();
+			$end = $end->format('c');
 
 		$db = \Craft::$app->db;
 		$bookingsTable = BookingRecord::$tableName;
 
 		// 1. Check start date
 		$startQuery = <<<SQL
-SELECT count(*) FROM "$bookingsTable"
+SELECT count(*) FROM $bookingsTable
 WHERE "slotStart" = '$start'
 LIMIT 1
 SQL;
-		$startConflicting = (bool) $db->createCommand($startQuery)->queryScalar();
 
-		if ($startConflicting)
+		if ($db->createCommand($startQuery)->queryScalar())
 			return \Craft::t('bookings', 'Slot Start is unavailable.');
 
 		if (!$end)
@@ -94,13 +122,12 @@ SQL;
 
 		// 3. Check end date
 		$endQuery = <<<SQL
-SELECT count(*) FROM "$bookingsTable"
+SELECT count(*) FROM $bookingsTable
 WHERE "slotEnd" = '$end'
 LIMIT 1
 SQL;
-		$endConflicting = (bool) $db->createCommand($endQuery)->queryScalar();
 
-		if ($endConflicting)
+		if ($db->createCommand($endQuery)->queryScalar())
 			return \Craft::t('bookings', 'Slot End is unavailable.');
 
 		// 4. Check for overlaps
@@ -110,9 +137,8 @@ WHERE "slotEnd" > '$start'
 OR "slotStart" < '$end'
 LIMIT 1
 SQL;
-		$overlapping = (bool) $db->createCommand($overlayQuery)->queryScalar();
 
-		if ($overlapping)
+		if ($db->createCommand($overlayQuery)->queryScalar())
 			return \Craft::t('bookings', 'The selected slot range is unavailable.');
 
 		return true;
@@ -129,6 +155,20 @@ SQL;
 	private function _generateBookingNumber ()
 	{
 		return md5(uniqid(mt_rand(), true));
+	}
+
+	/**
+	 * @param BookingRecord $record
+	 *
+	 * @return Booking|null
+	 * @private
+	 */
+	public function populateBookingOrExpire (BookingRecord $record)
+	{
+		// TODO: Check if booking has expired, and erase it, notifying the user?
+		// (Can't rely on user session here)
+
+		return new Booking($record);
 	}
 
 }

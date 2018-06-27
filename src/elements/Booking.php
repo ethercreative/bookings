@@ -12,10 +12,13 @@ use craft\base\Element;
 use craft\helpers\Db;
 use craft\helpers\UrlHelper;
 use ether\bookings\Bookings;
+use ether\bookings\enums\BookableType;
 use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\integrations\commerce\CommerceValidators;
 use ether\bookings\models\Bookable;
+use ether\bookings\records\BookableRecord;
 use ether\bookings\records\BookingRecord;
+use yii\helpers\Inflector;
 
 
 /**
@@ -269,7 +272,7 @@ class Booking extends Element
 				\Craft::t(
 					'bookings',
 					'{attribute} must not be set when Commerce is not installed.',
-					compact('attribute')
+					['attribute' => Inflector::camel2words($attribute)]
 				)
 			);
 
@@ -284,7 +287,7 @@ class Booking extends Element
 				\Craft::t(
 					'bookings',
 					'{attribute} must not be set when the element being booked is not a Commerce Purchasable.',
-					compact('attribute')
+					['attribute' => Inflector::camel2words($attribute)]
 				)
 			);
 
@@ -301,7 +304,7 @@ class Booking extends Element
 				\Craft::t(
 					'bookings',
 					'{attribute} is required.',
-					compact('attribute')
+					['attribute' => Inflector::camel2words($attribute)]
 				)
 			);
 		}
@@ -321,7 +324,7 @@ class Booking extends Element
 				\Craft::t(
 					'bookings',
 					'{attribute} is not a valid occurrence.',
-					compact('attribute')
+					['attribute' => Inflector::camel2words($attribute)]
 				)
 			);
 			return;
@@ -345,8 +348,8 @@ class Booking extends Element
 				$attribute,
 				\Craft::t(
 					'bookings',
-					'Unable to verify {attribute} availability',
-					compact('attribute')
+					'Unable to verify {attribute} availability: ' . $e->getMessage(),
+					['attribute' => Inflector::camel2words($attribute)]
 				)
 			);
 			return;
@@ -364,18 +367,31 @@ class Booking extends Element
 
 		if (!$this->slotEnd)
 		{
-			if ($bookable->acceptsRange)
+			if ($bookable->bookableType === BookableType::FLEXIBLE)
 			{
 				$this->addError(
 					$attribute,
 					\Craft::t(
 						'bookings',
-						'{attribute} is required for flexible bookings.',
-						compact('attribute')
+						'{attribute} is required for flexible duration bookings.',
+						['attribute' => Inflector::camel2words($attribute)]
 					)
 				);
 			}
 
+			return;
+		}
+
+		if ($bookable->bookableType === BookableType::FIXED)
+		{
+			$this->addError(
+				$attribute,
+				\Craft::t(
+					'bookings',
+					'{attribute} is not allowed for fixed duration bookings.',
+					['attribute' => Inflector::camel2words($attribute)]
+				)
+			);
 			return;
 		}
 
@@ -386,7 +402,7 @@ class Booking extends Element
 				\Craft::t(
 					'bookings',
 					'{attribute} is not a valid occurrence.',
-					compact('attribute')
+					['attribute' => Inflector::camel2words($attribute)]
 				)
 			);
 			return;
@@ -412,7 +428,7 @@ class Booking extends Element
 				\Craft::t(
 					'bookings',
 					'Unable to verify {attribute} availability',
-					compact('attribute')
+					['attribute' => Inflector::camel2words($attribute)]
 				)
 			);
 			return;
@@ -522,6 +538,7 @@ class Booking extends Element
 		$record->orderId       = $this->orderId;
 		$record->customerId    = $this->customerId;
 		$record->customerEmail = $this->customerEmail;
+		$record->slotStart     = $this->slotStart;
 		$record->slotEnd       = $this->slotEnd;
 		$record->dateBooked    = $this->dateBooked;
 
@@ -558,7 +575,7 @@ class Booking extends Element
 
 		if ($this->fieldId && $this->elementId)
 		{
-			$record = BookingRecord::findOne([
+			$record = BookableRecord::findOne([
 				'ownerId' => $this->elementId,
 				'fieldId' => $this->fieldId,
 			]);

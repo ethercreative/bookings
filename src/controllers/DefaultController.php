@@ -10,16 +10,23 @@ namespace ether\bookings\controllers;
 
 use craft\web\Controller;
 use ether\bookings\Bookings;
+use ether\bookings\elements\Booking;
 
 
 /**
  * Class PublicController
  *
+ * TODO: Find a way to allow for:
+ * <input type="hidden" name="action" value="bookings/book" />
+ *
+ * currently has to be:
+ * <input type="hidden" name="action" value="bookings/default/book" />
+ *
  * @author  Ether Creative
  * @package ether\bookings\controllers
  * @since   1.0.0
  */
-class PublicController extends Controller
+class DefaultController extends Controller
 {
 
 	// Properties
@@ -31,8 +38,6 @@ class PublicController extends Controller
 	// =========================================================================
 
 	/**
-	 * TODO: TEST ME
-	 *
 	 * @throws \Throwable
 	 * @throws \craft\errors\ElementNotFoundException
 	 * @throws \yii\base\Exception
@@ -59,9 +64,26 @@ class PublicController extends Controller
 			)
 		);
 
-		return $this->redirectToPostedUrl([
-			'errors' => $booking->getErrors(),
+		return $this->_redirectWithErrors($booking);
+	}
+
+	// Helpers
+	// =========================================================================
+
+	private function _redirectWithErrors (Booking $booking)
+	{
+		if (\Craft::$app->getRequest()->getAcceptsJson()) {
+			return $this->asJson([
+				'success' => false,
+				'errors' => $booking->getErrors(),
+			]);
+		}
+
+		\Craft::$app->getUrlManager()->setRouteParams([
+			'booking' => $booking
 		]);
+
+		return null;
 	}
 
 }

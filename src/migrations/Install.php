@@ -125,7 +125,7 @@ class Install extends Migration
 		$this->createIndex(
 			null,
 			BookingRecord::$tableName,
-			['fieldId', 'elementId'],
+			['fieldId', 'elementId', 'slotStart'],
 			true
 		);
 

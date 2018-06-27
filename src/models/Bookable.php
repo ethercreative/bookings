@@ -62,6 +62,8 @@ class Bookable extends Model
 
 	/**
 	 * @var int|null The maximum capacity per-slot for this bookable
+	 *               TODO: Is this being used anywhere?
+	 *                     Seems like we're just using bookableType
 	 */
 	public $maxCapacity;
 
@@ -98,6 +100,11 @@ class Bookable extends Model
 	public function __construct (array $attributes = [], array $config = [])
 	{
 		parent::__construct($attributes, $config);
+
+		if (array_key_exists('baseRule', $attributes) && is_array($attributes['baseRule']))
+		{
+			$this->baseRule = new RecursionRule($attributes['baseRule']);
+		}
 
 		if (array_key_exists('exceptions', $attributes))
 		{
