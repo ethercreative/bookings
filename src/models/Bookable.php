@@ -35,7 +35,7 @@ class Bookable extends Model
 	/** @var int */
 	public $ownerId;
 
-	/** @var int */
+	/** @var int - TODO: Remove. Field not translatable */
 	public $ownerSiteId;
 
 	/** @var int */
@@ -264,6 +264,21 @@ class Bookable extends Model
 		}
 
 		return $set->getOccurrences($count);
+	}
+
+	/**
+	 * Returns true if the given date occurs in the bookables set
+	 *
+	 * @param \DateTime|string $date
+	 *
+	 * @return bool
+	 */
+	public function isDateOccurrence ($date)
+	{
+		if (!$date instanceof \DateTime)
+			$date = new \DateTime($date);
+
+		return $this->_getSet()->occursAt($date);
 	}
 
 	// Methods: Private

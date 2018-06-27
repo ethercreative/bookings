@@ -14,6 +14,7 @@ use craft\helpers\UrlHelper;
 use ether\bookings\Bookings;
 use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\integrations\commerce\CommerceValidators;
+use ether\bookings\models\Bookable;
 use ether\bookings\records\BookingRecord;
 
 
@@ -158,6 +159,7 @@ class Booking extends Element
 	// Private Properties
 	// -------------------------------------------------------------------------
 
+	private $_bookable;
 	private $_field;
 	private $_element;
 	private $_user;
@@ -246,6 +248,9 @@ class Booking extends Element
 			'validateCommerceProperties',
 		];
 
+		$rules[] = [['slotStart'], 'validateSlotStart'];
+		$rules[] = [['slotEnd'], 'validateSlotEnd'];
+
 		return $rules;
 	}
 
@@ -299,6 +304,118 @@ class Booking extends Element
 					compact('attribute')
 				)
 			);
+		}
+	}
+
+	/**
+	 * Ensures the slot start is valid
+	 *
+	 * @param string $attribute
+	 */
+	public function validateSlotStart ($attribute)
+	{
+		if (!$this->getBookable()->isDateOccurrence($this->slotStart))
+		{
+			$this->addError(
+				$attribute,
+				\Craft::t(
+					'bookings',
+					'{attribute} is not a valid occurrence.',
+					compact('attribute')
+				)
+			);
+			return;
+		}
+
+		try {
+			$isValid = Bookings::getInstance()->booking->validateSlot(
+				$this->slotStart
+			);
+
+			if (is_string($isValid))
+			{
+				$this->addError(
+					$attribute,
+					$isValid
+				);
+				return;
+			}
+		} catch (\Exception $e) {
+			$this->addError(
+				$attribute,
+				\Craft::t(
+					'bookings',
+					'Unable to verify {attribute} availability',
+					compact('attribute')
+				)
+			);
+			return;
+		}
+	}
+
+	/**
+	 * Ensures the slot end is valid
+	 *
+	 * @param string $attribute
+	 */
+	public function validateSlotEnd ($attribute)
+	{
+		$bookable = $this->getBookable();
+
+		if (!$this->slotEnd)
+		{
+			if ($bookable->acceptsRange)
+			{
+				$this->addError(
+					$attribute,
+					\Craft::t(
+						'bookings',
+						'{attribute} is required for flexible bookings.',
+						compact('attribute')
+					)
+				);
+			}
+
+			return;
+		}
+
+		if (!$this->getBookable()->isDateOccurrence($this->slotEnd))
+		{
+			$this->addError(
+				$attribute,
+				\Craft::t(
+					'bookings',
+					'{attribute} is not a valid occurrence.',
+					compact('attribute')
+				)
+			);
+			return;
+		}
+
+		try {
+			$isValid = Bookings::getInstance()->booking->validateSlot(
+				$this->slotStart,
+				$this->slotEnd
+			);
+
+			if (is_string($isValid))
+			{
+				$this->addError(
+					$attribute,
+					$isValid
+				);
+				return;
+			}
+		} catch (\Exception $e) {
+			$this->addError(
+				$attribute,
+				\Craft::t(
+					'bookings',
+					'Unable to verify {attribute} availability',
+					compact('attribute')
+				)
+			);
+			return;
 		}
 	}
 
@@ -432,18 +549,47 @@ class Booking extends Element
 	// -------------------------------------------------------------------------
 
 	/**
+	 * @return Bookable|null
+	 */
+	public function getBookable ()
+	{
+		if ($this->_bookable)
+			return $this->_bookable;
+
+		if ($this->fieldId && $this->elementId)
+		{
+			$record = BookingRecord::findOne([
+				'ownerId' => $this->elementId,
+				'fieldId' => $this->fieldId,
+			]);
+
+			if ($record) {
+				$settings = $record->getAttributes()['settings'];
+
+				try {
+					$settings = json_decode($settings, true);
+				} catch (\Exception $e) {
+					$settings = [];
+				}
+
+				$model = new Bookable($settings);
+			} else {
+				$model = new Bookable();
+			}
+
+			return $this->_bookable = $model;
+		}
+
+		return null;
+	}
+
+	/**
 	 * TODO: Allow each field to have its own Booking field layout
 	 *
 	 * @return \craft\models\FieldLayout|null
 	 */
 	public function getFieldLayout ()
 	{
-		$bookingSettings =
-			Bookings::getInstance()->bookingSettings->getBookableFieldSettingsByHandle('defaultBooking');
-
-		if ($bookingSettings)
-			return $bookingSettings->getFieldLayout();
-
 		return null;
 	}
 

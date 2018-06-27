@@ -35,4 +35,11 @@ return [
 	'{attribute} must not be set when Commerce is not installed.' => '{attribute} must not be set when Commerce is not installed.',
 	'{attribute} must not be set when the element being booked is not a Commerce Purchasable.' => '{attribute} must not be set when the element being booked is not a Commerce Purchasable.',
 	'{attribute} is required.' => '{attribute} is required.',
+	'{attribute} is not a valid occurrence.' => '{attribute} is not a valid occurrence.',
+	'{attribute} is required for flexible bookings.' => '{attribute} is required for flexible bookings.',
+	'Unable to verify {attribute} availability' => 'Unable to verify {attribute} availability',
+	'Slot Start is unavailable.' => 'Slot Start is unavailable.',
+	'Slot End must occur after Slot Start.' => 'Slot End must occur after Slot Start.',
+	'Slot End is unavailable.' => 'Slot End is unavailable.',
+	'The selected slot range is unavailable.' => 'The selected slot range is unavailable.',
 ];

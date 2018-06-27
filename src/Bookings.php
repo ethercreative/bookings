@@ -23,6 +23,7 @@ use craft\web\UrlManager;
 use ether\bookings\fields\BookableField;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
 use ether\bookings\integrations\commerce\OnOrderEvent;
+use ether\bookings\services\BookingService;
 use ether\bookings\services\FieldService;
 use yii\base\Event;
 
@@ -32,6 +33,7 @@ use yii\base\Event;
  * @since     1.0.0-alpha.1
  *
  * @property FieldService $field
+ * @property BookingService $booking
  */
 class Bookings extends Plugin
 {
@@ -57,6 +59,7 @@ class Bookings extends Plugin
 
 		$this->setComponents([
 			'field' => FieldService::class,
+			'booking' => BookingService::class,
 		]);
 
 		// Events
