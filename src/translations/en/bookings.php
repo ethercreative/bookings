@@ -49,5 +49,7 @@ return [
 	'Number' => 'Number',
 	'ID' => 'ID',
 	'Date Booked' => 'Date Booked',
+	'Date Created' => 'Date Created',
 	'Date Updated' => 'Date Updated',
+	'Customer Email' => 'Customer Email',
 ];

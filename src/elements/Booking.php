@@ -279,6 +279,19 @@ class Booking extends Element
 		return $rules;
 	}
 
+	public function beforeValidate ()
+	{
+		// If we have a customer but not an email
+		if ($this->customerId && !$this->customerEmail)
+			$this->customerEmail = $this->getCustomer()->email;
+
+		// If we have a user but not an email
+		if ($this->userId && !$this->customerEmail)
+			$this->customerEmail = $this->getUser()->email;
+
+		return parent::beforeValidate();
+	}
+
 	/**
 	 * Validates the commerce specific properties
 	 *
@@ -790,9 +803,24 @@ class Booking extends Element
 		return [
 			'number' => ['label' => \Craft::t('bookings', 'Number')],
 			'id' => ['label' => \Craft::t('bookings', 'ID')],
+			'customerEmail' => ['label' => \Craft::t('bookings', 'Customer Email')],
 			'dateBooked' => ['label' => \Craft::t('bookings', 'Date Booked')],
+			'dateCreated' => ['label' => \Craft::t('bookings', 'Date Created')],
 			'dateUpdated' => ['label' => \Craft::t('bookings', 'Date Updated')],
+
+			// TODO: Field, Element, User, Line Item, Order, Customer
 		];
+	}
+
+	protected static function defineDefaultTableAttributes (string $source): array {
+		$attrs = parent::defineDefaultTableAttributes($source);
+
+		$attrs[] = 'number';
+		$attrs[] = 'customerEmail';
+		$attrs[] = 'dateBooked';
+		$attrs[] = 'dateUpdated';
+
+		return $attrs;
 	}
 
 	public static function sortOptions (): array
@@ -811,6 +839,8 @@ class Booking extends Element
 
 	protected static function defineSources (string $context = null): array
 	{
+		// TODO: All criteria should include ['isCompleted' => true]
+
 		$sources = [
 			'*' => [
 				'key' => '*',
@@ -819,6 +849,8 @@ class Booking extends Element
 				'defaultSort' => ['dateBooked', 'desc']
 			],
 		];
+
+		// TODO: For each field type (and then each entry?)
 
 		return $sources;
 	}
