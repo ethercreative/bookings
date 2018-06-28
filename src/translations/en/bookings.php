@@ -43,4 +43,11 @@ return [
 	'Slot End must occur after Slot Start.' => 'Slot End must occur after Slot Start.',
 	'Slot End is unavailable.' => 'Slot End is unavailable.',
 	'The selected slot range is unavailable.' => 'The selected slot range is unavailable.',
+
+	'All Bookings' => 'All Bookings',
+
+	'Number' => 'Number',
+	'ID' => 'ID',
+	'Date Booked' => 'Date Booked',
+	'Date Updated' => 'Date Updated',
 ];

@@ -782,6 +782,47 @@ class Booking extends Element
 		return $this->reservationExpiry->modify('+' . $dur . ' seconds');
 	}
 
+	// Elements Index
+	// =========================================================================
+
+	protected static function defineTableAttributes (): array
+	{
+		return [
+			'number' => ['label' => \Craft::t('bookings', 'Number')],
+			'id' => ['label' => \Craft::t('bookings', 'ID')],
+			'dateBooked' => ['label' => \Craft::t('bookings', 'Date Booked')],
+			'dateUpdated' => ['label' => \Craft::t('bookings', 'Date Updated')],
+		];
+	}
+
+	public static function sortOptions (): array
+	{
+		return [
+			'number' => \Craft::t('bookings', 'Number'),
+			'id' => \Craft::t('bookings', 'ID'),
+			'dateBooked' => \Craft::t('bookings', 'Date Booked'),
+			[
+				'label' => \Craft::t('bookings', 'Date Updated'),
+				'orderBy' => BookingRecord::$tableNameRaw . '.dateUpdated',
+				'attribute' => 'dateUpdated',
+			],
+		];
+	}
+
+	protected static function defineSources (string $context = null): array
+	{
+		$sources = [
+			'*' => [
+				'key' => '*',
+				'label' => \Craft::t('bookings', 'All Bookings'),
+//				'criteria' => ['isCompleted' => true],
+				'defaultSort' => ['dateBooked', 'desc']
+			],
+		];
+
+		return $sources;
+	}
+
 	// Helpers
 	// =========================================================================
 
