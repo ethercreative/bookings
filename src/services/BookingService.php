@@ -46,6 +46,8 @@ class BookingService extends Component
 			if (property_exists($booking, $key))
 				$booking->{$key} = $val;
 
+		// TODO: Set userId to current user, if available
+
 		\Craft::$app->elements->saveElement($booking);
 
 		return $booking;
@@ -154,21 +156,30 @@ SQL;
 	/**
 	 * Erases all expired bookings from the database
 	 *
+	 * @param bool $force If true the `clearExpiredDuration` will be ignored,
+	 *                    meaning all bookings marked as EXPIRED will be deleted
+	 *
 	 * @throws \Throwable
 	 */
-	public function clearExpiredBookings ()
+	public function clearExpiredBookings (bool $force = false)
 	{
 		$settings = Bookings::getInstance()->settings;
 
-		$since = time() - ($settings->expiryDuration + $settings->clearExpiredDuration);
+		$where = [
+			'and',
+			'{{%expired}} = true',
+		];
 
-		$expiredBookings = BookingRecord::findAll([
-			'reservationExpiry' => '< ' . $since,
-			'expired' => true,
-		]);
+		if (!$force)
+		{
+			$since = time() - ($settings->expiryDuration + $settings->clearExpiredDuration);
+			$where[] = "{{%reservationExpiry}} < '" . date(\DateTime::W3C, $since) . "'";
+		}
+
+		$expiredBookings = BookingRecord::find()->where($where)->all();
 
 		foreach ($expiredBookings as $booking)
-			\Craft::$app->elements->deleteElementById($booking->elementId);
+			\Craft::$app->elements->deleteElementById($booking->id);
 	}
 
 	// Private
@@ -194,18 +205,12 @@ SQL;
 	 */
 	public function populateBookingOrExpire (BookingRecord $record, $includeExpired = true)
 	{
-		$settings = Bookings::getInstance()->settings;
 		$booking = new Booking($record);
 
-		$expire = $booking->reservationExpiry < time() - $settings->expiryDuration;
+		$booking->expireBooking();
 
-		if ($expire)
-		{
-			$booking->expireBooking();
-
-			if (!$includeExpired)
-				return null;
-		}
+		if ($booking->expired && !$includeExpired)
+			return null;
 
 		return $booking;
 	}

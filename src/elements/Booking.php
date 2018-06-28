@@ -9,9 +9,11 @@
 namespace ether\bookings\elements;
 
 use craft\base\Element;
+use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Db;
 use craft\helpers\UrlHelper;
 use ether\bookings\Bookings;
+use ether\bookings\elements\db\BookingQuery;
 use ether\bookings\enums\BookableType;
 use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\integrations\commerce\CommerceValidators;
@@ -176,6 +178,15 @@ class Booking extends Element
 	// Public Methods
 	// =========================================================================
 
+	public function init ()
+	{
+		parent::init();
+
+		try {
+			$this->expireBooking();
+		} catch (\Throwable $e) {}
+	}
+
 	/**
 	 * @return null|string
 	 */
@@ -198,6 +209,14 @@ class Booking extends Element
 	public function __toString()
 	{
 		return $this->getShortNumber();
+	}
+
+	/**
+	 * @return ElementQueryInterface
+	 */
+	public static function find(): ElementQueryInterface
+	{
+		return new BookingQuery(static::class);
 	}
 
 	// Attributes
@@ -254,8 +273,11 @@ class Booking extends Element
 			'validateCommerceProperties',
 		];
 
-		$rules[] = [['slotStart'], 'validateSlotStart'];
-		$rules[] = [['slotEnd'], 'validateSlotEnd'];
+		if (!$this->expired && !$this->isCompleted)
+		{
+			$rules[] = [['slotStart'], 'validateSlotStart'];
+			$rules[] = [['slotEnd'], 'validateSlotEnd'];
+		}
 
 		return $rules;
 	}
@@ -480,26 +502,33 @@ class Booking extends Element
 	}
 
 	/**
-	 * Expires the booking and deletes itself from the database
+	 * Expires the booking if necessary
 	 *
 	 * @return bool
 	 * @throws \Throwable
 	 */
 	public function expireBooking (): bool
 	{
-		// TODO: Notify user session associated w/ booking?
+		if ($this->expired || $this->isCompleted)
+			return true;
+
+		$settings = Bookings::getInstance()->settings;
+
+		if ($this->reservationExpiry->getTimestamp() >= time() - $settings->expiryDuration)
+			return true;
 
 		if ($this->orderId && $this->lineItemId)
 			$this->getOrder()->removeLineItem($this->getLineItem());
 
 		$this->expired = true;
+		$this->reservationExpiry = null;
 
 		if (!\Craft::$app->elements->saveElement($this))
 		{
 			\Craft::error(
 				\Craft::t(
 					'bookings',
-					'Couldn\'t expire booking {number} as complete. Booking save failed during expiration with errors: {errors}',
+					'Couldn\'t expire booking {number}. Booking save failed during expiration with errors: {errors}',
 					['number' => $this->number, 'errors' => json_encode($this->errors)],
 					__METHOD__
 				)
@@ -552,6 +581,8 @@ class Booking extends Element
 
 		if ($isNew && !$this->isCompleted)
 			$record->reservationExpiry = Db::prepareDateForDb(new \DateTime());
+		else
+			$record->reservationExpiry = $this->reservationExpiry;
 
 		$record->save(false);
 
@@ -716,6 +747,21 @@ class Booking extends Element
 			return $this->_customer = CommerceGetters::getCustomerById($this->customerId);
 
 		return null;
+	}
+
+	/**
+	 * The date/time this booking will expire
+	 *
+	 * @return \DateTime|null
+	 */
+	public function getExpiryTime ()
+	{
+		if (!$this->reservationExpiry || $this->isCompleted || $this->expired)
+			return null;
+
+		$dur = Bookings::getInstance()->settings->expiryDuration;
+
+		return $this->reservationExpiry->modify('+' . $dur . ' seconds');
 	}
 
 	// Helpers

@@ -6,7 +6,7 @@
  * @copyright Copyright (c) Ether Creative
  */
 
-namespace ether\bookings\console;
+namespace ether\bookings\console\controllers;
 
 use ether\bookings\Bookings;
 use yii\console\Controller;
@@ -31,12 +31,15 @@ class BookingsController extends Controller
 	 *
 	 * ./craft bookings/bookings/clear-expired
 	 *
+	 * @param bool $force If true the `clearExpiredDuration` will be ignored,
+	 *                    meaning all bookings marked as EXPIRED will be deleted
+	 *
 	 * @return int
 	 * @throws \Throwable
 	 */
-	public function actionClearExpired ()
+	public function actionClearExpired (bool $force = false)
 	{
-		Bookings::getInstance()->booking->clearExpiredBookings();
+		Bookings::getInstance()->booking->clearExpiredBookings($force);
 		return ExitCode::OK;
 	}
 

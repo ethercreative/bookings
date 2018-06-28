@@ -19,6 +19,7 @@ use craft\helpers\UrlHelper;
 use craft\services\Fields;
 use craft\services\Plugins;
 use craft\services\UserPermissions;
+use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use ether\bookings\fields\BookableField;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
@@ -26,6 +27,7 @@ use ether\bookings\integrations\commerce\OnOrderEvent;
 use ether\bookings\models\Settings;
 use ether\bookings\services\BookingService;
 use ether\bookings\services\FieldService;
+use ether\bookings\web\twig\CraftVariableBehavior;
 use yii\base\Event;
 
 /**
@@ -95,6 +97,12 @@ class Bookings extends Plugin
 			Plugins::class,
 			Plugins::EVENT_BEFORE_UNINSTALL_PLUGIN,
 			[$this, 'onPluginUninstall']
+		);
+
+		Event::on(
+			CraftVariable::class,
+			CraftVariable::EVENT_INIT,
+			[$this, 'onVariableInit']
 		);
 
 		/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
@@ -201,6 +209,16 @@ class Bookings extends Plugin
 	{
 		if ($event->plugin->getHandle() === 'Commerce')
 			new OnCommerceUninstall();
+	}
+
+	public function onVariableInit (Event $event)
+	{
+		/** @var CraftVariable $variable */
+		$variable = $event->sender;
+		$variable->attachBehavior(
+			'bookings',
+			CraftVariableBehavior::class
+		);
 	}
 
 	// Events: Internal

@@ -25,16 +25,16 @@ class Settings extends Model
 	// =========================================================================
 
 	/**
-	 * @var int - Number of milliseconds before a booking is expired
+	 * @var int - Number of seconds before a booking is expired
 	 *            (Defaults to 20 minutes)
 	 */
-	public $expiryDuration = 1.2e6;
+	public $expiryDuration = 20 * 60;
 
 	/**
-	 * @var int - Number of milliseconds before an expired booking is purged
+	 * @var int - Number of seconds before an expired booking is purged
 	 *            (Defaults to 10 minutes)
 	 */
-	public $clearExpiredDuration = 6e5;
+	public $clearExpiredDuration = 10 * 60;
 
 	// Methods
 	// =========================================================================

@@ -42,6 +42,7 @@ class BookingRecord extends ActiveRecord
 	// Properties
 	// =========================================================================
 
+	public static $tableNameRaw = 'bookings_bookings';
 	public static $tableName = '{{%bookings_bookings}}';
 
 	// Public Methods
