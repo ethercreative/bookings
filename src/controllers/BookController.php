@@ -50,13 +50,17 @@ class BookController extends Controller
 		$slotStart = $craft->request->getRequiredBodyParam('slotStart');
 		$slotEnd = $craft->request->getBodyParam('slotEnd');
 
+		$user = \Craft::$app->user;
+		$userId = $user->isGuest ? null : $user->id;
+
 		$booking = Bookings::getInstance()->booking->create(
 			compact(
 				'fieldId',
 				'elementId',
 				'customerEmail',
 				'slotStart',
-				'slotEnd'
+				'slotEnd',
+				'userId'
 			)
 		);
 

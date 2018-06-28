@@ -46,8 +46,6 @@ class BookingService extends Component
 			if (property_exists($booking, $key))
 				$booking->{$key} = $val;
 
-		// TODO: Set userId to current user, if available
-
 		\Craft::$app->elements->saveElement($booking);
 
 		return $booking;
@@ -89,17 +87,21 @@ class BookingService extends Component
 	 *
 	 * @param \DateTime|string      $start
 	 * @param \DateTime|string|null $end
+	 * @param int|null              $id
 	 *
 	 * @return bool
 	 * @throws \yii\db\Exception
 	 */
-	public function validateSlot ($start, $end = null)
+	public function validateSlot ($start, $end = null, $id = null)
 	{
 		if (!$start instanceof \DateTime)
 			$start = new \DateTime($start);
 
 		if ($end && !$end instanceof \DateTime)
 			$end = new \DateTime($end);
+
+		if ($id) $id = 'AND "id" != ' . $id;
+		else $id = '';
 
 		$start = $start->format('c');
 
@@ -114,6 +116,7 @@ class BookingService extends Component
 SELECT count(*) FROM $bookingsTable
 WHERE "slotStart" = '$start'
 AND "expired" = FALSE
+$id
 LIMIT 1
 SQL;
 
@@ -132,6 +135,7 @@ SQL;
 SELECT count(*) FROM $bookingsTable
 WHERE "slotEnd" = '$end'
 AND "expired" = FALSE
+$id
 LIMIT 1
 SQL;
 
@@ -144,6 +148,7 @@ SELECT count(*) FROM $bookingsTable
 WHERE "slotEnd" > '$start' 
 OR "slotStart" < '$end'
 AND "expired" = FALSE
+$id
 LIMIT 1
 SQL;
 

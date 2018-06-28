@@ -273,11 +273,8 @@ class Booking extends Element
 			'validateCommerceProperties',
 		];
 
-		if (!$this->expired && !$this->isCompleted)
-		{
-			$rules[] = [['slotStart'], 'validateSlotStart'];
-			$rules[] = [['slotEnd'], 'validateSlotEnd'];
-		}
+		$rules[] = [['slotStart'], 'validateSlotStart'];
+		$rules[] = [['slotEnd'], 'validateSlotEnd'];
 
 		return $rules;
 	}
@@ -357,7 +354,9 @@ class Booking extends Element
 
 		try {
 			$isValid = Bookings::getInstance()->booking->validateSlot(
-				$this->slotStart
+				$this->slotStart,
+				null,
+				$this->id
 			);
 
 			if (is_string($isValid))
@@ -436,7 +435,8 @@ class Booking extends Element
 		try {
 			$isValid = Bookings::getInstance()->booking->validateSlot(
 				$this->slotStart,
-				$this->slotEnd
+				$this->slotEnd,
+				$this->id
 			);
 
 			if (is_string($isValid))
@@ -670,6 +670,9 @@ class Booking extends Element
 	 */
 	public function getField ()
 	{
+		if (!$this->fieldId)
+			return null;
+
 		if ($this->_field)
 			return $this->_field;
 
@@ -683,6 +686,9 @@ class Booking extends Element
 	 */
 	public function getElement ()
 	{
+		if (!$this->elementId)
+			return null;
+
 		if ($this->_element)
 			return $this->_element;
 
@@ -696,6 +702,9 @@ class Booking extends Element
 	 */
 	public function getUser ()
 	{
+		if (!$this->userId)
+			return null;
+
 		if ($this->_user)
 			return $this->_user;
 
@@ -709,11 +718,14 @@ class Booking extends Element
 	 */
 	public function getLineItem ()
 	{
+		if (!$this->lineItemId)
+			return null;
+
 		if ($this->_lineItem)
 			return $this->_lineItem;
 
 		/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
-		if ($this->lineItemId && class_exists(\craft\commerce\models\LineItem::class))
+		if (class_exists(\craft\commerce\models\LineItem::class))
 			return $this->_lineItem = CommerceGetters::getLineItemById($this->lineItemId);
 
 		return null;
@@ -724,11 +736,14 @@ class Booking extends Element
 	 */
 	public function getOrder ()
 	{
+		if (!$this->orderId)
+			return null;
+
 		if ($this->_order)
 			return $this->_order;
 
 		/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
-		if ($this->orderId && class_exists(\craft\commerce\elements\Order::class))
+		if (class_exists(\craft\commerce\elements\Order::class))
 			return $this->_order = CommerceGetters::getOrderById($this->orderId);
 
 		return null;
@@ -739,11 +754,14 @@ class Booking extends Element
 	 */
 	public function getCustomer ()
 	{
+		if (!$this->customerId)
+			return null;
+
 		if ($this->_customer)
 			return $this->_customer;
 
 		/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
-		if ($this->customerId && class_exists(\craft\commerce\models\Customer::class))
+		if (class_exists(\craft\commerce\models\Customer::class))
 			return $this->_customer = CommerceGetters::getCustomerById($this->customerId);
 
 		return null;
