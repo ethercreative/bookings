@@ -113,6 +113,7 @@ class Install extends Migration
 				'slotEnd'           => $this->dateTime(),
 				'dateBooked'        => $this->dateTime(),
 				'reservationExpiry' => $this->dateTime(),
+				'expired'           => $this->boolean(),
 
 				'dateCreated' => $this->dateTime()->notNull(),
 				'dateUpdated' => $this->dateTime()->notNull(),
@@ -125,7 +126,7 @@ class Install extends Migration
 		$this->createIndex(
 			null,
 			BookingRecord::$tableName,
-			['fieldId', 'elementId', 'slotStart'],
+			['fieldId', 'elementId', 'slotStart', 'reservationExpiry'],
 			true
 		);
 

@@ -9,6 +9,7 @@
 namespace ether\bookings\services;
 
 use craft\base\Component;
+use ether\bookings\Bookings;
 use ether\bookings\elements\Booking;
 use ether\bookings\records\BookableRecord;
 use ether\bookings\records\BookingRecord;
@@ -23,13 +24,6 @@ use ether\bookings\records\BookingRecord;
  */
 class BookingService extends Component
 {
-
-	// TODO: Need a way to clear expired bookings as soon as they expire...
-	// Could have a cron running every minute to clear expired bookings.
-	// Every time a booking is populated, we could check to see if it has
-	// expired and remove it accordingly?
-	// This would probably require us having a single function responsible for
-	// populating Booking models from records.
 
 	// Public
 	// =========================================================================
@@ -64,18 +58,28 @@ class BookingService extends Component
 	 * from the DB
 	 *
 	 * @param BookableRecord|BookableRecord[] $records
+	 * @param bool                            $includeExpired
 	 *
 	 * @return Booking|Booking[]
+	 * @throws \Throwable
 	 */
-	public function populate ($records)
+	public function populate ($records, $includeExpired = true)
 	{
 		if (is_array($records))
 			return array_filter(
-				array_map([$this, 'populateBookingOrExpire'], $records)
+				array_map(
+					function (BookingRecord $record) use ($includeExpired) {
+						return $this->populateBookingOrExpire(
+							$record,
+							$includeExpired
+						);
+					},
+					$records
+				)
 			);
 
 		/** @noinspection PhpParamsInspection */
-		return $this->populateBookingOrExpire($records);
+		return $this->populateBookingOrExpire($records, $includeExpired);
 	}
 
 	/**
@@ -107,6 +111,7 @@ class BookingService extends Component
 		$startQuery = <<<SQL
 SELECT count(*) FROM $bookingsTable
 WHERE "slotStart" = '$start'
+AND "expired" = FALSE
 LIMIT 1
 SQL;
 
@@ -124,6 +129,7 @@ SQL;
 		$endQuery = <<<SQL
 SELECT count(*) FROM $bookingsTable
 WHERE "slotEnd" = '$end'
+AND "expired" = FALSE
 LIMIT 1
 SQL;
 
@@ -135,6 +141,7 @@ SQL;
 SELECT count(*) FROM $bookingsTable
 WHERE "slotEnd" > '$start' 
 OR "slotStart" < '$end'
+AND "expired" = FALSE
 LIMIT 1
 SQL;
 
@@ -142,6 +149,26 @@ SQL;
 			return \Craft::t('bookings', 'The selected slot range is unavailable.');
 
 		return true;
+	}
+
+	/**
+	 * Erases all expired bookings from the database
+	 *
+	 * @throws \Throwable
+	 */
+	public function clearExpiredBookings ()
+	{
+		$settings = Bookings::getInstance()->settings;
+
+		$since = time() - ($settings->expiryDuration + $settings->clearExpiredDuration);
+
+		$expiredBookings = BookingRecord::findAll([
+			'reservationExpiry' => '< ' . $since,
+			'expired' => true,
+		]);
+
+		foreach ($expiredBookings as $booking)
+			\Craft::$app->elements->deleteElementById($booking->elementId);
 	}
 
 	// Private
@@ -159,16 +186,28 @@ SQL;
 
 	/**
 	 * @param BookingRecord $record
+	 * @param bool          $includeExpired
 	 *
 	 * @return Booking|null
+	 * @throws \Throwable
 	 * @private
 	 */
-	public function populateBookingOrExpire (BookingRecord $record)
+	public function populateBookingOrExpire (BookingRecord $record, $includeExpired = true)
 	{
-		// TODO: Check if booking has expired, and erase it, notifying the user?
-		// (Can't rely on user session here)
+		$settings = Bookings::getInstance()->settings;
+		$booking = new Booking($record);
 
-		return new Booking($record);
+		$expire = $booking->reservationExpiry < time() - $settings->expiryDuration;
+
+		if ($expire)
+		{
+			$booking->expireBooking();
+
+			if (!$includeExpired)
+				return null;
+		}
+
+		return $booking;
 	}
 
 }

@@ -159,6 +159,9 @@ class Booking extends Element
 	/** @var \DateTime|null - The time this booking reservation will expire (if null, this is a complete booking) */
 	public $reservationExpiry = null;
 
+	/** @var bool - If true, this booking has expired */
+	public $expired = false;
+
 	// Private Properties
 	// -------------------------------------------------------------------------
 
@@ -484,15 +487,19 @@ class Booking extends Element
 	 */
 	public function expireBooking (): bool
 	{
+		// TODO: Notify user session associated w/ booking?
+
 		if ($this->orderId && $this->lineItemId)
 			$this->getOrder()->removeLineItem($this->getLineItem());
 
-		if (!\Craft::$app->elements->deleteElement($this))
+		$this->expired = true;
+
+		if (!\Craft::$app->elements->saveElement($this))
 		{
 			\Craft::error(
 				\Craft::t(
 					'bookings',
-					'Couldn\'t expire booking {number} as complete. Booking deletion failed during expiration with errors: {errors}',
+					'Couldn\'t expire booking {number} as complete. Booking save failed during expiration with errors: {errors}',
 					['number' => $this->number, 'errors' => json_encode($this->errors)],
 					__METHOD__
 				)
@@ -541,6 +548,7 @@ class Booking extends Element
 		$record->slotStart     = $this->slotStart;
 		$record->slotEnd       = $this->slotEnd;
 		$record->dateBooked    = $this->dateBooked;
+		$record->expired       = $this->expired;
 
 		if ($isNew && !$this->isCompleted)
 			$record->reservationExpiry = Db::prepareDateForDb(new \DateTime());

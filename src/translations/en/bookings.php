@@ -30,7 +30,7 @@ return [
 	'General Settings' => 'General Settings',
 
 	'Couldn\'t mark booking {number} as complete. Booking save failed during completion with errors: {errors}' => 'Couldn\'t mark booking {number} as complete. Booking save failed during completion with errors: {errors}',
-	'Couldn\'t expire booking {number} as complete. Booking deletion failed during expiration with errors: {errors}' => 'Couldn\'t expire booking {number} as complete. Booking deletion failed during expiration with errors: {errors}',
+	'Couldn\'t expire booking {number} as complete. Booking save failed during expiration with errors: {errors}' => 'Couldn\'t expire booking {number} as complete. Booking save failed during expiration with errors: {errors}',
 
 	'{attribute} must not be set when Commerce is not installed.' => '{attribute} must not be set when Commerce is not installed.',
 	'{attribute} must not be set when the element being booked is not a Commerce Purchasable.' => '{attribute} must not be set when the element being booked is not a Commerce Purchasable.',

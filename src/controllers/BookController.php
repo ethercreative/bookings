@@ -14,19 +14,13 @@ use ether\bookings\elements\Booking;
 
 
 /**
- * Class PublicController
- *
- * TODO: Find a way to allow for:
- * <input type="hidden" name="action" value="bookings/book" />
- *
- * currently has to be:
- * <input type="hidden" name="action" value="bookings/default/book" />
+ * Class BookController
  *
  * @author  Ether Creative
  * @package ether\bookings\controllers
  * @since   1.0.0
  */
-class DefaultController extends Controller
+class BookController extends Controller
 {
 
 	// Properties
@@ -38,12 +32,14 @@ class DefaultController extends Controller
 	// =========================================================================
 
 	/**
+	 * bookings/book
+	 *
 	 * @throws \Throwable
 	 * @throws \craft\errors\ElementNotFoundException
 	 * @throws \yii\base\Exception
 	 * @throws \yii\web\BadRequestHttpException
 	 */
-	public function actionBook ()
+	public function actionIndex ()
 	{
 		$this->requirePostRequest();
 		$craft = \Craft::$app;

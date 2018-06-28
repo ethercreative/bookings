@@ -30,6 +30,7 @@ use yii\db\ActiveQueryInterface;
  * @property \DateTime $slotEnd
  * @property \DateTime $dateBooked
  * @property \DateTime $reservationExpiry
+ * @property bool $expired
  *
  * @author  Ether Creative
  * @package ether\bookings\records
