@@ -12,7 +12,13 @@ module.exports = {
 
 		sidebar: {
 			"/core/": [
-				"elements",
+				{
+					title: "Querying Elements",
+					collapsable: false,
+					children: [
+						'/elements/bookings',
+					]
+				},
 			],
 		},
 	}
