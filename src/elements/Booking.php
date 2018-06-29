@@ -782,6 +782,14 @@ class Booking extends Element
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getBookingStatus ()
+	{
+		return $this->isCompleted ? 'Booked' : 'Reserved';
+	}
+
+	/**
 	 * The date/time this booking will expire
 	 *
 	 * @return \DateTime|null
@@ -804,7 +812,10 @@ class Booking extends Element
 		return [
 			'number' => ['label' => \Craft::t('bookings', 'Number')],
 			'id' => ['label' => \Craft::t('bookings', 'ID')],
+			'slotStart' => ['label' => \Craft::t('bookings', 'When')],
+			'slotEnd' => ['label' => \Craft::t('bookings', 'Until')],
 			'customerEmail' => ['label' => \Craft::t('bookings', 'Customer Email')],
+			'bookingStatus' => ['label' => \Craft::t('bookings', 'Booking Status')],
 			'dateBooked' => ['label' => \Craft::t('bookings', 'Date Booked')],
 			'dateCreated' => ['label' => \Craft::t('bookings', 'Date Created')],
 			'dateUpdated' => ['label' => \Craft::t('bookings', 'Date Updated')],
@@ -818,6 +829,7 @@ class Booking extends Element
 
 		$attrs[] = 'number';
 		$attrs[] = 'customerEmail';
+		$attrs[] = 'slotStart';
 		$attrs[] = 'dateBooked';
 		$attrs[] = 'dateUpdated';
 
@@ -829,6 +841,8 @@ class Booking extends Element
 		return [
 			'number' => \Craft::t('bookings', 'Number'),
 			'id' => \Craft::t('bookings', 'ID'),
+			'slotStart' => \Craft::t('bookings', 'When'),
+			'slotEnd' => \Craft::t('bookings', 'Until'),
 			'dateBooked' => \Craft::t('bookings', 'Date Booked'),
 			[
 				'label' => \Craft::t('bookings', 'Date Updated'),
@@ -841,39 +855,70 @@ class Booking extends Element
 	protected static function defineSources (string $context = null): array
 	{
 		// TODO: All criteria should include ['isCompleted' => true]
+		// TODO: This could be improved w/ better grouping of elements (i.e. by Product / Entry Type
 
 		$sources = [
 			'*' => [
 				'key' => '*',
 				'label' => \Craft::t('bookings', 'All Bookings'),
 //				'criteria' => ['isCompleted' => true],
-				'defaultSort' => ['dateBooked', 'desc']
+				'defaultSort' => ['slotStart', 'desc']
 			],
 		];
 
-//		$fields = (new Query())
-//			->select(['fields.id',])
-//			->from(['{{%fields}} fields'])
-//			->where(['fields.type' => 'ether\bookings\fields\BookableField']);
-//
-//		$fieldIds = $fields->column();
-//
-//		$layouts = (new Query())
-//			->select(['layouts.layoutId'])
-//			->from(['{{%fieldlayoutfields}} layouts'])
-//			->where(['layouts.fieldId' => $fieldIds]);
-//
-//		$layoutIds = $layouts->column();
-//
-//		$elements = (new Query())
-//			->select([
-//				'elements.id',
-//				'elements.type',
-//			])
-//			->from(['{{%elements}} elements'])
-//			->where(['elements.fieldLayoutId' => $layoutIds]);
-//
-//		\Craft::dd($elements->all());
+		$enabledBookables = (new Query())
+			->select(['bookables.ownerId'])
+			->from([BookableRecord::$tableName . ' bookables'])
+			->where(['bookables.enabled' => true]);
+
+		$enabledBookableElementIds = $enabledBookables->column();
+
+		$elements = (new Query())
+			->select(['content.title', 'elements.id', 'elements.type'])
+			->from(['{{%elements}} elements'])
+			->where([
+				'elements.id' => $enabledBookableElementIds,
+				'elements.enabled' => true,
+				'elements.archived' => false,
+			])
+			->innerJoin(
+				'{{%content}} content',
+				'{{%content}}.{{%elementId}} = {{%elements}}.{{%id}} AND {{%content}}.{{%siteId}} = ' . \Craft::$app->sites->primarySite->id
+			)
+			->orderBy('content.title asc')
+			->all();
+
+		$byType = [];
+
+		foreach ($elements as $element)
+		{
+			$type = explode('\\', $element['type']);
+			$type = end($type);
+
+			if (!array_key_exists($type, $byType))
+				$byType[$type] = [];
+
+			$byType[$type][] = $element;
+		}
+
+		ksort($byType);
+
+		foreach ($byType as $type => $elements)
+		{
+			$sources[] = ['heading' => $type];
+
+			foreach ($elements as $element)
+			{
+				$key = 'element:' . $element['id'];
+
+				$sources[$key] = [
+					'key' => $key,
+					'label' => $element['title'],
+					'criteria' => ['elementId' => $element['id']],
+					'defaultSort' => ['slotStart', 'desc']
+				];
+			}
+		}
 
 		return $sources;
 	}

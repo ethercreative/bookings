@@ -52,4 +52,7 @@ return [
 	'Date Created' => 'Date Created',
 	'Date Updated' => 'Date Updated',
 	'Customer Email' => 'Customer Email',
+	'When' => 'When',
+	'Until' => 'Until',
+	'Booking Status' => 'Booking Status',
 ];
