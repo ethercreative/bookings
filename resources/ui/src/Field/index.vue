@@ -5,15 +5,17 @@
 	import RRuleBlock from "../components/RRuleBlock";
 	import CraftFieldHeading from "../components/CraftFieldHeading";
 	import Button from "../components/form/Button";
+	import Lightswitch from "../components/form/Lightswitch";
 	import BookableType from "../enums/BookableType";
 
 	export default {
 		name: "field",
 
-		components: { ExceptionsModal, RRuleBlock, Button, CraftFieldHeading },
+		components: { ExceptionsModal, RRuleBlock, Button, CraftFieldHeading, Lightswitch },
 
 		data () {
 			return {
+				enabled: true,
 				exceptionsModalOpen: false,
 				internal_bookableType: this.bookableType,
 			};
@@ -21,6 +23,7 @@
 
 		computed: {
 			...mapState([
+				// "enabled",
 				"baseRule",
 				"exceptions",
 				"exceptionsSort",
@@ -42,84 +45,102 @@
 		render () {
 			return (
 				<div class={this.$style.wrap}>
-					<CraftFieldHeading
-						label="Bookable Type"
-						instructions="Select the type of bookable event this is."
-					/>
+					<label>
+						<CraftFieldHeading
+							label="[FIXME] Enable Bookings"
+							instructions="Allow bookings on this element"
+						/>
 
-					<div class={this.$style.types}>
-						{this._renderTypeButton(
-							BookableType.FIXED,
-							"Fixed Slots",
-							"The user can book a single slot at a time.\r\nConvenient for concerts, cookery classes, etc.",
-							(
-								<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg">
-									<g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-										<g transform="translate(-423.000000, -319.000000)">
-											<g transform="translate(423.000000, 319.000000)">
-												<circle fill="#5186D9" cx="25" cy="25" r="25" />
-												<g transform="translate(13.000000, 13.000000)" fill="#FFFFFF" fillRule="nonzero">
-													<path d="M22,4 L2,4 L2,22 L22,22 L22,4 Z M24,22 C24,23.1022847 23.1022847,24 22,24 L2,24 C0.89771525,24 0,23.1022847 0,22 L0,4 C0,2.89771525 0.89771525,2 2,2 L22,2 C23.1022847,2 24,2.89771525 24,4 L24,22 Z" />
-													<path d="M7,1 C7,0.44771525 7.44771525,0 8,0 C8.55228475,0 9,0.44771525 9,1 L9,5 C9,5.55228475 8.55228475,6 8,6 C7.44771525,6 7,5.55228475 7,5 L7,1 Z M15,1 C15,0.44771525 15.4477153,0 16,0 C16.5522847,0 17,0.44771525 17,1 L17,5 C17,5.55228475 16.5522847,6 16,6 C15.4477153,6 15,5.55228475 15,5 L15,1 Z M17,12 C16.4477153,12 16,11.5522847 16,11 L16,9 C16,8.44771525 16.4477153,8 17,8 L19,8 C19.5522847,8 20,8.44771525 20,9 L20,11 C20,11.5522847 19.5522847,12 19,12 L17,12 Z M17,18 C16.4477153,18 16,17.5522847 16,17 L16,15 C16,14.4477153 16.4477153,14 17,14 L19,14 C19.5522847,14 20,14.4477153 20,15 L20,17 C20,17.5522847 19.5522847,18 19,18 L17,18 Z M5,12 C4.44771525,12 4,11.5522847 4,11 L4,9 C4,8.44771525 4.44771525,8 5,8 L7,8 C7.55228475,8 8,8.44771525 8,9 L8,11 C8,11.5522847 7.55228475,12 7,12 L5,12 Z M5,18 C4.44771525,18 4,17.5522847 4,17 L4,15 C4,14.4477153 4.44771525,14 5,14 L7,14 C7.55228475,14 8,14.4477153 8,15 L8,17 C8,17.5522847 7.55228475,18 7,18 L5,18 Z M11,12 C10.4477153,12 10,11.5522847 10,11 L10,9 C10,8.44771525 10.4477153,8 11,8 L13,8 C13.5522847,8 14,8.44771525 14,9 L14,11 C14,11.5522847 13.5522847,12 13,12 L11,12 Z M11,18 C10.4477153,18 10,17.5522847 10,17 L10,15 C10,14.4477153 10.4477153,14 11,14 L13,14 C13.5522847,14 14,14.4477153 14,15 L14,17 C14,17.5522847 13.5522847,18 13,18 L11,18 Z" />
-												</g>
-											</g>
-										</g>
-									</g>
-								</svg>
-							)
-						)}
-						{this._renderTypeButton(
-							BookableType.FLEXIBLE,
-							"Flexible Slots",
-							"The user can book a range of slots.\r\nHandy for hotels, hardware hire, etc.",
-							(
-								<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg">
-									<g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-										<g transform="translate(-794.000000, -319.000000)">
-											<g transform="translate(647.000000, 299.000000)">
-												<g transform="translate(147.000000, 20.000000)">
-													<circle fill="#9C9C9C" cx="25" cy="25" r="25" />
+						<Lightswitch
+							v-model="enabled"
+							value={this.enabled}
+							name={this.$parent.$data.options.handle + "[enabled]"}
+						/>
+					</label>
+
+
+					<div class={[this.$style.main, {[this.$style.disabled]: !this.enabled}]}>
+
+						<CraftFieldHeading
+							label="Bookable Type"
+							instructions="Select the type of bookable event this is."
+						/>
+
+						<div class={this.$style.types}>
+							{this._renderTypeButton(
+								BookableType.FIXED,
+								"Fixed Slots",
+								"The user can book a single slot at a time.\r\nConvenient for concerts, cookery classes, etc.",
+								(
+									<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg">
+										<g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+											<g transform="translate(-423.000000, -319.000000)">
+												<g transform="translate(423.000000, 319.000000)">
+													<circle fill="#5186D9" cx="25" cy="25" r="25" />
 													<g transform="translate(13.000000, 13.000000)" fill="#FFFFFF" fillRule="nonzero">
 														<path d="M22,4 L2,4 L2,22 L22,22 L22,4 Z M24,22 C24,23.1022847 23.1022847,24 22,24 L2,24 C0.89771525,24 0,23.1022847 0,22 L0,4 C0,2.89771525 0.89771525,2 2,2 L22,2 C23.1022847,2 24,2.89771525 24,4 L24,22 Z" />
-														<path d="M6,1 C6,0.44771525 6.44771525,0 7,0 C7.55228475,0 8,0.44771525 8,1 L8,5 C8,5.55228475 7.55228475,6 7,6 C6.44771525,6 6,5.55228475 6,5 L6,1 Z M16,1 C16,0.44771525 16.4477153,0 17,0 C17.5522847,0 18,0.44771525 18,1 L18,5 C18,5.55228475 17.5522847,6 17,6 C16.4477153,6 16,5.55228475 16,5 L16,1 Z M15.2415024,10.3483242 C15.601413,9.9294175 16.2327692,9.88159178 16.6516758,10.2415024 C17.0705825,10.601413 17.1184082,11.2327692 16.7584976,11.6516758 L11.6034976,17.6516758 C11.2166238,18.1019655 10.5249324,18.118029 10.1175723,17.6861843 L7.27257228,14.6701843 C6.89360315,14.2684371 6.91206845,13.6355414 7.31381569,13.2565723 C7.71556293,12.8776031 8.34845859,12.8960685 8.72742772,13.2978157 L10.8103013,15.5058813 L15.2415024,10.3483242 Z" />
+														<path d="M7,1 C7,0.44771525 7.44771525,0 8,0 C8.55228475,0 9,0.44771525 9,1 L9,5 C9,5.55228475 8.55228475,6 8,6 C7.44771525,6 7,5.55228475 7,5 L7,1 Z M15,1 C15,0.44771525 15.4477153,0 16,0 C16.5522847,0 17,0.44771525 17,1 L17,5 C17,5.55228475 16.5522847,6 16,6 C15.4477153,6 15,5.55228475 15,5 L15,1 Z M17,12 C16.4477153,12 16,11.5522847 16,11 L16,9 C16,8.44771525 16.4477153,8 17,8 L19,8 C19.5522847,8 20,8.44771525 20,9 L20,11 C20,11.5522847 19.5522847,12 19,12 L17,12 Z M17,18 C16.4477153,18 16,17.5522847 16,17 L16,15 C16,14.4477153 16.4477153,14 17,14 L19,14 C19.5522847,14 20,14.4477153 20,15 L20,17 C20,17.5522847 19.5522847,18 19,18 L17,18 Z M5,12 C4.44771525,12 4,11.5522847 4,11 L4,9 C4,8.44771525 4.44771525,8 5,8 L7,8 C7.55228475,8 8,8.44771525 8,9 L8,11 C8,11.5522847 7.55228475,12 7,12 L5,12 Z M5,18 C4.44771525,18 4,17.5522847 4,17 L4,15 C4,14.4477153 4.44771525,14 5,14 L7,14 C7.55228475,14 8,14.4477153 8,15 L8,17 C8,17.5522847 7.55228475,18 7,18 L5,18 Z M11,12 C10.4477153,12 10,11.5522847 10,11 L10,9 C10,8.44771525 10.4477153,8 11,8 L13,8 C13.5522847,8 14,8.44771525 14,9 L14,11 C14,11.5522847 13.5522847,12 13,12 L11,12 Z M11,18 C10.4477153,18 10,17.5522847 10,17 L10,15 C10,14.4477153 10.4477153,14 11,14 L13,14 C13.5522847,14 14,14.4477153 14,15 L14,17 C14,17.5522847 13.5522847,18 13,18 L11,18 Z" />
 													</g>
 												</g>
 											</g>
 										</g>
-									</g>
-								</svg>
-							)
-						)}
-					</div>
-
-					<CraftFieldHeading
-						label="Bookable Rules"
-						instructions="Add rules to either add bookable space, or remove it from the primary booking window"
-					/>
-
-					<div class={this.$style.well}>
-						<header>
-							<h5>Primary Rule</h5>
-
-							<Button onClick={() => { this.exceptionsModalOpen = true; }}>
-								<svg width="14px" height="15px" viewBox="0 0 14 15" version="1.1" xmlns="http://www.w3.org/2000/svg">
-									<g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-										<g transform="translate(-875.000000, -613.000000)" fill="#FFFFFF" fillRule="nonzero">
-											<g transform="translate(875.000000, 613.000000)">
-												<path d="M0,2 L2,2 L2,1 C2,0.44771525 2.44771525,1.01453063e-16 3,0 C3.55228475,-1.01453063e-16 4,0.44771525 4,1 L4,2 L10,2 L10,1 C10,0.44771525 10.4477153,1.01453063e-16 11,0 C11.5522847,-1.01453063e-16 12,0.44771525 12,1 L12,2 L14,2 L14,5 L0,5 M0,6 L14,6 L14,15 L0,15" />
+									</svg>
+								)
+							)}
+							{this._renderTypeButton(
+								BookableType.FLEXIBLE,
+								"Flexible Slots",
+								"The user can book a range of slots.\r\nHandy for hotels, hardware hire, etc.",
+								(
+									<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg">
+										<g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+											<g transform="translate(-794.000000, -319.000000)">
+												<g transform="translate(647.000000, 299.000000)">
+													<g transform="translate(147.000000, 20.000000)">
+														<circle fill="#9C9C9C" cx="25" cy="25" r="25" />
+														<g transform="translate(13.000000, 13.000000)" fill="#FFFFFF" fillRule="nonzero">
+															<path d="M22,4 L2,4 L2,22 L22,22 L22,4 Z M24,22 C24,23.1022847 23.1022847,24 22,24 L2,24 C0.89771525,24 0,23.1022847 0,22 L0,4 C0,2.89771525 0.89771525,2 2,2 L22,2 C23.1022847,2 24,2.89771525 24,4 L24,22 Z" />
+															<path d="M6,1 C6,0.44771525 6.44771525,0 7,0 C7.55228475,0 8,0.44771525 8,1 L8,5 C8,5.55228475 7.55228475,6 7,6 C6.44771525,6 6,5.55228475 6,5 L6,1 Z M16,1 C16,0.44771525 16.4477153,0 17,0 C17.5522847,0 18,0.44771525 18,1 L18,5 C18,5.55228475 17.5522847,6 17,6 C16.4477153,6 16,5.55228475 16,5 L16,1 Z M15.2415024,10.3483242 C15.601413,9.9294175 16.2327692,9.88159178 16.6516758,10.2415024 C17.0705825,10.601413 17.1184082,11.2327692 16.7584976,11.6516758 L11.6034976,17.6516758 C11.2166238,18.1019655 10.5249324,18.118029 10.1175723,17.6861843 L7.27257228,14.6701843 C6.89360315,14.2684371 6.91206845,13.6355414 7.31381569,13.2565723 C7.71556293,12.8776031 8.34845859,12.8960685 8.72742772,13.2978157 L10.8103013,15.5058813 L15.2415024,10.3483242 Z" />
+														</g>
+													</g>
+												</g>
 											</g>
 										</g>
-									</g>
-								</svg>
-								Edit Rules
-							</Button>
-						</header>
+									</svg>
+								)
+							)}
+						</div>
 
-						<RRuleBlock
-							rrule={this.baseRule}
-							hideFooter
-							includeDuration
+						<CraftFieldHeading
+							label="Bookable Rules"
+							instructions="Add rules to either add bookable space, or remove it from the primary booking window"
 						/>
+
+						<div class={this.$style.well}>
+							<header>
+								<h5>Primary Rule</h5>
+
+								<Button onClick={() => { this.exceptionsModalOpen = true; }}>
+									<svg width="14px" height="15px" viewBox="0 0 14 15" version="1.1" xmlns="http://www.w3.org/2000/svg">
+										<g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+											<g transform="translate(-875.000000, -613.000000)" fill="#FFFFFF" fillRule="nonzero">
+												<g transform="translate(875.000000, 613.000000)">
+													<path d="M0,2 L2,2 L2,1 C2,0.44771525 2.44771525,1.01453063e-16 3,0 C3.55228475,-1.01453063e-16 4,0.44771525 4,1 L4,2 L10,2 L10,1 C10,0.44771525 10.4477153,1.01453063e-16 11,0 C11.5522847,-1.01453063e-16 12,0.44771525 12,1 L12,2 L14,2 L14,5 L0,5 M0,6 L14,6 L14,15 L0,15" />
+												</g>
+											</g>
+										</g>
+									</svg>
+									Edit Rules
+								</Button>
+							</header>
+
+							<RRuleBlock
+								rrule={this.baseRule}
+								hideFooter
+								includeDuration
+							/>
+						</div>
+
 					</div>
 
 					<ExceptionsModal
@@ -131,7 +152,7 @@
 
 					<input
 						type="hidden"
-						name={this.$parent.$data.options.handle}
+						name={this.$parent.$data.options.handle + "[settings]"}
 						value={JSON.stringify({
 							baseRule: this.baseRule,
 							exceptions: this.exceptionsSort.map(id => this.exceptions[id]),
@@ -207,6 +228,15 @@
 		& * {
 			box-sizing: border-box;
 		}
+	}
+
+	.main {
+		margin-top: @spacer;
+	}
+
+	.disabled {
+		opacity: 0.25;
+		pointer-events: none;
 	}
 
 	.types {

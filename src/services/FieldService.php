@@ -61,8 +61,15 @@ class FieldService extends Component
 			if (is_string($value))
 				$value = json_decode($value, true);
 
-			$model = new Bookable($value);
+			if (is_string($value['settings']))
+				$value['settings'] = json_decode($value['settings'], true);
+
+			$model = new Bookable(array_merge(
+				['enabled' => $value['enabled']],
+				$value['settings']
+			));
 		} else if ($record) {
+			$enabled = $record->getAttributes()['enabled'];
 			$settings = $record->getAttributes()['settings'];
 
 			try {
@@ -71,9 +78,14 @@ class FieldService extends Component
 				$settings = [];
 			}
 
-			$settings['id'] = $field->id;
+			$id = $field->id;
 
-			$model = new Bookable($settings);
+			$model = new Bookable(
+				array_merge(
+					compact('id','enabled'),
+					$settings
+				)
+			);
 		} else {
 			$model = new Bookable();
 		}
@@ -109,7 +121,8 @@ class FieldService extends Component
 			$record->fieldId     = $field->id;
 		}
 
-		$record->settings = json_encode($value->asArray());
+		$record->enabled = $value->enabled;
+		$record->settings = json_encode($value->asArray()['settings']);
 
 		$save = $record->save();
 

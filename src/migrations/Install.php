@@ -50,6 +50,7 @@ class Install extends Migration
 				'ownerId'     => $this->integer()->notNull(),
 				'fieldId'     => $this->integer()->notNull(),
 
+				'enabled'     => $this->boolean()->notNull(),
 				'settings'    => $this->text()->notNull(),
 
 				'dateCreated' => $this->dateTime()->notNull(),
@@ -113,7 +114,7 @@ class Install extends Migration
 				'slotEnd'           => $this->dateTime(),
 				'dateBooked'        => $this->dateTime(),
 				'reservationExpiry' => $this->dateTime(),
-				'expired'           => $this->boolean(),
+				'expired'           => $this->boolean()->notNull(),
 
 				'dateCreated' => $this->dateTime()->notNull(),
 				'dateUpdated' => $this->dateTime()->notNull(),

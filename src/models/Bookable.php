@@ -50,6 +50,11 @@ class Bookable extends Model
 	// ---
 
 	/**
+	 * @var bool If true, the element this field is attached to can be booked
+	 */
+	public $enabled;
+
+	/**
 	 * @var string The type of bookable
 	 * @see BookableType
 	 */
@@ -140,9 +145,12 @@ class Bookable extends Model
 	public function asArray ()
 	{
 		return [
-			'baseRule' => $this->baseRule,
-			'exceptions' => $this->exRules,
-			'bookableType' => $this->bookableType,
+			'enabled' => $this->enabled,
+			'settings' => [
+				'baseRule' => $this->baseRule,
+				'exceptions' => $this->exRules,
+				'bookableType' => $this->bookableType,
+			],
 		];
 	}
 

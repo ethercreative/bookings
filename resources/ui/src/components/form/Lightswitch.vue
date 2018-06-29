@@ -2,6 +2,7 @@
 	<label>
 		<input
 			type="checkbox"
+			:name="name"
 			:checked="value"
 			@change="$emit('input', $event.target.checked)"
 		/>
@@ -14,6 +15,7 @@
 		props: {
 			value: null,
 			checked: Boolean,
+			name: String,
 		},
 	}
 </script>

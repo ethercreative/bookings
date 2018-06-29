@@ -9,6 +9,7 @@
 namespace ether\bookings\elements;
 
 use craft\base\Element;
+use craft\db\Query;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Db;
 use craft\helpers\UrlHelper;
@@ -850,7 +851,29 @@ class Booking extends Element
 			],
 		];
 
-		// TODO: For each field type (and then each entry?)
+//		$fields = (new Query())
+//			->select(['fields.id',])
+//			->from(['{{%fields}} fields'])
+//			->where(['fields.type' => 'ether\bookings\fields\BookableField']);
+//
+//		$fieldIds = $fields->column();
+//
+//		$layouts = (new Query())
+//			->select(['layouts.layoutId'])
+//			->from(['{{%fieldlayoutfields}} layouts'])
+//			->where(['layouts.fieldId' => $fieldIds]);
+//
+//		$layoutIds = $layouts->column();
+//
+//		$elements = (new Query())
+//			->select([
+//				'elements.id',
+//				'elements.type',
+//			])
+//			->from(['{{%elements}} elements'])
+//			->where(['elements.fieldLayoutId' => $layoutIds]);
+//
+//		\Craft::dd($elements->all());
 
 		return $sources;
 	}

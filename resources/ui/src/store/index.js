@@ -92,6 +92,8 @@ function formatSlotsForStorage (slots) {
 // =========================================================================
 
 const state = {
+	enabled: false,
+
 	baseRule: new RecursionRule(),
 	exceptions: {},
 	exceptionsSort: [],
@@ -152,13 +154,15 @@ const mutations = {
 	 * Sets the default state of the store
 	 *
 	 * @param state
+	 * @param enabled
 	 * @param baseRule
 	 * @param exceptions
 	 * @param bookableType
 	 */
-	setDefaultState (state, { baseRule, exceptions, bookableType }) {
+	setDefaultState (state, { enabled, settings: { baseRule, exceptions, bookableType } }) {
 		const exceptionsSort = [];
 
+		state.enabled = enabled;
 		state.baseRule = new RecursionRule(baseRule);
 		state.exceptions = exceptions.reduce((a, b) => {
 			const ex = new ExRule(b);
