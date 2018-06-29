@@ -40,7 +40,7 @@ title: Stand Alone
 ### Confirm a booking
 
 ```twig
-{% for booking in craft.bookings.email('tam@ethercreative.co.uk').all() %}
+{% for booking in craft.bookings.email('customers@email.com').all() %}
     {% if not booking.isCompleted and not booking.expired %}
         <form method="post">
             {{ csrfInput() }}
