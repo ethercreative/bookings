@@ -178,7 +178,9 @@ SQL;
 		if (!$force)
 		{
 			$since = time() - ($settings->expiryDuration + $settings->clearExpiredDuration);
-			$where[] = "{{%reservationExpiry}} < '" . date(\DateTime::W3C, $since) . "'";
+			$since = "'" . date(\DateTime::W3C, $since) . "'";
+
+			$where[] = '{{%reservationExpiry}} < ' . $since;
 		}
 
 		$expiredBookings = BookingRecord::find()->where($where)->all();

@@ -535,7 +535,7 @@ class Booking extends Element
 			$this->getOrder()->removeLineItem($this->getLineItem());
 
 		$this->expired = true;
-		$this->reservationExpiry = null;
+//		$this->reservationExpiry = null;
 
 		if (!\Craft::$app->elements->saveElement($this))
 		{
@@ -782,6 +782,8 @@ class Booking extends Element
 	}
 
 	/**
+	 * TODO: Remove me (also remove from table attrs)
+	 *
 	 * @return string
 	 */
 	public function getBookingStatus ()
