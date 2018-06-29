@@ -1,6 +1,7 @@
 ---
 title: Querying Elements
-sidebar: auto
 ---
 
 # Querying Elements
+
+- [Bookings](bookings.md)

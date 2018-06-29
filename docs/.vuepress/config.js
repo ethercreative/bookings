@@ -16,7 +16,7 @@ module.exports = {
 					title: "Querying Elements",
 					collapsable: false,
 					children: [
-						'/elements/bookings',
+						["elements/bookings", "Bookings"],
 					]
 				},
 			],
