@@ -1,16 +1,17 @@
 ---
 title: Stand Alone
+sidebar: auto
 ---
 
 # Stand Alone
 
-### Reserve a slot
+## Reserve a slot
 
 ```twig
 <form method="post">
 	{{ csrfInput() }}
 	<input type="hidden" name="action" value="bookings/book">
-	{{ entry.bookable.input() }}
+	{{ placeBookingInput(entry.bookable) }}
 
 	{% if booking is defined and booking.hasErrors() %}
 		<div>
@@ -37,7 +38,7 @@ title: Stand Alone
 </form>
 ```
 
-### Confirm a booking
+## Confirm a booking
 
 ```twig
 {% for booking in craft.bookings.email('customers@email.com').all() %}

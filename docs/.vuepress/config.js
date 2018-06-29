@@ -4,9 +4,9 @@ module.exports = {
 	description: "An advanced booking plugin for Craft CMS and Craft Commerce.",
 
 	themeConfig: {
-		sidebar: [
-			'/',
-			'/standalone',
+		nav: [
+			{ text: 'Stand Alone', link: '/stand-alone/' },
+			{ text: 'Commerce', link: '/commerce/' },
 		]
 	}
 };

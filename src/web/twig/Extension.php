@@ -10,6 +10,7 @@ namespace ether\bookings\web\twig;
 
 use craft\helpers\Template;
 use ether\bookings\elements\Booking;
+use ether\bookings\models\Bookable;
 
 
 /**
@@ -28,12 +29,31 @@ class Extension extends \Twig_Extension
 	public function getFunctions ()
 	{
 		return [
-			new \Twig_Function('confirmBookingInput', [$this, 'confirmBookingInput'])
+			new \Twig_Function('placeBookingInput', [$this, 'placeBookingInput']),
+			new \Twig_Function('confirmBookingInput', [$this, 'confirmBookingInput']),
 		];
 	}
 
 	// Functions
 	// =========================================================================
+
+	/**
+	 * {{ placeBookingInput(entry.bookableField) }}
+	 *
+	 * @param Bookable $bookable
+	 *
+	 * @return \Twig_Markup
+	 * @throws \yii\base\Exception
+	 * @throws \yii\base\InvalidConfigException
+	 */
+	public function placeBookingInput (Bookable $bookable): \Twig_Markup
+	{
+		$value = $bookable->ownerId;
+		$value .= '_' . $bookable->id;
+		$value = \Craft::$app->security->hashData($value);
+
+		return Template::raw('<input type="hidden" name="book" value="' . $value . '" />');
+	}
 
 	/**
 	 * {{ confirmBookingInput(booking) }}

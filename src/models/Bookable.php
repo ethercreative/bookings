@@ -297,25 +297,6 @@ class Bookable extends Model
 		return $this->_getSet()->occursAt($date);
 	}
 
-	// Methods: Template
-	// -------------------------------------------------------------------------
-
-	/**
-	 * {{ element.bookableField.input() }}
-	 *
-	 * @return \Twig_Markup
-	 * @throws \yii\base\Exception
-	 * @throws \yii\base\InvalidConfigException
-	 */
-	public function input (): \Twig_Markup
-	{
-		$value = $this->ownerId;
-		$value .= '_' . $this->id;
-		$value = \Craft::$app->security->hashData($value);
-
-		return Template::raw('<input type="hidden" name="book" value="' . $value . '" />');
-	}
-
 	// Methods: Private
 	// -------------------------------------------------------------------------
 
