@@ -53,6 +53,9 @@ class FieldService extends Component
 		if ($value instanceof Bookable)
 			return $value;
 
+		$id = $field->id;
+		$ownerId = $owner->id;
+
 		if (
 			!\Craft::$app->request->isConsoleRequest
 			&& \Craft::$app->request->isPost
@@ -65,7 +68,11 @@ class FieldService extends Component
 				$value['settings'] = json_decode($value['settings'], true);
 
 			$model = new Bookable(array_merge(
-				['enabled' => $value['enabled']],
+				[
+					'id' => $id,
+					'ownerId' => $ownerId,
+					'enabled' => $value['enabled']
+				],
 				$value['settings']
 			));
 		} else if ($record) {
@@ -78,11 +85,9 @@ class FieldService extends Component
 				$settings = [];
 			}
 
-			$id = $field->id;
-
 			$model = new Bookable(
 				array_merge(
-					compact('id','enabled'),
+					compact('id', 'ownerId', 'enabled'),
 					$settings
 				)
 			);

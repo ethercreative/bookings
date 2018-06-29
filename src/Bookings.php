@@ -28,6 +28,7 @@ use ether\bookings\models\Settings;
 use ether\bookings\services\BookingService;
 use ether\bookings\services\FieldService;
 use ether\bookings\web\twig\CraftVariableBehavior;
+use ether\bookings\web\twig\Extension;
 use yii\base\Event;
 
 /**
@@ -121,6 +122,15 @@ class Bookings extends Plugin
 				\craft\commerce\elements\Order::EVENT_BEFORE_COMPLETE_ORDER,
 				[new OnOrderEvent, 'onComplete']
 			);
+		}
+
+		// Site Requests
+		// ---------------------------------------------------------------------
+
+		if (\Craft::$app->request->isSiteRequest)
+		{
+			$extension = new Extension();
+			\Craft::$app->view->registerTwigExtension($extension);
 		}
 
 		// Misc

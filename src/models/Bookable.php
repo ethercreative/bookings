@@ -8,6 +8,8 @@
 
 namespace ether\bookings\models;
 
+use craft\base\Element;
+use craft\helpers\Template;
 use ether\bookings\base\Model;
 use ether\bookings\enums\BookableType;
 use RRule\RRule;
@@ -294,6 +296,25 @@ class Bookable extends Model
 			$date = new \DateTime($date);
 
 		return $this->_getSet()->occursAt($date);
+	}
+
+	// Methods: Template
+	// -------------------------------------------------------------------------
+
+	/**
+	 * {{ element.bookableField.input() }}
+	 *
+	 * @return \Twig_Markup
+	 * @throws \yii\base\Exception
+	 * @throws \yii\base\InvalidConfigException
+	 */
+	public function input (): \Twig_Markup
+	{
+		$value = $this->ownerId;
+		$value .= '_' . $this->id;
+		$value = \Craft::$app->security->hashData($value);
+
+		return Template::raw('<input type="hidden" name="book" value="' . $value . '" />');
 	}
 
 	// Methods: Private
