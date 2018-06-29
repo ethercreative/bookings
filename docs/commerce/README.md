@@ -1,8 +1,8 @@
 ---
-title: Stand Alone
+title: Craft Commerce
 sidebar: auto
 ---
 
-# Commerce
+# Craft Commerce
 
 Coming Soon

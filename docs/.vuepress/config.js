@@ -5,8 +5,15 @@ module.exports = {
 
 	themeConfig: {
 		nav: [
-			{ text: 'Stand Alone', link: '/stand-alone/' },
-			{ text: 'Commerce', link: '/commerce/' },
-		]
+			{ text: "Core", link: "/core/" },
+			{ text: "Stand Alone", link: "/stand-alone/" },
+			{ text: "Commerce", link: "/commerce/" },
+		],
+
+		sidebar: {
+			"/core/": [
+				"elements",
+			],
+		},
 	}
 };
