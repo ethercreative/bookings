@@ -158,7 +158,7 @@ class FieldService extends Component
 
 		$on = [
 			'and',
-			'[[elements.id]] = [['.$tableAlias.'.ownerId]]',
+			'[[templating.id]] = [['.$tableAlias.'.ownerId]]',
 		];
 
 		$query->query->join(

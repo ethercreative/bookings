@@ -28,7 +28,7 @@ use yii\helpers\Inflector;
  * Class Booking
  *
  * @author  Ether Creative
- * @package ether\bookings\elements
+ * @package ether\bookings\templating
  * @since   1.0.0
  */
 class Booking extends Element
@@ -43,7 +43,7 @@ class Booking extends Element
 	 * Plugins can get notified after a booking is reserved:
 	 *
 	 * ```php
-	 * use ether\bookings\elements\Booking;
+	 * use ether\bookings\templating\Booking;
 	 * use yii\base\Event;
 	 *
 	 * Event::on(
@@ -63,7 +63,7 @@ class Booking extends Element
 	 * Plugins can get notified after a reserved booking expires:
 	 *
 	 * ```php
-	 * use ether\bookings\elements\Booking;
+	 * use ether\bookings\templating\Booking;
 	 * use yii\base\Event;
 	 *
 	 * Event::on(
@@ -83,7 +83,7 @@ class Booking extends Element
 	 * Plugins can get notified before a booking is completed:
 	 *
 	 * ```php
-	 * use ether\bookings\elements\Booking;
+	 * use ether\bookings\templating\Booking;
 	 * use yii\base\Event;
 	 *
 	 * Event::on(
@@ -103,7 +103,7 @@ class Booking extends Element
 	 * Plugins can get notified after a booking is completed:
 	 *
 	 * ```php
-	 * use ether\bookings\elements\Booking;
+	 * use ether\bookings\templating\Booking;
 	 * use yii\base\Event;
 	 *
 	 * Event::on(
@@ -857,7 +857,7 @@ class Booking extends Element
 	protected static function defineSources (string $context = null): array
 	{
 		// TODO: All criteria should include ['isCompleted' => true]
-		// TODO: This could be improved w/ better grouping of elements (i.e. by Product / Entry Type
+		// TODO: This could be improved w/ better grouping of templating (i.e. by Product / Entry Type
 
 		$sources = [
 			'*' => [
@@ -876,16 +876,16 @@ class Booking extends Element
 		$enabledBookableElementIds = $enabledBookables->column();
 
 		$elements = (new Query())
-			->select(['content.title', 'elements.id', 'elements.type'])
-			->from(['{{%elements}} elements'])
+			->select(['content.title', 'templating.id', 'templating.type'])
+			->from(['{{%templating}} templating'])
 			->where([
-				'elements.id' => $enabledBookableElementIds,
-				'elements.enabled' => true,
-				'elements.archived' => false,
+				'templating.id' => $enabledBookableElementIds,
+				'templating.enabled' => true,
+				'templating.archived' => false,
 			])
 			->innerJoin(
 				'{{%content}} content',
-				'{{%content}}.{{%elementId}} = {{%elements}}.{{%id}} AND {{%content}}.{{%siteId}} = ' . \Craft::$app->sites->primarySite->id
+				'{{%content}}.{{%elementId}} = {{%templating}}.{{%id}} AND {{%content}}.{{%siteId}} = ' . \Craft::$app->sites->primarySite->id
 			)
 			->orderBy('content.title asc')
 			->all();

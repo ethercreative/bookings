@@ -74,7 +74,7 @@ class Install extends Migration
 			null,
 			BookableRecord::$tableName,
 			['ownerId'],
-			'{{%elements}}',
+			'{{%templating}}',
 			['id'],
 			'CASCADE',
 			null
@@ -139,7 +139,7 @@ class Install extends Migration
 			$this->db->getForeignKeyName(BookingRecord::$tableName, 'id'),
 			BookingRecord::$tableName,
 			'id',
-			'{{%elements}}',
+			'{{%templating}}',
 			'id',
 			'CASCADE',
 			null
@@ -169,7 +169,7 @@ class Install extends Migration
 			$this->db->getForeignKeyName(BookingRecord::$tableName, 'elementId'),
 			BookingRecord::$tableName,
 			'elementId',
-			'{{%elements}}',
+			'{{%templating}}',
 			'id',
 			'CASCADE',
 			null

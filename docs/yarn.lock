@@ -5802,6 +5802,12 @@ vuepress-html-webpack-plugin@^3.2.0:
     toposort "^1.0.0"
     util.promisify "1.0.0"
 
+vuepress-theme-craftdocs@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/vuepress-theme-craftdocs/-/vuepress-theme-craftdocs-1.2.1.tgz#060bbd701caf9cee548523b54291a68514a608d8"
+  dependencies:
+    vuex "^3.0.1"
+
 vuepress@^0.10.2:
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/vuepress/-/vuepress-0.10.2.tgz#4f1cd6126619f7a94ab1b08caacdf6d91c52954f"
@@ -5862,6 +5868,10 @@ vuepress@^0.10.2:
     webpack-serve "^1.0.2"
     webpackbar "^2.6.1"
     workbox-build "^3.1.0"
+
+vuex@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.0.1.tgz#e761352ebe0af537d4bb755a9b9dc4be3df7efd2"
 
 watchpack@^1.5.0:
   version "1.6.0"

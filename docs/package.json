@@ -5,5 +5,8 @@
   },
   "dependencies": {
     "vuepress": "^0.10.2"
+  },
+  "devDependencies": {
+    "vuepress-theme-craftdocs": "^1.2.1"
   }
 }

@@ -3,7 +3,13 @@ module.exports = {
 	title: "Bookings for Craft CMS",
 	description: "An advanced booking plugin for Craft CMS and Craft Commerce.",
 
+	theme: "craftdocs",
 	themeConfig: {
+		codeLanguages: {
+			php: "PHP",
+			twig: "Twig",
+		},
+
 		nav: [
 			{ text: "Core", link: "/core/" },
 			{ text: "Stand Alone", link: "/stand-alone/" },
@@ -13,13 +19,29 @@ module.exports = {
 		sidebar: {
 			"/core/": [
 				{
-					title: "Querying Elements",
+					title: "Introduction",
 					collapsable: false,
 					children: [
-						["elements/bookings", "Bookings"],
+						"concepts",
+					],
+				},
+				{
+					title: "Templating",
+					collapsable: false,
+					children: [
+						"templating/bookings",
+						"templating/availability",
 					]
 				},
 			],
 		},
-	}
+	},
+
+	markdown: {
+		anchor: { level: [2, 3] },
+		config (md) {
+			let markup = require('vuepress-theme-craftdocs/markup');
+			md.use(markup);
+		},
+	},
 };
