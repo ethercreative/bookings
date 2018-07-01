@@ -37,6 +37,10 @@ class Booking extends Element
 	// Constants
 	// =========================================================================
 
+	const STATUS_RESERVED = 0;
+	const STATUS_COMPLETED = 1;
+	const STATUS_EXPIRED = 2;
+
 	/**
 	 * @event \yii\base\Event This event is raised when a booking is reserved.
 	 *
