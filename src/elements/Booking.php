@@ -28,7 +28,7 @@ use yii\helpers\Inflector;
  * Class Booking
  *
  * @author  Ether Creative
- * @package ether\bookings\templating
+ * @package ether\bookings\elements
  * @since   1.0.0
  */
 class Booking extends Element
@@ -47,7 +47,7 @@ class Booking extends Element
 	 * Plugins can get notified after a booking is reserved:
 	 *
 	 * ```php
-	 * use ether\bookings\templating\Booking;
+	 * use ether\bookings\elements\Booking;
 	 * use yii\base\Event;
 	 *
 	 * Event::on(
@@ -67,7 +67,7 @@ class Booking extends Element
 	 * Plugins can get notified after a reserved booking expires:
 	 *
 	 * ```php
-	 * use ether\bookings\templating\Booking;
+	 * use ether\bookings\elements\Booking;
 	 * use yii\base\Event;
 	 *
 	 * Event::on(
@@ -87,7 +87,7 @@ class Booking extends Element
 	 * Plugins can get notified before a booking is completed:
 	 *
 	 * ```php
-	 * use ether\bookings\templating\Booking;
+	 * use ether\bookings\elements\Booking;
 	 * use yii\base\Event;
 	 *
 	 * Event::on(
@@ -107,7 +107,7 @@ class Booking extends Element
 	 * Plugins can get notified after a booking is completed:
 	 *
 	 * ```php
-	 * use ether\bookings\templating\Booking;
+	 * use ether\bookings\elements\Booking;
 	 * use yii\base\Event;
 	 *
 	 * Event::on(
@@ -852,14 +852,13 @@ class Booking extends Element
 
 	protected static function defineSources (string $context = null): array
 	{
-		// TODO: All criteria should include ['status' => self::STATUS_COMPLETED]
-		// TODO: This could be improved w/ better grouping of templating (i.e. by Product / Entry Type
+		// TODO: This could be improved w/ better grouping of elements (i.e. by Product / Entry Type)
 
 		$sources = [
 			'*' => [
 				'key' => '*',
 				'label' => \Craft::t('bookings', 'All Bookings'),
-//				'criteria' => ['isCompleted' => true],
+				'criteria' => ['status' => self::STATUS_COMPLETED],
 				'defaultSort' => ['slotStart', 'desc']
 			],
 		];
@@ -872,16 +871,16 @@ class Booking extends Element
 		$enabledBookableElementIds = $enabledBookables->column();
 
 		$elements = (new Query())
-			->select(['content.title', 'templating.id', 'templating.type'])
-			->from(['{{%templating}} templating'])
+			->select(['content.title', 'elements.id', 'elements.type'])
+			->from(['{{%elements}} elements'])
 			->where([
-				'templating.id' => $enabledBookableElementIds,
-				'templating.enabled' => true,
-				'templating.archived' => false,
+				'elements.id' => $enabledBookableElementIds,
+				'elements.enabled' => true,
+				'elements.archived' => false,
 			])
 			->innerJoin(
 				'{{%content}} content',
-				'{{%content}}.{{%elementId}} = {{%templating}}.{{%id}} AND {{%content}}.{{%siteId}} = ' . \Craft::$app->sites->primarySite->id
+				'{{%content}}.{{%elementId}} = {{%elements}}.{{%id}} AND {{%content}}.{{%siteId}} = ' . \Craft::$app->sites->primarySite->id
 			)
 			->orderBy('content.title asc')
 			->all();
@@ -912,7 +911,10 @@ class Booking extends Element
 				$sources[$key] = [
 					'key' => $key,
 					'label' => $element['title'],
-					'criteria' => ['elementId' => $element['id']],
+					'criteria' => [
+						'elementId' => $element['id'],
+						'status' => self::STATUS_COMPLETED,
+					],
 					'defaultSort' => ['slotStart', 'desc']
 				];
 			}

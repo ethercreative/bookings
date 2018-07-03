@@ -23,7 +23,7 @@ use ether\bookings\records\BookingRecord;
  * Class BookingQuery
  *
  * @author  Ether Creative
- * @package ether\bookings\templating\db
+ * @package ether\bookings\elements\db
  * @since   1.0.0
  */
 class BookingQuery extends ElementQuery
