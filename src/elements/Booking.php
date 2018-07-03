@@ -37,9 +37,9 @@ class Booking extends Element
 	// Constants
 	// =========================================================================
 
-	const STATUS_RESERVED = 'reserved';
-	const STATUS_COMPLETED = 'completed';
-	const STATUS_EXPIRED = 'expired';
+	const STATUS_RESERVED = 0;
+	const STATUS_COMPLETED = 1;
+	const STATUS_EXPIRED = 2;
 
 	/**
 	 * @event \yii\base\Event This event is raised when a booking is reserved.
@@ -229,9 +229,18 @@ class Booking extends Element
 	public static function statuses (): array
 	{
 		return [
-			self::STATUS_RESERVED => \Craft::t('bookings', 'Reserved'),
-			self::STATUS_COMPLETED => \Craft::t('bookings', 'Completed'),
-			self::STATUS_EXPIRED => \Craft::t('bookings', 'Expired'),
+			self::STATUS_RESERVED => [
+				'label' => \Craft::t('bookings', 'Reserved'),
+				'color' => 'orange',
+			],
+			self::STATUS_COMPLETED => [
+				'label' => \Craft::t('bookings', 'Completed'),
+				'color' => 'green',
+			],
+			self::STATUS_EXPIRED => [
+				'label' => \Craft::t('bookings', 'Expired'),
+				'color' => 'red',
+			],
 		];
 	}
 
@@ -667,11 +676,20 @@ class Booking extends Element
 	}
 
 	/**
-	 * @return int
+	 * @return string - A user friendly version of the status
 	 */
-	public function getStatus ()
+	public function getReadableStatus ()
 	{
-		return $this->status;
+		switch ($this->status) {
+			case self::STATUS_RESERVED:
+				return 'reserved';
+			case self::STATUS_COMPLETED:
+				return 'completed';
+			case self::STATUS_EXPIRED:
+				return 'expired';
+			default:
+				return null;
+		}
 	}
 
 	/**

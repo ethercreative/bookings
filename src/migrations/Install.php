@@ -9,7 +9,6 @@
 namespace ether\bookings\migrations;
 
 use craft\db\Migration;
-use ether\bookings\elements\Booking;
 use ether\bookings\records\BookableRecord;
 use ether\bookings\records\BookingRecord;
 
@@ -102,14 +101,7 @@ class Install extends Migration
 			[
 				'id' => $this->primaryKey(),
 
-				'status'            => $this->enum(
-					'status',
-					[
-						Booking::STATUS_RESERVED,
-						Booking::STATUS_COMPLETED,
-						Booking::STATUS_EXPIRED,
-					]
-				)->notNull(),
+				'status'            => $this->integer(1)->notNull(),
 				'number'            => $this->string(32)->notNull(),
 				'fieldId'           => $this->integer()->notNull(),
 				'elementId'         => $this->integer()->notNull(),
@@ -120,7 +112,7 @@ class Install extends Migration
 				'customerEmail'     => $this->string()->notNull(),
 				'slotStart'         => $this->dateTime()->notNull(),
 				'slotEnd'           => $this->dateTime(),
-				'dateBooked'        => $this->dateTime()->notNull(),
+				'dateBooked'        => $this->dateTime(),
 				'reservationExpiry' => $this->dateTime(),
 
 				'dateCreated' => $this->dateTime()->notNull(),
