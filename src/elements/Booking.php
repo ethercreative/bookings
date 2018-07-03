@@ -205,6 +205,11 @@ class Booking extends Element
 		return true;
 	}
 
+	public static function hasStatuses (): bool
+	{
+		return true;
+	}
+
 	/**
 	 * @inheritdoc
 	 */
@@ -219,6 +224,15 @@ class Booking extends Element
 	public static function find(): ElementQueryInterface
 	{
 		return new BookingQuery(static::class);
+	}
+
+	public static function statuses (): array
+	{
+		return [
+			self::STATUS_RESERVED => \Craft::t('bookings', 'Reserved'),
+			self::STATUS_COMPLETED => \Craft::t('bookings', 'Completed'),
+			self::STATUS_EXPIRED => \Craft::t('bookings', 'Expired'),
+		];
 	}
 
 	// Attributes

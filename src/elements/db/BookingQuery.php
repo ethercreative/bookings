@@ -109,18 +109,6 @@ class BookingQuery extends ElementQuery
 	// -------------------------------------------------------------------------
 
 	/**
-	 * @param mixed $value
-	 *
-	 * @return static
-	 */
-	public function status ($value)
-	{
-		$this->status = $value;
-
-		return $this;
-	}
-
-	/**
 	 * @param string $value
 	 *
 	 * @return static

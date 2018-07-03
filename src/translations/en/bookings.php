@@ -55,4 +55,8 @@ return [
 	'When' => 'When',
 	'Until' => 'Until',
 	'Booking Status' => 'Booking Status',
+
+	'Reserved' => 'Reserved',
+	'Completed' => 'Completed',
+	'Expired' => 'Expired',
 ];
