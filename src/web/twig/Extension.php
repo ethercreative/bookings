@@ -10,6 +10,7 @@ namespace ether\bookings\web\twig;
 
 use craft\helpers\Template;
 use ether\bookings\elements\Booking;
+use ether\bookings\enums\BookableType;
 use ether\bookings\models\Bookable;
 
 
@@ -32,6 +33,9 @@ class Extension extends \Twig_Extension implements \Twig_Extension_GlobalsInterf
 			'BOOKING_RESERVED'  => Booking::STATUS_RESERVED,
 			'BOOKING_COMPLETED' => Booking::STATUS_COMPLETED,
 			'BOOKING_EXPIRED'   => Booking::STATUS_EXPIRED,
+
+			'BOOKABLE_FIXED'    => BookableType::FIXED,
+			'BOOKABLE_FLEXIBLE' => BookableType::FLEXIBLE,
 		];
 	}
 

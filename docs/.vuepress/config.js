@@ -5,6 +5,14 @@ module.exports = {
 
 	theme: "craftdocs",
 	themeConfig: {
+		repo: 'ethercreative/bookings',
+		repoLabel: 'Source',
+		docsRepo: 'ethercreative/bookings',
+		docsDir: 'docs',
+		docsBranch: 'master',
+		editLinks: true,
+		editLinkText: 'Suggest an improvement',
+
 		codeLanguages: {
 			php: "PHP",
 			twig: "Twig",
@@ -12,8 +20,8 @@ module.exports = {
 
 		nav: [
 			{ text: "Core", link: "/core/" },
-			{ text: "Stand Alone", link: "/stand-alone/" },
 			{ text: "Commerce", link: "/commerce/" },
+			{ text: "Changelog", link: "https://github.com/ethercreative/bookings/blob/master/CHANGELOG.md" },
 		],
 
 		sidebar: {
@@ -29,9 +37,19 @@ module.exports = {
 					title: "Templating",
 					collapsable: false,
 					children: [
+						"templating/functions",
+						"templating/global-variables",
 						"templating/bookings",
 						"templating/availability",
 					]
+				},
+				{
+					title: "Example Templates",
+					collapsable: false,
+					children: [
+						"example-templates/reserve-slot",
+						"example-templates/confirm-booking",
+					],
 				},
 			],
 		},

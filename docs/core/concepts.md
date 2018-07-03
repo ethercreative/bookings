@@ -10,6 +10,14 @@ These are the core concepts and key terminology of *Bookings*.
 
 TODO
 
+### Fixed
+
+TODO
+
+### Flexible
+
+TODO
+
 ## Reservation
 
 TODO

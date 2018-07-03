@@ -27,9 +27,9 @@ craft.bookings()
 
 ## Parameters
 
-### `status(string)`
+### `status(int)`
 
-Find bookings by the given status.
+Find bookings by the given status. You can view all available statuses [here](./global-variables.md#statuses).
 
 ::: code
 

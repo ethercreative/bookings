@@ -426,12 +426,6 @@ class BookingQuery extends ElementQuery
 	{
 		$table = BookingRecord::$tableNameRaw;
 
-
-		\Craft::info(
-			print_r($this, true),
-			'bookings'
-		);
-
 		$this->joinElementTable($table);
 
 		$this->query->select([
@@ -502,12 +496,6 @@ class BookingQuery extends ElementQuery
 		$col = BookingRecord::$tableName . '.status';
 
 		switch ($status) {
-			case 'reserved':
-				return [$col => Booking::STATUS_RESERVED];
-			case 'completed':
-				return [$col => Booking::STATUS_COMPLETED];
-			case 'expired':
-				return [$col => Booking::STATUS_EXPIRED];
 			case Booking::STATUS_RESERVED:
 			case Booking::STATUS_COMPLETED:
 			case Booking::STATUS_EXPIRED:

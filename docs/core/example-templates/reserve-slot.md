@@ -1,11 +1,8 @@
 ---
-title: Stand Alone
-sidebar: auto
+title: Reserve a Slot
 ---
 
-# Stand Alone
-
-## Reserve a slot
+# Reserve a Slot
 
 ```twig
 <form method="post">
@@ -26,7 +23,7 @@ sidebar: auto
 	<input type="time" placeholder="Start Time" id="startTime" value="{{ booking is defined ? booking.slotStart|date('g:i') }}">
 	<input type="hidden" name="slotStart" id="slotStart" value="{{ booking is defined ? booking.slotStart|date('Y-m-d g:i') }}">
 
-	{% if entry.bookable.bookableType == 'flexible' %}
+	{% if entry.bookable.bookableType == BOOKABLE_FLEXIBLE %}
 		<br>
 		<input type="date" placeholder="End Date" id="endDate" value="{{ booking is defined ? booking.slotEnd|date('Y-m-d') }}">
 		<input type="time" placeholder="End Time" id="endTime" value="{{ booking is defined ? booking.slotEnd|date('g:i') }}">
@@ -36,19 +33,4 @@ sidebar: auto
 	<br>
 	<button>Book</button>
 </form>
-```
-
-## Confirm a booking
-
-```twig
-{% for booking in craft.bookings.email('customers@email.com').all() %}
-    {% if not booking.isCompleted and not booking.expired %}
-        <form method="post">
-            {{ csrfInput() }}
-            {{ confirmBookingInput(booking) }}
-            <input type="hidden" name="action" value="bookings/book/confirm">
-            <button>Confirm</button>
-        </form>
-    {% endif %}
-{% endfor %}
 ```
