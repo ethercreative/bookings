@@ -27,22 +27,20 @@ craft.bookings()
 
 ## Parameters
 
-### `completed(bool)`
+### `status(string)`
 
-Find bookings that are or are not marked as completed. Bookings marked as not 
-completed are considered [reserved](../concepts.md#reservation) or [expired](../concepts.md#expiration).
-The parameter must be a boolean.
+Find bookings by the given status.
 
 ::: code
 
 ```twig
-{% set query = craft.bookings.completed(true).all() %}
+{% set query = craft.bookings.status(BOOKING_COMPLETED).all() %}
 ```
 
 ```php
 use ether\bookings\elements\Booking;
 
-Booking::find()->completed(true)->all();
+Booking::find()->status(Booking::STATUS_COMPLETED)->all();
 ```
 
 :::
