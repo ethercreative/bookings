@@ -37,9 +37,9 @@ class Booking extends Element
 	// Constants
 	// =========================================================================
 
-	const STATUS_RESERVED = 0;
-	const STATUS_COMPLETED = 1;
-	const STATUS_EXPIRED = 2;
+	const STATUS_RESERVED = 'reserved';
+	const STATUS_COMPLETED = 'completed';
+	const STATUS_EXPIRED = 'expired';
 
 	/**
 	 * @event \yii\base\Event This event is raised when a booking is reserved.
@@ -127,8 +127,8 @@ class Booking extends Element
 	/** @inheritdoc */
 	public $id;
 
-	/** @var bool - Whether or not the booking is completed */
-	public $isCompleted = false;
+	/** @var int - The current status of the booking */
+	public $status = self::STATUS_RESERVED;
 
 	/** @var string - A unique identifier for this booking */
 	public $number;
@@ -165,9 +165,6 @@ class Booking extends Element
 
 	/** @var \DateTime|null - The time this booking reservation will expire (if null, this is a complete booking) */
 	public $reservationExpiry = null;
-
-	/** @var bool - If true, this booking has expired */
-	public $expired = false;
 
 	// Private Properties
 	// -------------------------------------------------------------------------
@@ -491,10 +488,10 @@ class Booking extends Element
 	 */
 	public function markAsComplete (): bool
 	{
-		if ($this->isCompleted)
+		if ($this->status === Booking::STATUS_COMPLETED)
 			return true;
 
-		$this->isCompleted = true;
+		$this->status = Booking::STATUS_COMPLETED;
 		$this->reservationExpiry = null;
 		$this->dateBooked = Db::prepareDateForDb(new \DateTime());
 
@@ -527,7 +524,7 @@ class Booking extends Element
 	 */
 	public function expireBooking (): bool
 	{
-		if ($this->expired || $this->isCompleted)
+		if ($this->status !== Booking::STATUS_RESERVED)
 			return true;
 
 		$settings = Bookings::getInstance()->settings;
@@ -538,8 +535,7 @@ class Booking extends Element
 		if ($this->orderId && $this->lineItemId)
 			$this->getOrder()->removeLineItem($this->getLineItem());
 
-		$this->expired = true;
-//		$this->reservationExpiry = null;
+		$this->status = Booking::STATUS_EXPIRED;
 
 		if (!\Craft::$app->elements->saveElement($this))
 		{
@@ -583,7 +579,7 @@ class Booking extends Element
 				throw new \Exception('Invalid booking ID: ' . $this->id);
 		}
 
-		$record->isCompleted   = $this->isCompleted;
+		$record->status        = $this->status;
 		$record->number        = $this->number;
 		$record->fieldId       = $this->fieldId;
 		$record->elementId     = $this->elementId;
@@ -595,16 +591,15 @@ class Booking extends Element
 		$record->slotStart     = $this->slotStart;
 		$record->slotEnd       = $this->slotEnd;
 		$record->dateBooked    = $this->dateBooked;
-		$record->expired       = $this->expired;
 
-		if ($isNew && !$this->isCompleted)
+		if ($isNew)
 			$record->reservationExpiry = Db::prepareDateForDb(new \DateTime());
 		else
 			$record->reservationExpiry = $this->reservationExpiry;
 
 		$record->save(false);
 
-		if ($isNew && !$this->isCompleted && $this->hasEventHandlers(self::EVENT_AFTER_BOOKING_RESERVED))
+		if ($isNew && $this->status === Booking::STATUS_RESERVED && $this->hasEventHandlers(self::EVENT_AFTER_BOOKING_RESERVED))
 			$this->trigger(self::EVENT_AFTER_BOOKING_RESERVED);
 
 		return parent::afterSave($isNew);
@@ -655,6 +650,14 @@ class Booking extends Element
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getStatus ()
+	{
+		return $this->status;
 	}
 
 	/**
@@ -786,23 +789,13 @@ class Booking extends Element
 	}
 
 	/**
-	 * TODO: Remove me (also remove from table attrs)
-	 *
-	 * @return string
-	 */
-	public function getBookingStatus ()
-	{
-		return $this->isCompleted ? 'Booked' : 'Reserved';
-	}
-
-	/**
 	 * The date/time this booking will expire
 	 *
 	 * @return \DateTime|null
 	 */
 	public function getExpiryTime ()
 	{
-		if (!$this->reservationExpiry || $this->isCompleted || $this->expired)
+		if (!$this->reservationExpiry || $this->status !== self::STATUS_RESERVED)
 			return null;
 
 		$dur = Bookings::getInstance()->settings->expiryDuration;
@@ -821,7 +814,6 @@ class Booking extends Element
 			'slotStart' => ['label' => \Craft::t('bookings', 'When')],
 			'slotEnd' => ['label' => \Craft::t('bookings', 'Until')],
 			'customerEmail' => ['label' => \Craft::t('bookings', 'Customer Email')],
-			'bookingStatus' => ['label' => \Craft::t('bookings', 'Booking Status')],
 			'dateBooked' => ['label' => \Craft::t('bookings', 'Date Booked')],
 			'dateCreated' => ['label' => \Craft::t('bookings', 'Date Created')],
 			'dateUpdated' => ['label' => \Craft::t('bookings', 'Date Updated')],
@@ -860,7 +852,7 @@ class Booking extends Element
 
 	protected static function defineSources (string $context = null): array
 	{
-		// TODO: All criteria should include ['isCompleted' => true]
+		// TODO: All criteria should include ['status' => self::STATUS_COMPLETED]
 		// TODO: This could be improved w/ better grouping of templating (i.e. by Product / Entry Type
 
 		$sources = [

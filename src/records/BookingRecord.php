@@ -17,7 +17,7 @@ use yii\db\ActiveQueryInterface;
  * Class BookingRecord
  *
  * @property int $id
- * @property bool $isCompleted
+ * @property int $status
  * @property string $number
  * @property int $fieldId
  * @property int $elementId
@@ -30,7 +30,6 @@ use yii\db\ActiveQueryInterface;
  * @property \DateTime $slotEnd
  * @property \DateTime $dateBooked
  * @property \DateTime $reservationExpiry
- * @property bool $expired
  *
  * @author  Ether Creative
  * @package ether\bookings\records

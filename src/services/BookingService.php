@@ -110,12 +110,13 @@ class BookingService extends Component
 
 		$db = \Craft::$app->db;
 		$bookingsTable = BookingRecord::$tableName;
+		$expired = Booking::STATUS_EXPIRED;
 
 		// 1. Check start date
 		$startQuery = <<<SQL
 SELECT count(*) FROM $bookingsTable
 WHERE "slotStart" = '$start'
-AND "expired" = FALSE
+AND "status" <> '$expired'
 $id
 LIMIT 1
 SQL;
@@ -134,7 +135,7 @@ SQL;
 		$endQuery = <<<SQL
 SELECT count(*) FROM $bookingsTable
 WHERE "slotEnd" = '$end'
-AND "expired" = FALSE
+AND "status" <> '$expired'
 $id
 LIMIT 1
 SQL;
@@ -147,7 +148,7 @@ SQL;
 SELECT count(*) FROM $bookingsTable
 WHERE "slotEnd" > '$start' 
 OR "slotStart" < '$end'
-AND "expired" = FALSE
+AND "status" <> '$expired'
 $id
 LIMIT 1
 SQL;
@@ -216,7 +217,7 @@ SQL;
 
 		$booking->expireBooking();
 
-		if ($booking->expired && !$includeExpired)
+		if ($booking->status === Booking::STATUS_EXPIRED && !$includeExpired)
 			return null;
 
 		return $booking;

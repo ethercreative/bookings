@@ -9,6 +9,7 @@
 namespace ether\bookings\migrations;
 
 use craft\db\Migration;
+use ether\bookings\elements\Booking;
 use ether\bookings\records\BookableRecord;
 use ether\bookings\records\BookingRecord;
 
@@ -74,7 +75,7 @@ class Install extends Migration
 			null,
 			BookableRecord::$tableName,
 			['ownerId'],
-			'{{%templating}}',
+			'{{%elements}}',
 			['id'],
 			'CASCADE',
 			null
@@ -101,7 +102,14 @@ class Install extends Migration
 			[
 				'id' => $this->primaryKey(),
 
-				'isCompleted'       => $this->boolean(),
+				'status'            => $this->enum(
+					'status',
+					[
+						Booking::STATUS_RESERVED,
+						Booking::STATUS_COMPLETED,
+						Booking::STATUS_EXPIRED,
+					]
+				),
 				'number'            => $this->string(32),
 				'fieldId'           => $this->integer()->notNull(),
 				'elementId'         => $this->integer()->notNull(),
@@ -114,7 +122,6 @@ class Install extends Migration
 				'slotEnd'           => $this->dateTime(),
 				'dateBooked'        => $this->dateTime(),
 				'reservationExpiry' => $this->dateTime(),
-				'expired'           => $this->boolean()->notNull(),
 
 				'dateCreated' => $this->dateTime()->notNull(),
 				'dateUpdated' => $this->dateTime()->notNull(),
@@ -139,7 +146,7 @@ class Install extends Migration
 			$this->db->getForeignKeyName(BookingRecord::$tableName, 'id'),
 			BookingRecord::$tableName,
 			'id',
-			'{{%templating}}',
+			'{{%elements}}',
 			'id',
 			'CASCADE',
 			null
@@ -169,7 +176,7 @@ class Install extends Migration
 			$this->db->getForeignKeyName(BookingRecord::$tableName, 'elementId'),
 			BookingRecord::$tableName,
 			'elementId',
-			'{{%templating}}',
+			'{{%elements}}',
 			'id',
 			'CASCADE',
 			null

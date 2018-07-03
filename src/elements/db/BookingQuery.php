@@ -15,6 +15,7 @@ use craft\elements\db\ElementQuery;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
+use ether\bookings\elements\Booking;
 use ether\bookings\records\BookingRecord;
 
 
@@ -31,8 +32,8 @@ class BookingQuery extends ElementQuery
 	// Properties
 	// =========================================================================
 
-	/** @var bool - Whether or not the booking is completed */
-	public $isCompleted = false;
+	/** @var int - The current status of the booking */
+	public $status;
 
 	/** @var string - A unique identifier for this booking */
 	public $number;
@@ -108,13 +109,13 @@ class BookingQuery extends ElementQuery
 	// -------------------------------------------------------------------------
 
 	/**
-	 * @param bool $value
+	 * @param mixed $value
 	 *
 	 * @return static
 	 */
-	public function completed (bool $value)
+	public function status ($value)
 	{
-		$this->isCompleted = $value;
+		$this->status = $value;
 
 		return $this;
 	}
@@ -193,18 +194,6 @@ class BookingQuery extends ElementQuery
 	public function email (string $value)
 	{
 		$this->customerEmail = $value;
-
-		return $this;
-	}
-
-	/**
-	 * @param bool $value
-	 *
-	 * @return static
-	 */
-	public function expired (bool $value)
-	{
-		$this->expired = $value;
 
 		return $this;
 	}
@@ -453,7 +442,7 @@ class BookingQuery extends ElementQuery
 
 		$this->query->select([
 			$table . '.id',
-			$table . '.isCompleted',
+			$table . '.status',
 			$table . '.number',
 			$table . '.fieldId',
 			$table . '.elementId',
@@ -466,12 +455,11 @@ class BookingQuery extends ElementQuery
 			$table . '.slotEnd',
 			$table . '.dateBooked',
 			$table . '.reservationExpiry',
-			$table . '.expired',
 			$table . '.dateUpdated',
 		]);
 
-		if ($this->isCompleted)
-			$this->subQuery->andWhere(Db::parseParam($table . '.isCompleted', $this->isCompleted));
+		if ($this->status)
+			$this->subQuery->andWhere(Db::parseParam($table . '.status', $this->status));
 
 		if ($this->number)
 			$this->subQuery->andWhere(Db::parseParam($table . '.number', $this->number));
@@ -508,9 +496,6 @@ class BookingQuery extends ElementQuery
 
 		if ($this->reservationExpiry)
 			$this->subQuery->andWhere(Db::parseParam($table . '.reservationExpiry', $this->reservationExpiry));
-
-		if ($this->expired)
-			$this->subQuery->andWhere(Db::parseParam($table . '.expired', $this->expired));
 
 		if ($this->dateUpdated)
 			$this->subQuery->andWhere(Db::parseParam($table . '.dateUpdated', $this->dateUpdated));

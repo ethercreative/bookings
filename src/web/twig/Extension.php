@@ -20,11 +20,20 @@ use ether\bookings\models\Bookable;
  * @package ether\bookings\web\twig
  * @since   1.0.0
  */
-class Extension extends \Twig_Extension
+class Extension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
 
 	// Twig
 	// =========================================================================
+
+	public function getGlobals ()
+	{
+		return [
+			'BOOKING_RESERVED'  => Booking::STATUS_RESERVED,
+			'BOOKING_COMPLETED' => Booking::STATUS_COMPLETED,
+			'BOOKING_EXPIRED'   => Booking::STATUS_EXPIRED,
+		];
+	}
 
 	public function getFunctions ()
 	{
