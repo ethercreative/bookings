@@ -8,9 +8,14 @@
 
 namespace ether\bookings\common;
 
+use craft\db\Query;
+use craft\helpers\Db;
+use ether\bookings\elements\Booking;
 use ether\bookings\enums\Frequency;
 use ether\bookings\models\Bookable;
+use ether\bookings\models\RecursionRule;
 use ether\bookings\models\Slot;
+use ether\bookings\records\BookingRecord;
 
 
 /**
@@ -54,10 +59,10 @@ class Availability
 
 		$this->_start = $baseRule->start->format(\DateTime::W3C);
 
-		if ($baseRule->until)
+		if ($baseRule->until && $baseRule->repeats === RecursionRule::REPEATS_UNTIL)
 			$this->_end = $baseRule->until->format(\DateTime::W3C);
 
-		if ($baseRule->count && $baseRule->count < 1000)
+		if ($baseRule->count && $baseRule->count < 1000 && $baseRule->repeats === RecursionRule::REPEATS_UNTIL)
 			$this->_count = $baseRule->count;
 	}
 
@@ -113,17 +118,6 @@ class Availability
 	 */
 	public function count ($value)
 	{
-		if ($value > 1000)
-		{
-			\Craft::warning(
-				\Craft::t(
-					'bookings',
-					'Attempting to retrieve more than 1000 slots can have an impact on performance!'
-				),
-				'bookings'
-			);
-		}
-
 		$this->_count = $value;
 
 		return $this;
@@ -132,15 +126,31 @@ class Availability
 	// Methods: Execution
 	// -------------------------------------------------------------------------
 
+	/**
+	 * @return array
+	 * @throws \yii\base\Exception
+	 */
 	public function all (): array
 	{
 		$slots = [];
+		$bookings = $this->_bookings();
 
-		// TODO: Get slot count from DB
+		// TODO: Booking count needs to take flexible bookings into consideration. Currently only looks at start Date :(
 
 		/** @var \DateTime $slot */
-		foreach ($this->_slots() as $slot)
-			$slots[] = new Slot($this->_field, $slot, 0);
+		foreach ($this->_slots() as $i => $slot)
+		{
+			if (!$this->_end && $this->_count && $i > $this->_count - 1)
+				break;
+
+			$dbDate = $slot->format('Y-m-d H:i:s');
+
+			$slots[] = new Slot(
+				$this->_field,
+				$slot,
+				array_key_exists($dbDate, $bookings) ? $bookings[$dbDate] : 0
+			);
+		}
 
 		return $slots;
 	}
@@ -159,6 +169,45 @@ class Availability
 			return $this->_field->getSlotsInRangeAsIterable($this->_start, $this->_end);
 
 		return $this->_field->getSlotsFromAsIterable($this->_start);
+	}
+
+	/**
+	 * @return array
+	 * @throws \yii\base\Exception
+	 */
+	private function _bookings ()
+	{
+		$fieldId = $this->_field->fieldId;
+		$elementId = $this->_field->ownerId;
+
+		$results = (new Query())
+			->select('slotStart, count(*)')
+			->from(BookingRecord::$tableName)
+			->where([
+				'fieldId' => $fieldId,
+				'elementId' => $elementId,
+				'status' => [Booking::STATUS_RESERVED, Booking::STATUS_COMPLETED],
+			])
+			->andWhere(['>=', 'slotStart', $this->_start]);
+
+		if ($this->_end)
+			$results->andWhere(['<=', 'slotEnd', $this->_end]);
+		else if ($this->_count)
+			$results->andWhere(['<=', 'slotEnd', $this->_endDateFromCount()]);
+
+		$results = $results->groupBy('slotStart')->pairs();
+
+		return $results;
+	}
+
+	/**
+	 * @return string
+	 */
+	private function _endDateFromCount ()
+	{
+		$baseRule = $this->_field->baseRule;
+		$mod = '+' . (($baseRule->duration + $baseRule->interval) * $this->_count) . ' ' . Frequency::toUnit($baseRule->frequency);
+		return (new \DateTime($this->_start))->modify($mod)->format(\DateTime::W3C);
 	}
 
 }

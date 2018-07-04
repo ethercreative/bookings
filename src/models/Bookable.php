@@ -32,13 +32,13 @@ class Bookable extends Model
 	/** @var int */
 	public $id;
 
-	/** @var int */
+	/** @var int - TODO: Rename to elementId? */
 	public $ownerId;
 
 	/** @var int - TODO: Remove. Field not translatable */
 	public $ownerSiteId;
 
-	/** @var int */
+	/** @var int - TODO: I think this ends up being the same as $id */
 	public $fieldId;
 
 	/** @var \DateTime */

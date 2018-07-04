@@ -9,6 +9,7 @@
 namespace ether\bookings\models;
 
 use ether\bookings\enums\Frequency;
+use ether\bookings\helpers\SlotDateTime;
 
 
 /**
@@ -24,14 +25,20 @@ class Slot
 	// Properties
 	// =========================================================================
 
-	/** @var \DateTime */
+	/** @var \DateTime|string */
 	public $start;
 
-	/** @var \DateTime */
+	/** @var \DateTime|string */
 	public $end;
 
 	/** @var int - The available capacity on this slot */
 	public $capacity;
+
+	/** @var boolean */
+	public $hasBookings;
+
+	/** @var boolean */
+	public $fullyBooked;
 
 	// Constructor
 	// =========================================================================
@@ -43,9 +50,13 @@ class Slot
 		$durationModifier = $baseRule->duration;
 		$durationModifier .= ' ' . Frequency::toUnit($baseRule->frequency);
 
+		$start = new SlotDateTime($start->format(DATE_ATOM));
+
 		$this->start = $start;
 		$this->end = $start->modify($durationModifier);
 		$this->capacity = $bookable->slotMultiplier - $bookingCount;
+		$this->hasBookings = $bookingCount > 0;
+		$this->fullyBooked = $this->capacity === 0;
 	}
 
 }

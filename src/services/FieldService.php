@@ -95,6 +95,10 @@ class FieldService extends Component
 			$model = new Bookable();
 		}
 
+		// Ensure we have the field and element ID stored
+		$model->fieldId = $id;
+		$model->ownerId = $ownerId;
+
 		return $model;
 	}
 

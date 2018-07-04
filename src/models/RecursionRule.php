@@ -25,11 +25,16 @@ class RecursionRule extends Model
 	// Properties
 	// =========================================================================
 
+	const REPEATS_COUNT = 'count';
+	const REPEATS_UNTIL = 'until';
+	const REPEATS_FOREVER = 'forever';
+
 	// Properties: Public
 	// -------------------------------------------------------------------------
 
 	/**
 	 * @var string The repetition the rule is restricted by (i.e. count, until)
+	 *             TODO: Use the constants above (pass to field type?)
 	 */
 	public $repeats;
 
@@ -130,6 +135,14 @@ class RecursionRule extends Model
 
 	// Methods: Public
 	// -------------------------------------------------------------------------
+
+	public function datetimeAttributes (): array
+	{
+		return array_merge([
+			'start',
+			'until'
+		], parent::datetimeAttributes());
+	}
 
 	public function rules ()
 	{
