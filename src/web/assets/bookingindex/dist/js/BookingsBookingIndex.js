@@ -7,7 +7,7 @@ Craft.Bookings.BookingIndex = Craft.BaseElementIndex.extend({
 	// Properties
 	// =========================================================================
 
-	status: 1,
+	status: window.__bookingsStatus || 1,
 
 });
 
