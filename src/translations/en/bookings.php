@@ -59,4 +59,6 @@ return [
 	'Reserved' => 'Reserved',
 	'Completed' => 'Completed',
 	'Expired' => 'Expired',
+
+	'Attempting to retrieve more than 1000 slots can have an impact on performance!' => 'Attempting to retrieve more than 1000 slots can have an impact on performance!',
 ];

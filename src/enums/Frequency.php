@@ -30,5 +30,28 @@ abstract class Frequency extends Enum
 	const Hourly = 'HOURLY';
 	const Minutely = 'MINUTELY';
 
+	// Methods
+	// =========================================================================
+
+	public static function toUnit ($frequency)
+	{
+		switch ($frequency)
+		{
+			case self::Yearly:
+				return 'years';
+			case self::Monthly:
+				return 'months';
+			case self::Weekly:
+				return 'weeks';
+			case self::Daily:
+				return 'days';
+			case self::Hourly:
+				return 'hours';
+			case self::Minutely:
+			default:
+				return 'minutes';
+		}
+	}
+
 
 }

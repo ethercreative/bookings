@@ -8,8 +8,11 @@
 
 namespace ether\bookings\web\twig;
 
+use craft\elements\db\ElementQueryInterface;
+use ether\bookings\common\Availability;
 use ether\bookings\elements\Booking;
 use ether\bookings\elements\db\BookingQuery;
+use ether\bookings\models\Bookable;
 use yii\base\Behavior;
 
 
@@ -28,7 +31,7 @@ class CraftVariableBehavior extends Behavior
 	 *
 	 * @param mixed $criteria
 	 *
-	 * @return BookingQuery
+	 * @return BookingQuery|ElementQueryInterface
 	 */
 	public function bookings ($criteria = null): BookingQuery
 	{
@@ -38,6 +41,18 @@ class CraftVariableBehavior extends Behavior
 			\Craft::configure($query, $criteria);
 
 		return $query;
+	}
+
+	/**
+	 * {{ craft.availability(myBookableField) }}
+	 *
+	 * @param Bookable $field
+	 *
+	 * @return Availability
+	 */
+	public function availability (Bookable $field): Availability
+	{
+		return new Availability($field);
 	}
 
 }

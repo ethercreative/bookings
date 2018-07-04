@@ -238,6 +238,36 @@ class Bookable extends Model
 	}
 
 	/**
+	 * Gets all the slots from te given start as an iterable
+	 *
+	 * @param \DateTime|string $start
+	 *
+	 * @return RSet|\Iterator|\ArrayAccess|\Countable
+	 */
+	public function getSlotsFromAsIterable ($start)
+	{
+		if (!$start instanceof \DateTime)
+			$start = new \DateTime($start);
+
+		$baseStart = $this->baseRule->start;
+
+		$set = clone $this->_getSet();
+
+		// If the start time is after the base start time, exclude all slots
+		// between those two times
+		if ($start->getTimestamp() > $baseStart->getTimestamp())
+		{
+			$set->addExRule([
+				'FREQ'    => RRule::SECONDLY,
+				'DTSTART' => $baseStart,
+				'UNTIL'   => $start,
+			]);
+		}
+
+		return $set;
+	}
+
+	/**
 	 * Gets all the slots withing the given range as an array
 	 *
 	 * @param \DateTime|string $start
@@ -260,25 +290,7 @@ class Bookable extends Model
 	 */
 	public function getSlotsFrom ($start, $count = 100): array
 	{
-		if (!$start instanceof \DateTime)
-			$start = new \DateTime($start);
-
-		$baseStart = $this->baseRule->start;
-
-		$set = clone $this->_getSet();
-
-		// If the start time is after the base start time, exclude all slots
-		// between those two times
-		if ($start->getTimestamp() > $baseStart->getTimestamp())
-		{
-			$set->addExRule([
-				'FREQ'    => 'SECONDLY',
-				'DTSTART' => $baseStart,
-				'UNTIL'   => $start,
-			]);
-		}
-
-		return $set->getOccurrences($count);
+		return $this->getSlotsFromAsIterable($start)->getOccurrences($count);
 	}
 
 	/**
