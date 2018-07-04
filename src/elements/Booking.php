@@ -157,7 +157,14 @@ class Booking extends Element
 	/** @var \DateTime - The slot that was booked */
 	public $slotStart;
 
-	/** @var \DateTime - The end slot that was booked (if booking is flexible) */
+	/**
+	 * @var \DateTime - The end slot that was booked (if booking is flexible)
+	 *
+	 * NOTE:
+	 * This is the START TIME of the END SLOT, not the end time of the entire
+	 * booking. For that use $this->slotEnd + $this->getField()->baseRule->duration in $this->getField()->baseRule->frequency
+	 * TODO: Write getter/helper that does this
+	 */
 	public $slotEnd;
 
 	/** @var \DateTime - The time the booking was placed */

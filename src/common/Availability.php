@@ -145,6 +145,8 @@ class Availability
 
 			$dbDate = $slot->format('Y-m-d H:i:s');
 
+			// TODO: Get all bookings by timestamp
+
 			$slots[] = new Slot(
 				$this->_field,
 				$slot,
@@ -174,6 +176,7 @@ class Availability
 	/**
 	 * @return array
 	 * @throws \yii\base\Exception
+	 * @throws \Exception
 	 */
 	private function _bookings ()
 	{
@@ -197,11 +200,17 @@ class Availability
 
 		$results = $results->groupBy('slotStart')->pairs();
 
+		// TODO: Refactor to get all bookings and use PHP to count them by slotStart and slotEnd
+		// (We don't need to know if a date is a start or end since they can overlap)
+		// Key using a timestamp rather than date
+		// Duplicate for each slot within the bookings start - end range?
+
 		return $results;
 	}
 
 	/**
 	 * @return string
+	 * @throws \Exception
 	 */
 	private function _endDateFromCount ()
 	{
