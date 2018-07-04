@@ -72,6 +72,7 @@ abstract class Frequency extends Enum
 		switch ($frequency)
 		{
 			// TODO: Monthly / Yearly might need DateTime and a starting datetime to work from
+			// TODO: Also worth checking RRule to see if there are any pre-baked arrays we can use
 
 			case self::Yearly:
 				return 'years'; // TODO: Do we need to account for leap years
