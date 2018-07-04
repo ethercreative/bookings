@@ -9,6 +9,7 @@
 namespace ether\bookings\controllers;
 
 use craft\web\Controller;
+use ether\bookings\web\assets\bookingindex\BookingIndexAsset;
 use yii\web\Response;
 
 
@@ -34,8 +35,13 @@ class CpController extends Controller
 	// Actions
 	// =========================================================================
 
+	/**
+	 * @return Response
+	 * @throws \yii\base\InvalidConfigException
+	 */
 	public function actionIndex (): Response
 	{
+		$this->view->registerAssetBundle(BookingIndexAsset::class);
 		return $this->renderTemplate('bookings/index');
 	}
 

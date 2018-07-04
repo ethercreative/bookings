@@ -8,7 +8,6 @@
 
 namespace ether\bookings\models;
 
-use craft\helpers\Template;
 use ether\bookings\base\Model;
 use ether\bookings\enums\BookableType;
 use RRule\RRule;

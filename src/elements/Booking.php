@@ -207,7 +207,7 @@ class Booking extends Element
 
 	public static function hasStatuses (): bool
 	{
-		return true;
+		return false;
 	}
 
 	/**
@@ -673,6 +673,14 @@ class Booking extends Element
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getStatus ()
+	{
+		return $this->status;
 	}
 
 	/**

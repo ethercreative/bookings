@@ -428,6 +428,11 @@ class BookingQuery extends ElementQuery
 
 		$this->joinElementTable($table);
 
+		\Craft::info(
+			print_r($this->status, true),
+			'bookings'
+		);
+
 		$this->query->select([
 			$table . '.id',
 			$table . '.status',
