@@ -60,5 +60,18 @@ abstract class Frequency extends Enum
 		}
 	}
 
+	/**
+	 * @param $unit
+	 * @param $frequency
+	 *
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public static function isUnitLowerOrEqualToFrequency ($unit, $frequency)
+	{
+		$units = ['minutes', 'hours', 'days', 'weeks', 'months', 'years'];
+
+		return array_search($unit, $units) <= array_search(self::toUnit($frequency), $units);
+	}
 
 }

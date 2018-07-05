@@ -14,6 +14,7 @@ use ether\bookings\elements\Booking;
 use ether\bookings\enums\BookableType;
 use ether\bookings\enums\Frequency;
 use ether\bookings\models\Bookable;
+use ether\bookings\models\GroupedSlot;
 use ether\bookings\models\RecursionRule;
 use ether\bookings\models\Slot;
 use ether\bookings\records\BookingRecord;
@@ -43,6 +44,9 @@ class Availability
 
 	/** @var int */
 	private $_count = 1000;
+
+	/** @var string|null */
+	private $_group;
 
 	// Constructor
 	// =========================================================================
@@ -113,13 +117,41 @@ class Availability
 	 * How many slots to return (will default to the bookable fields count or
 	 * 1000 (which ever is lower))
 	 *
-	 * @param int $value
+	 * @param int|null $value
 	 *
 	 * @return static
 	 */
 	public function count ($value)
 	{
 		$this->_count = $value;
+
+		return $this;
+	}
+
+	/**
+	 * Allows grouping of the results by frequency. If your frequency is smaller
+	 * or equal to your Bookable base rule frequency, the results will not be grouped.
+	 *
+	 * Accepts:
+	 *   - `hour`
+	 *   - `day`
+	 *   - `week`
+	 *   - `month`
+	 *   - `year`
+	 *
+	 * @param string|null $value
+	 *
+	 * @return $this
+	 * @throws \Exception
+	 */
+	public function groupBy ($value)
+	{
+		if (Frequency::isUnitLowerOrEqualToFrequency(
+			$value . 's',
+			$this->_field->baseRule->frequency
+		)) return $this;
+
+		$this->_group = strtolower($value);
 
 		return $this;
 	}
@@ -137,19 +169,39 @@ class Availability
 		$slots = [];
 		$bookings = $this->_bookings();
 
-		/** @var \DateTime $slot */
-		foreach ($this->_slots() as $i => $slot)
+		if ($this->_group)
 		{
-			if (!$this->_end && $this->_count && $i > $this->_count - 1)
-				break;
+			foreach ($bookings as $date => $count)
+			{
+				$slots[] = new GroupedSlot(
+					$this->_field,
+					$this->_group,
+					$date,
+					$count
+				);
+			}
+		}
+		else
+		{
+			/** @var \DateTime $slot */
+			foreach ($this->_slots() as $i => $slot)
+			{
+				if (!$this->_end && $this->_count && $i > $this->_count - 1)
+					break;
 
-			$dbDate = $slot->format('Y-m-d H:i:s');
+				$dbDate = $slot->format('Y-m-d H:i:s');
 
-			$slots[] = new Slot(
-				$this->_field,
-				$slot,
-				array_key_exists($dbDate, $bookings) ? $bookings[$dbDate] : 0
-			);
+				$bookingCount =
+					array_key_exists($dbDate, $bookings)
+						? $bookings[$dbDate]
+						: 0;
+
+				$slots[] = new Slot(
+					$this->_field,
+					$slot,
+					$bookingCount
+				);
+			}
 		}
 
 		return $slots;
@@ -195,8 +247,10 @@ class Availability
 		$fieldId = $field->fieldId;
 		$elementId = $field->ownerId;
 
+		$group = $this->_groupBy('slotStart') . ' as slot';
+
 		$results = (new Query())
-			->select('slotStart, count(*)')
+			->select([$group, 'count(*)'])
 			->from(BookingRecord::$tableName)
 			->where([
 				'fieldId' => $fieldId,
@@ -208,7 +262,12 @@ class Availability
 		if ($this->_count)
 			$results->andWhere(['<=', 'slotStart', $this->_endDateFromCount()]);
 
-		return $results->groupBy('slotStart')->pairs();
+		$results = $results->groupBy('slot');
+
+//		\Craft::dd($results->getRawSql());
+//		\Craft::dd($results->pairs());
+
+		return $results->pairs();
 	}
 
 	private function _bookingsFlexible ()
@@ -252,6 +311,52 @@ class Availability
 		$baseRule = $this->_field->baseRule;
 		$mod = '+' . (($baseRule->duration + $baseRule->interval) * $this->_count) . ' ' . Frequency::toUnit($baseRule->frequency);
 		return (new \DateTime($this->_start))->modify($mod)->format(\DateTime::W3C);
+	}
+
+	/**
+	 * @param string $column - The column to group by
+	 *
+	 * @return string|array
+	 */
+	private function _groupBy ($column)
+	{
+		if (!$this->_group)
+			return $column;
+
+		if (\Craft::$app->db->getIsPgsql())
+		{
+			switch ($this->_group)
+			{
+				case 'hour':
+					return "to_char({{%$column}}, 'YYYY-MM-DD HH24:00:00')";
+				case 'day':
+					return "to_char({{%$column}}, 'YYYY-MM-DD 00:00:00')";
+				case 'week':
+					return "to_char({{%$column}}, 'YYYY-WW 00:00:00')";
+				case 'month':
+					return "to_char({{%$column}}, 'YYYY-MM-01 00:00:00')";
+				case 'year':
+					return "to_char({{%$column}}, 'YYYY-01-01 00:00:00')";
+			}
+		}
+		else
+		{
+			switch ($this->_group)
+			{
+				case 'hour':
+					return "DATE_FORMAT({{%$column}}, '%Y-%m-%d %H:00:00')";
+				case 'day':
+					return "DATE_FORMAT({{%$column}}, '%Y-%m-%d 00:00:00')";
+				case 'week':
+					return "DATE_FORMAT({{%$column}}, '%Y-%u 00:00:00')";
+				case 'month':
+					return "DATE_FORMAT({{%$column}}, '%Y-%m-01 00:00:00')";
+				case 'year':
+					return "DATE_FORMAT({{%$column}}, '%Y-01-01 00:00:00')";
+			}
+		}
+
+		return $column;
 	}
 
 }
