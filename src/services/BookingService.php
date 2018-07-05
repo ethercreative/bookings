@@ -85,6 +85,7 @@ class BookingService extends Component
 	/**
 	 * Ensures the given slot times do not conflict with existing slots
 	 *
+	 * @param int                   $multiplier
 	 * @param \DateTime|string      $start
 	 * @param \DateTime|string|null $end
 	 * @param int|null              $id
@@ -92,7 +93,7 @@ class BookingService extends Component
 	 * @return bool
 	 * @throws \yii\db\Exception
 	 */
-	public function validateSlot ($start, $end = null, $id = null)
+	public function validateSlot ($multiplier, $start, $end = null, $id = null)
 	{
 		if (!$start instanceof \DateTime)
 			$start = new \DateTime($start);
@@ -114,14 +115,13 @@ class BookingService extends Component
 
 		// 1. Check start date
 		$startQuery = <<<SQL
-SELECT count(*) FROM $bookingsTable
+SELECT count(id) FROM $bookingsTable
 WHERE "slotStart" = '$start'
 AND "status" <> '$expired'
 $id
-LIMIT 1
 SQL;
 
-		if ($db->createCommand($startQuery)->queryScalar())
+		if ($db->createCommand($startQuery)->queryScalar() >= $multiplier)
 			return \Craft::t('bookings', 'Slot Start is unavailable.');
 
 		if (!$end)
@@ -133,27 +133,25 @@ SQL;
 
 		// 3. Check end date
 		$endQuery = <<<SQL
-SELECT count(*) FROM $bookingsTable
+SELECT count(id) FROM $bookingsTable
 WHERE "slotEnd" = '$end'
 AND "status" <> '$expired'
 $id
-LIMIT 1
 SQL;
 
-		if ($db->createCommand($endQuery)->queryScalar())
+		if ($db->createCommand($endQuery)->queryScalar() >= $multiplier)
 			return \Craft::t('bookings', 'Slot End is unavailable.');
 
 		// 4. Check for overlaps
 		$overlayQuery = <<<SQL
-SELECT count(*) FROM $bookingsTable
+SELECT count(id) FROM $bookingsTable
 WHERE "slotEnd" > '$start' 
 OR "slotStart" < '$end'
 AND "status" <> '$expired'
 $id
-LIMIT 1
 SQL;
 
-		if ($db->createCommand($overlayQuery)->queryScalar())
+		if ($db->createCommand($overlayQuery)->queryScalar() >= $multiplier)
 			return \Craft::t('bookings', 'The selected slot range is unavailable.');
 
 		return true;

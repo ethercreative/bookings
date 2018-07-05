@@ -399,6 +399,7 @@ class Booking extends Element
 
 		try {
 			$isValid = Bookings::getInstance()->booking->validateSlot(
+				$this->getBookable()->slotMultiplier,
 				$this->slotStart,
 				null,
 				$this->id
