@@ -250,7 +250,7 @@ class Availability
 		$group = $this->_groupBy('slotStart') . ' as slot';
 
 		$results = (new Query())
-			->select([$group, 'count(*)'])
+			->select([$group, 'count(id)'])
 			->from(BookingRecord::$tableName)
 			->where([
 				'fieldId' => $fieldId,
