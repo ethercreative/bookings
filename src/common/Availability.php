@@ -81,7 +81,7 @@ class Availability
 	 * When to start looking from (will default to the bookable fields start
 	 * date / time)
 	 *
-	 * @param \DateTime|string|int|null $value
+	 * @param \DateTime|string|null $value
 	 *
 	 * @return static
 	 */
@@ -99,7 +99,9 @@ class Availability
 	 * When to end looking (will default to the bookable fields until date /
 	 * time, if available)
 	 *
-	 * @param \DateTime|string|int|null $value
+	 * FIXME: Not working for some reason
+	 *
+	 * @param \DateTime|string|null $value
 	 *
 	 * @return static
 	 */
@@ -259,7 +261,9 @@ class Availability
 			])
 			->andWhere(['>=', 'slotStart', $this->_start]);
 
-		if ($this->_count)
+		if ($this->_end)
+			$results->andWhere(['<=', 'slotStart', $this->_end]);
+		else if ($this->_count)
 			$results->andWhere(['<=', 'slotStart', $this->_endDateFromCount()]);
 
 		$results = $results->groupBy('slot');
