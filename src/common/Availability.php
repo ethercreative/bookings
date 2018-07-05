@@ -183,6 +183,8 @@ class Availability
 		$fieldId = $this->_field->fieldId;
 		$elementId = $this->_field->ownerId;
 
+		// TODO: Have different queries / logic for fixed vs flexible?
+
 		$results = (new Query())
 			->select('slotStart, count(*)')
 			->from(BookingRecord::$tableName)
