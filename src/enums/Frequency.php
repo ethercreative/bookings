@@ -60,36 +60,5 @@ abstract class Frequency extends Enum
 		}
 	}
 
-	/**
-	 * @param int $value
-	 * @param string $frequency
-	 *
-	 * @return string
-	 * @throws \Exception
-	 */
-	public static function toSeconds ($value, $frequency)
-	{
-		switch ($frequency)
-		{
-			// TODO: Monthly / Yearly might need DateTime and a starting datetime to work from
-			// TODO: Also worth checking RRule to see if there are any pre-baked arrays we can use
-
-			case self::Yearly:
-				return 'years'; // TODO: Do we need to account for leap years
-			case self::Monthly:
-				return 'months'; // TODO: Might need to use DateTime?
-			case self::Weekly:
-				return $value * 60 * 60 * 24 * 7;
-			case self::Daily:
-				return $value * 60 * 60 * 24;
-			case self::Hourly:
-				return $value * 60 * 60;
-			case self::Minutely:
-				return $value * 60;
-			default:
-				throw new \Exception('Unknown frequency: ' . $frequency);
-		}
-	}
-
 
 }

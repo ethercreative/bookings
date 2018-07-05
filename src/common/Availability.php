@@ -11,6 +11,7 @@ namespace ether\bookings\common;
 use craft\db\Query;
 use craft\helpers\Db;
 use ether\bookings\elements\Booking;
+use ether\bookings\enums\BookableType;
 use ether\bookings\enums\Frequency;
 use ether\bookings\models\Bookable;
 use ether\bookings\models\RecursionRule;
@@ -129,13 +130,12 @@ class Availability
 	/**
 	 * @return array
 	 * @throws \yii\base\Exception
+	 * @throws \Exception
 	 */
 	public function all (): array
 	{
 		$slots = [];
 		$bookings = $this->_bookings();
-
-		// TODO: Booking count needs to take flexible bookings into consideration. Currently only looks at start Date :(
 
 		/** @var \DateTime $slot */
 		foreach ($this->_slots() as $i => $slot)
@@ -144,8 +144,6 @@ class Availability
 				break;
 
 			$dbDate = $slot->format('Y-m-d H:i:s');
-
-			// TODO: Get all bookings by timestamp
 
 			$slots[] = new Slot(
 				$this->_field,
@@ -180,10 +178,22 @@ class Availability
 	 */
 	private function _bookings ()
 	{
-		$fieldId = $this->_field->fieldId;
-		$elementId = $this->_field->ownerId;
+		if ($this->_field->bookableType === BookableType::FIXED)
+			return $this->_bookingsFixed();
 
-		// TODO: Have different queries / logic for fixed vs flexible?
+		return $this->_bookingsFlexible();
+	}
+
+	/**
+	 * @return array
+	 * @throws \yii\base\Exception
+	 * @throws \Exception
+	 */
+	private function _bookingsFixed ()
+	{
+		$field = $this->_field;
+		$fieldId = $field->fieldId;
+		$elementId = $field->ownerId;
 
 		$results = (new Query())
 			->select('slotStart, count(*)')
@@ -195,19 +205,42 @@ class Availability
 			])
 			->andWhere(['>=', 'slotStart', $this->_start]);
 
-		if ($this->_end)
-			$results->andWhere(['<=', 'slotEnd', $this->_end]);
-		else if ($this->_count)
-			$results->andWhere(['<=', 'slotEnd', $this->_endDateFromCount()]);
+		if ($this->_count)
+			$results->andWhere(['<=', 'slotStart', $this->_endDateFromCount()]);
 
-		$results = $results->groupBy('slotStart')->pairs();
+		return $results->groupBy('slotStart')->pairs();
+	}
+
+	private function _bookingsFlexible ()
+	{
+		// TODO
 
 		// TODO: Refactor to get all bookings and use PHP to count them by slotStart and slotEnd
 		// (We don't need to know if a date is a start or end since they can overlap)
 		// Key using a timestamp rather than date
 		// Duplicate for each slot within the bookings start - end range?
 
-		return $results;
+		// TODO: We need each slot that a flexible booking covers
+		// TODO: We need a count of each booking that flexible slots cover (can overlap)
+
+//		$results = (new Query())
+//			->select('slotStart, count(*)')
+//			->from(BookingRecord::$tableName)
+//			->where([
+//				'fieldId' => $fieldId,
+//				'elementId' => $elementId,
+//				'status' => [Booking::STATUS_RESERVED, Booking::STATUS_COMPLETED],
+//			])
+//			->andWhere(['>=', 'slotStart', $this->_start]);
+//
+//		if ($this->_end)
+//			$results->andWhere(['<=', 'slotEnd', $this->_end]);
+//		else if ($this->_count)
+//			$results->andWhere(['<=', 'slotEnd', $this->_endDateFromCount()]);
+//
+//		$results = $results->groupBy('slotStart')->pairs();
+
+		return [];
 	}
 
 	/**

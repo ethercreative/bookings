@@ -25,10 +25,10 @@ class Slot
 	// Properties
 	// =========================================================================
 
-	/** @var \DateTime|string */
+	/** @var \DateTime|string - The start time of the slot */
 	public $start;
 
-	/** @var \DateTime|string */
+	/** @var \DateTime|string - The end time of the slot (start + duration) */
 	public $end;
 
 	/** @var int - The available capacity on this slot */
@@ -43,6 +43,15 @@ class Slot
 	// Constructor
 	// =========================================================================
 
+	/**
+	 * Slot constructor.
+	 *
+	 * @param Bookable  $bookable
+	 * @param \DateTime $start
+	 * @param int       $bookingCount
+	 *
+	 * @throws \Exception
+	 */
 	public function __construct (Bookable $bookable, \DateTime $start, int $bookingCount)
 	{
 		$baseRule = $bookable->baseRule;
@@ -50,10 +59,15 @@ class Slot
 		$durationModifier = $baseRule->duration;
 		$durationModifier .= ' ' . Frequency::toUnit($baseRule->frequency);
 
-		$start = new SlotDateTime($start->format(DATE_ATOM));
+		$start = new SlotDateTime(
+			$start->format(\DateTime::W3C),
+			$start->getTimezone()
+		);
+
+		$end = clone $start;
 
 		$this->start = $start;
-		$this->end = $start->modify($durationModifier);
+		$this->end = $end->modify($durationModifier);
 		$this->capacity = $bookable->slotMultiplier - $bookingCount;
 		$this->hasBookings = $bookingCount > 0;
 		$this->fullyBooked = $this->capacity === 0;
