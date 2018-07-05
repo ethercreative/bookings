@@ -196,7 +196,7 @@ class Availability
 		$elementId = $field->ownerId;
 
 		$results = (new Query())
-			->select('slotStart, count(*)')
+			->select('slotStart, count(id)')
 			->from(BookingRecord::$tableName)
 			->where([
 				'fieldId' => $fieldId,
