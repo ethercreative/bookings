@@ -264,12 +264,12 @@ class Availability
 
 		$results = $results->groupBy('slot');
 
-//		\Craft::dd($results->getRawSql());
-//		\Craft::dd($results->pairs());
-
 		return $results->pairs();
 	}
 
+	/**
+	 * @return array
+	 */
 	private function _bookingsFlexible ()
 	{
 		// TODO
@@ -323,38 +323,47 @@ class Availability
 		if (!$this->_group)
 			return $column;
 
+		$format = null;
+
 		if (\Craft::$app->db->getIsPgsql())
 		{
+			$function = 'to_char';
+
 			switch ($this->_group)
 			{
 				case 'hour':
-					return "to_char({{%$column}}, 'YYYY-MM-DD HH24:00:00')";
+					 $format = "YYYY-MM-DD HH24:00:00"; break;
 				case 'day':
-					return "to_char({{%$column}}, 'YYYY-MM-DD 00:00:00')";
+					 $format = "YYYY-MM-DD 00:00:00"; break;
 				case 'week':
-					return "to_char({{%$column}}, 'YYYY-WW 00:00:00')";
+					 $format = "YYYY-WW 00:00:00"; break;
 				case 'month':
-					return "to_char({{%$column}}, 'YYYY-MM-01 00:00:00')";
+					 $format = "YYYY-MM-01 00:00:00"; break;
 				case 'year':
-					return "to_char({{%$column}}, 'YYYY-01-01 00:00:00')";
+					 $format = "YYYY-01-01 00:00:00"; break;
 			}
 		}
 		else
 		{
+			$function = 'DATE_FORMAT';
+
 			switch ($this->_group)
 			{
 				case 'hour':
-					return "DATE_FORMAT({{%$column}}, '%Y-%m-%d %H:00:00')";
+					$format = "%Y-%m-%d %H:00:00"; break;
 				case 'day':
-					return "DATE_FORMAT({{%$column}}, '%Y-%m-%d 00:00:00')";
+					$format = "%Y-%m-%d 00:00:00"; break;
 				case 'week':
-					return "DATE_FORMAT({{%$column}}, '%Y-%u 00:00:00')";
+					$format = "%Y-%u 00:00:00"; break;
 				case 'month':
-					return "DATE_FORMAT({{%$column}}, '%Y-%m-01 00:00:00')";
+					$format = "%Y-%m-01 00:00:00"; break;
 				case 'year':
-					return "DATE_FORMAT({{%$column}}, '%Y-01-01 00:00:00')";
+					$format = "%Y-01-01 00:00:00"; break;
 			}
 		}
+
+		if ($format)
+			return "$function({{%$column}}, '$format')";
 
 		return $column;
 	}
