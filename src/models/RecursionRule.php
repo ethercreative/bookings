@@ -8,6 +8,7 @@
 
 namespace ether\bookings\models;
 
+use craft\helpers\DateTimeHelper;
 use ether\bookings\base\Model;
 use ether\bookings\enums\Frequency;
 use RRule\RRule;
@@ -136,12 +137,27 @@ class RecursionRule extends Model
 	// Methods: Public
 	// -------------------------------------------------------------------------
 
-	public function datetimeAttributes (): array
+	public function init ()
 	{
-		return array_merge([
-			'start',
-			'until'
-		], parent::datetimeAttributes());
+		// Normalize dates
+
+		if ($this->start !== null)
+		{
+			if (is_array($this->start))
+				$this->start = DateTimeHelper::toDateTime($this->start['date']);
+			else
+				$this->start = DateTimeHelper::toDateTime($this->start);
+		}
+
+		if ($this->until !== null)
+		{
+			if (is_array($this->until))
+				$this->until = DateTimeHelper::toDateTime($this->until['date']);
+			else
+				$this->until = DateTimeHelper::toDateTime($this->until);
+		}
+
+		parent::init();
 	}
 
 	public function rules ()

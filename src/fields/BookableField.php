@@ -89,6 +89,8 @@ class BookableField extends Field
 		$handle       = $view->namespaceInputName($this->handle);
 		$namespacedId = $view->namespaceInputId($id);
 
+//		\Craft::dd($value->asArray());
+
 		$value = json_encode($value->asArray());
 
 		$view->registerAssetBundle(UIAsset::class);

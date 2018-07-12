@@ -33,8 +33,8 @@ async function refreshCalendar (commit, state) {
 		const exceptions = formatSlotsForStorage(res.exceptions);
 
 		commit("refreshComputedSlots", { slots, exceptions, duration: res.duration });
-	} catch (e) {
-		console.error(e);
+	} catch (err) {
+		console.error(err);
 	}
 }
 

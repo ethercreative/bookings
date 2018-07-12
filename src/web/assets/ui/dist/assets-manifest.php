@@ -5,7 +5,7 @@
 */
 class WebpackBuiltFiles {
   static $jsFiles = [
-    'app' => 'js/app.14aaab2b.js',
+    'app' => 'js/app.8b7d66aa.js',
     'vendor' => 'js/vendor.0cc6a67a.js',
   ];
   static $cssFiles = [
