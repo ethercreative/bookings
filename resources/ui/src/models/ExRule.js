@@ -29,7 +29,8 @@ export default class ExRule extends RecursionRule {
 			let value = def[key];
 
 			if (~["start", "until"].indexOf(key)) {
-				value = new Date(value);
+				if (!(value instanceof Date))
+					value = new Date(typeof value === "string" ? value : value.date + "Z");
 				value.setSeconds(0);
 				value.setMilliseconds(0);
 			}

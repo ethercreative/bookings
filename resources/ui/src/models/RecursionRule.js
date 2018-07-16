@@ -106,7 +106,7 @@ export default class RecursionRule {
 
 			if (~["start", "until"].indexOf(key)) {
 				if (!(value instanceof Date))
-					value = new Date(typeof value === "string" ? value : value.date);
+					value = new Date(typeof value === "string" ? value : value.date + "Z");
 				value.setSeconds(0);
 				value.setMilliseconds(0);
 			}
@@ -164,7 +164,7 @@ export default class RecursionRule {
 			if (!(value instanceof Date))
 				continue;
 
-			data[key] = value.toUTCString();
+			data[key] = value.toISOString();
 		}
 
 		return data;

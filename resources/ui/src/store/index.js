@@ -49,20 +49,11 @@ async function refreshCalendar (commit, state) {
  */
 function formatSlotsForStorage (slots) {
 	return slots.reduce((slots, slot) => {
-		const d = new Date(slot.date);
+		const d = new Date(slot.date + "Z");
+		d.setSeconds(0);
+		d.setMilliseconds(0);
 
-		// Convert from UTC to local time
-		// (dropping seconds & milliseconds, since we're not using them)
-		slot.date = new Date(Date.UTC(
-			d.getFullYear(),
-			d.getMonth(),
-			d.getDate(),
-			d.getHours(),
-			d.getMinutes(),
-			0,
-			0
-		));
-
+		slot.date = d;
 		slot.day = slot.date.getDay();
 		slot.hour = slot.date.getHours();
 		slot.minute = slot.date.getMinutes();

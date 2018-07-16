@@ -48,7 +48,46 @@ if (process.env.NODE_ENV === "development") {
 			handle: "fieldHandle",
 			value: {
 				"enabled": true,
-				"settings":{"baseRule":{"frequency":"MINUTELY","start":{"date":"2018-07-12 01:00:00.000000","timezone_type":3,"timezone":"UTC"},"duration":"10","interval":0,"repeats":"count","count":"5","until":{"date":"2018-07-12 01:00:00.000000","timezone_type":3,"timezone":"UTC"},"byMonth":[],"byWeekNumber":[],"byYearDay":[],"byMonthDay":[],"byDay":[],"byHour":[],"byMinute":[],"bySetPosition":[]},"exceptions":[{"bookable":false,"repeats":"count","frequency":"MINUTELY","start":"2018-05-15T13:10:00.000Z","duration":1,"interval":"10","count":"2","until":"2018-05-15T16:46:00.000Z","byMonth":[],"byWeekNumber":[],"byYearDay":[],"byMonthDay":[],"byDay":[],"byHour":[],"byMinute":[],"bySetPosition":[]}],"bookableType":"fixed"}
+				"settings":{
+					"baseRule":{
+						"frequency":"HOURLY",
+						"start":{"date":"2018-07-12 01:00:00.000000","timezone_type":3,"timezone":"UTC"},
+						"duration":1,
+						"interval":0,
+						"repeats":"count",
+						"count":20,
+						"until":{"date":"2018-07-12 01:00:00.000000","timezone_type":3,"timezone":"UTC"},
+						"byMonth":[],
+						"byWeekNumber":[],
+						"byYearDay":[],
+						"byMonthDay":[],
+						"byDay":[],
+						"byHour":[],
+						"byMinute":[],
+						"bySetPosition":[]
+					},
+					"exceptions":[
+						{
+							"bookable":false,
+							"repeats":"count",
+							"frequency":"HOURLY",
+							"start":{"date":"2018-07-12 13:00:00.000000","timezone_type":3,"timezone":"UTC"},
+							"duration":1,
+							"interval":1,
+							"count":2,
+							"until":{"date":"2018-07-12 16:00:00.000000","timezone_type":3,"timezone":"UTC"},
+							"byMonth":[],
+							"byWeekNumber":[],
+							"byYearDay":[],
+							"byMonthDay":[],
+							"byDay":[],
+							"byHour":[],
+							"byMinute":[],
+							"bySetPosition":[]
+						}
+					],
+					"bookableType":"fixed"
+				}
 			}
 		}
 	);
