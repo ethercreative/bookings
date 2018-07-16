@@ -188,6 +188,18 @@ SQL;
 			\Craft::$app->elements->deleteElementById($booking->id);
 	}
 
+	/**
+	 * @param $bookingId
+	 *
+	 * @return Booking
+	 * @throws \Throwable
+	 */
+	public function getBookingById ($bookingId): Booking
+	{
+		$record = BookingRecord::findOne(['id' => $bookingId]);
+		return $this->populate($record);
+	}
+
 	// Private
 	// =========================================================================
 

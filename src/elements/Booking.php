@@ -732,7 +732,7 @@ class Booking extends Element
 	 */
 	public function getCpEditUrl(): string
 	{
-		return UrlHelper::cpUrl('bookings/bookings/' . $this->id);
+		return UrlHelper::cpUrl('bookings/' . $this->id);
 	}
 
 	/**

@@ -61,4 +61,5 @@ return [
 	'Expired' => 'Expired',
 
 	'Attempting to retrieve more than 1000 slots can have an impact on performance!' => 'Attempting to retrieve more than 1000 slots can have an impact on performance!',
+	'Are you sure you want to delete this booking?' => 'Are you sure you want to delete this booking?',
 ];
