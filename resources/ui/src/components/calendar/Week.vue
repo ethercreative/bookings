@@ -194,7 +194,7 @@
 
 			getHeader (day, week, i) {
 				// eslint-disable-next-line no-unused-vars
-				const [y, m, d] = this.correctDateByWeek(week, i);
+				const [/*y*/, m, d] = this.correctDateByWeek(week, i);
 				return day + ` ${d}/${m}`;
 			},
 
