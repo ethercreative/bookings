@@ -200,6 +200,31 @@ SQL;
 		return $this->populate($record);
 	}
 
+	/**
+	 * @param $orderId
+	 *
+	 * @return Booking|Booking[]
+	 * @throws \Throwable
+	 */
+	public function getBookingsByOrderId ($orderId)
+	{
+		$records = BookingRecord::findAll(compact('orderId'));
+		return $this->populate($records);
+	}
+
+	/**
+	 * @param $orderId
+	 * @param $lineItemId
+	 *
+	 * @return Booking|Booking[]
+	 * @throws \Throwable
+	 */
+	public function getBookingByOrderIdAndLineItemId ($orderId, $lineItemId)
+	{
+		$records = BookingRecord::findOne(compact('orderId', 'lineItemId'));
+		return $this->populate($records);
+	}
+
 	// Private
 	// =========================================================================
 

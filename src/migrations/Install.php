@@ -105,6 +105,7 @@ class Install extends Migration
 				'number'            => $this->string(32)->notNull(),
 				'fieldId'           => $this->integer()->notNull(),
 				'elementId'         => $this->integer()->notNull(),
+				'subElementId'      => $this->integer(),
 				'userId'            => $this->integer(),
 				'lineItemId'        => $this->integer(),
 				'orderId'           => $this->integer(),
@@ -126,7 +127,7 @@ class Install extends Migration
 		$this->createIndex(
 			null,
 			BookingRecord::$tableName,
-			['fieldId', 'elementId', 'slotStart', 'reservationExpiry'],
+			['fieldId', 'elementId', 'subElementId', 'slotStart', 'reservationExpiry'],
 			true
 		);
 
@@ -168,6 +169,16 @@ class Install extends Migration
 			$this->db->getForeignKeyName(BookingRecord::$tableName, 'elementId'),
 			BookingRecord::$tableName,
 			'elementId',
+			'{{%elements}}',
+			'id',
+			'CASCADE',
+			null
+		);
+
+		$this->addForeignKey(
+			$this->db->getForeignKeyName(BookingRecord::$tableName, 'subElementId'),
+			BookingRecord::$tableName,
+			'subElementId',
 			'{{%elements}}',
 			'id',
 			'CASCADE',

@@ -139,6 +139,9 @@ class Booking extends Element
 	/** @var int - The element this booking is bound to (i.e. entry, product, etc.) */
 	public $elementId;
 
+	/** @var int - The sub-element this bookings is bound to (i.e. variant) */
+	public $subElementId;
+
 	/** @var int - The user this booking is bound to (if the user was logged in at the time of booking) */
 	public $userId;
 
@@ -179,6 +182,7 @@ class Booking extends Element
 	private $_bookable;
 	private $_field;
 	private $_element;
+	private $_subElement;
 	private $_user;
 	private $_lineItem;
 	private $_order;
@@ -564,6 +568,8 @@ class Booking extends Element
 		if ($this->reservationExpiry->getTimestamp() >= time() - $settings->expiryDuration)
 			return true;
 
+		\Craft::$app->session->setError('A booking has expired.');
+
 		if ($this->orderId && $this->lineItemId)
 			$this->getOrder()->removeLineItem($this->getLineItem());
 
@@ -765,6 +771,22 @@ class Booking extends Element
 		$element = \Craft::$app->elements->getElementById($this->elementId);
 
 		return $this->_element = $element;
+	}
+
+	/**
+	 * @return \craft\base\ElementInterface|null
+	 */
+	public function getSubElement ()
+	{
+		if (!$this->subElementId)
+			return null;
+
+		if ($this->_subElement)
+			return $this->_subElement;
+
+		$element = \Craft::$app->elements->getElementById($this->subElementId);
+
+		return $this->_subElement = $element;
 	}
 
 	/**
@@ -990,7 +1012,10 @@ class Booking extends Element
 	{
 		/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
 		if (class_exists(\craft\commerce\base\Purchasable::class))
-			return CommerceValidators::isElementPurchasable($this->getElement());
+			return (
+				CommerceValidators::isElementPurchasable($this->getElement())
+				|| CommerceValidators::isElementPurchasable($this->getSubElement())
+			);
 
 		return false;
 	}

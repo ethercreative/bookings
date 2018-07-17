@@ -29,6 +29,9 @@ class CommerceValidators
 	 */
 	public static function isElementPurchasable (ElementInterface $element)
 	{
+		if (!$element)
+			return false;
+
 		return $element instanceof Purchasable;
 	}
 
