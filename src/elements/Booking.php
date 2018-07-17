@@ -139,7 +139,7 @@ class Booking extends Element
 	/** @var int - The element this booking is bound to (i.e. entry, product, etc.) */
 	public $elementId;
 
-	/** @var int - The sub-element this bookings is bound to (i.e. variant) */
+	/** @var int - The sub-element this bookings is bound to (i.e. variant, matrix block, etc.) */
 	public $subElementId;
 
 	/** @var int - The user this booking is bound to (if the user was logged in at the time of booking) */
