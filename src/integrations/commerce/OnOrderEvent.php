@@ -64,7 +64,7 @@ class OnOrderEvent
 		$lineItem = $event->lineItem;
 
 		/** @var Order $order */
-		$order = $event->sender;
+		$order = $lineItem->order;
 
 		/** @var bool $isNew */
 		$isNew = $event->isNew;
@@ -81,19 +81,6 @@ class OnOrderEvent
 				$craft->elements->deleteElementById($booking->id);
 		}
 
-		\Craft::dd([
-			'fieldId'       => $fieldId,
-			'elementId'     => $elementId,
-			'subElementId'  => $lineItem->purchasableId,
-			'userId'        => $order->user ? $order->user->id : null,
-			'orderId'       => $order->id,
-			'lineItemId'    => $lineItem->id, // FIXME: New line items don't have ID's yet :(
-			'customerId'    => $order->customerId,
-			'customerEmail' => $order->email,
-			'slotStart'     => $slotStart,
-			'slotEnd'       => $slotEnd,
-		]);
-
 		// Create a new booking
 		$bookingService->create([
 			'fieldId'       => $fieldId,
@@ -101,7 +88,7 @@ class OnOrderEvent
 			'subElementId'  => $lineItem->purchasableId,
 			'userId'        => $order->user ? $order->user->id : null,
 			'orderId'       => $order->id,
-			'lineItemId'    => $lineItem->id, // FIXME: New line items don't have ID's yet :(
+			'lineItemId'    => $lineItem->id,
 			'customerId'    => $order->customerId,
 			'customerEmail' => $order->email,
 			'slotStart'     => $slotStart,

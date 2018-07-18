@@ -111,8 +111,8 @@ class Bookings extends Plugin
 		{
 			/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
 			Event::on(
-				\craft\commerce\elements\Order::class,
-				\craft\commerce\elements\Order::EVENT_AFTER_ADD_LINE_ITEM,
+				\craft\commerce\services\LineItems::class,
+				\craft\commerce\services\LineItems::EVENT_AFTER_SAVE_LINE_ITEM,
 				[new OnOrderEvent, 'onAddLineItem']
 			);
 

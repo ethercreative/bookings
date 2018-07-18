@@ -110,7 +110,7 @@ class Install extends Migration
 				'lineItemId'        => $this->integer(),
 				'orderId'           => $this->integer(),
 				'customerId'        => $this->integer(),
-				'customerEmail'     => $this->string()->notNull(),
+				'customerEmail'     => $this->string(),
 				'slotStart'         => $this->dateTime()->notNull(),
 				'slotEnd'           => $this->dateTime(),
 				'dateBooked'        => $this->dateTime(),

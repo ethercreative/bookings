@@ -154,7 +154,7 @@ class Booking extends Element
 	/** @var int - The customer this booking belongs to (if Commerce is used) */
 	public $customerId;
 
-	/** @var string - The customers email (always required) */
+	/** @var string - The customers email (required unless we have a customer) */
 	public $customerEmail;
 
 	/** @var \DateTime - The slot that was booked */
@@ -292,7 +292,7 @@ class Booking extends Element
 		$rules = parent::rules();
 
 		$rules[] = [
-			['fieldId', 'elementId', 'customerEmail', 'slotStart'],
+			['fieldId', 'elementId', 'slotStart'],
 			'required'
 		];
 
@@ -303,6 +303,7 @@ class Booking extends Element
 		];
 
 		$rules[] = [['customerEmail'], 'email'];
+		$rules[] = [['customerEmail'], 'validateEmail'];
 
 		$rules[] = [
 			['lineItemId', 'orderId', 'customerId'],
@@ -326,6 +327,26 @@ class Booking extends Element
 			$this->customerEmail = $this->getUser()->email;
 
 		return parent::beforeValidate();
+	}
+
+	/**
+	 * Email is required if customer isn't set
+	 *
+	 * @param $attribute
+	 */
+	public function validateEmail ($attribute)
+	{
+		if (!$this->customerId && !$this->customerEmail)
+		{
+			$this->addError(
+				$attribute,
+				\Craft::t(
+					'bookings',
+					'{attribute} is required.',
+					['attribute' => Inflector::camel2words($attribute)]
+				)
+			);
+		}
 	}
 
 	/**
