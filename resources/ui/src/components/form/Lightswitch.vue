@@ -1,12 +1,15 @@
 <template>
-	<label>
+	<div>
 		<input
 			type="checkbox"
 			:name="name"
+			:id="name"
 			:checked="value"
+			class="checkbox"
 			@change="$emit('input', $event.target.checked)"
 		/>
-	</label>
+		<label :for="name"></label>
+	</div>
 </template>
 
 <script>

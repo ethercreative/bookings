@@ -49,9 +49,9 @@
 				</div>
 			</div>
 
-			<footer :class="$style.sidebarFooter">
+			<!--<footer :class="$style.sidebarFooter">
 				<Button>Save event rules</Button>
-			</footer>
+			</footer>-->
 		</aside>
 
 		<div :class="$style.main">
