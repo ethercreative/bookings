@@ -1,11 +1,21 @@
+import path from "path";
+
 export default (config, env, helpers) => {
-  delete config.entry.polyfills;
-  config.output.filename = "[name].js";
+	config.module.loaders[4].include = [
+		path.resolve(__dirname, 'src'),
+	];
 
-  let { plugin } = helpers.getPluginsByName(config, "ExtractTextPlugin")[0];
-  plugin.options.disable = true;
+	config.module.loaders[5].exclude = [
+		path.resolve(__dirname, 'src'),
+	];
 
-  if (env.production) {
-    config.output.libraryTarget = "umd";
-  }
+	delete config.entry.polyfills;
+	config.output.filename = "[name].js";
+
+	let { plugin } = helpers.getPluginsByName(config, "ExtractTextPlugin")[0];
+	plugin.options.disable = true;
+
+	if (env.production) {
+		config.output.libraryTarget = "umd";
+	}
 };

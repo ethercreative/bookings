@@ -1,5 +1,5 @@
 import "preact-cli/lib/lib/webpack/polyfills";
-import { h, Component } from "preact";
+import { Component } from "preact";
 import habitat from "preact-habitat";
 import store from "./store";
 import Field from "./Field/Field";
@@ -7,6 +7,10 @@ import Field from "./Field/Field";
 class App extends Component {
 	constructor (props) {
 		super(props);
+
+		if (process.env.NODE_ENV === "development")
+			console.log(props);
+
 		store("set", props);
 	}
 

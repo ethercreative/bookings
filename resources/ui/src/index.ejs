@@ -30,7 +30,50 @@
 <craft-bookings class="preview">
     <script type="text/props">
         {
-            "color": "red"
+            "handle": "fieldHandle",
+            "value": {
+                "enabled": true,
+                "settings":{
+                    "baseRule":{
+                        "frequency":"HOURLY",
+                        "start":{"date":"2018-07-12 01:00:00.000000","timezone_type":3,"timezone":"UTC"},
+                        "duration":1,
+                        "interval":0,
+                        "repeats":"count",
+                        "count":20,
+                        "until":{"date":"2018-07-12 01:00:00.000000","timezone_type":3,"timezone":"UTC"},
+                        "byMonth":[],
+                        "byWeekNumber":[],
+                        "byYearDay":[],
+                        "byMonthDay":[],
+                        "byDay":[],
+                        "byHour":[],
+                        "byMinute":[],
+                        "bySetPosition":[]
+                    },
+                    "exceptions":[
+                        {
+                            "bookable":false,
+                            "repeats":"count",
+                            "frequency":"HOURLY",
+                            "start":{"date":"2018-07-12 13:00:00.000000","timezone_type":3,"timezone":"UTC"},
+                            "duration":1,
+                            "interval":1,
+                            "count":2,
+                            "until":{"date":"2018-07-12 16:00:00.000000","timezone_type":3,"timezone":"UTC"},
+                            "byMonth":[],
+                            "byWeekNumber":[],
+                            "byYearDay":[],
+                            "byMonthDay":[],
+                            "byDay":[],
+                            "byHour":[],
+                            "byMinute":[],
+                            "bySetPosition":[]
+                        }
+                    ],
+                    "bookableType":"fixed"
+                }
+            }
         }
     </script>
 </craft-bookings>

@@ -91,14 +91,30 @@ class BookableField extends Field
 
 //		\Craft::dd($value->asArray());
 
-		$value = json_encode($value->asArray());
+//		$value = json_encode($value->asArray());
+		$value = $value->asArray();
 
-		$view->registerAssetBundle(UIAsset::class);
-		$view->registerJs("new window.__BookingsUI('field', '#$namespacedId', { handle: '$handle', value: $value })");
+		if (getenv('ETHER_ENVIRONMENT'))
+		{
+			$view->registerJsFile('https://localhost:8080/bundle.js', [
+				'async' => true,
+			]);
+		}
+		else
+		{
+			// TODO: Update to work w/ new UI
+			$view->registerAssetBundle(UIAsset::class);
+			$view->registerJs("new window.__BookingsUI('field', '#$namespacedId', { handle: '$handle', value: $value })");
+		}
 
-		return Html::encodeParams(
-			'<div id="{id}"></div>',
-			[ 'id' => $this->id ]
+		$props = json_encode(array_merge(
+			compact('handle'),
+			$value
+		));
+
+		return new \Twig_Markup(
+			'<craft-bookings><script type="text/props">' . $props . '</script><div class="spinner"></div></craft-bookings>',
+			'utf-8'
 		);
 	}
 

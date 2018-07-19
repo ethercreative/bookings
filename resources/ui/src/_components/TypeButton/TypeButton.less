@@ -1,0 +1,90 @@
+@import "../../variables";
+
+.type {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	width: calc(~"50% - "@spacer / 2);
+	padding: @spacer;
+
+	appearance: none;
+	background: #FFFFFF;
+	border: 1px solid #E3E5E8;
+	box-shadow: 0 2px 6px 0 rgba(35, 36, 46, 0.08);
+	border-radius: 2px;
+
+	cursor: pointer;
+	outline: none;
+	opacity: 0.5;
+	transition: opacity 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+
+	svg {
+		margin-bottom: 10px;
+	}
+
+	circle {
+		fill: #9C9C9C;
+		transition: fill 0.15s ease;
+	}
+
+	strong {
+		margin-bottom: 5px;
+		font-size: 16px;
+		font-weight: 500;
+		letter-spacing: 0;
+	}
+
+	span {
+		color: #9C9C9C;
+		font-size: 12px;
+		letter-spacing: 0;
+		text-align: center;
+		line-height: 18px;
+		white-space: pre;
+	}
+
+	&:focus,
+	&:hover {
+		opacity: 1;
+	}
+
+	&.active {
+		border: 1px solid #5186D9;
+		box-shadow: 0 2px 9px 0 rgba(81, 134, 217, 0.30);
+		opacity: 1;
+
+		circle {
+			fill: #5186D9;
+		}
+	}
+
+	&.disabled {
+		position: relative;
+		opacity: 1;
+		pointer-events: none;
+
+		border-color: fade(#E3E5E8, 50%);
+		box-shadow: 0 2px 6px 0 rgba(35, 36, 46, 0.05);
+
+		> * {
+			opacity: 0.15;
+		}
+
+		&:before {
+			content: 'Coming Soon!';
+			position: absolute;
+			z-index: 1;
+			top: 50%;
+			left: 50%;
+
+			color: #da5a47;
+			font-size: 24px;
+			font-weight: bold;
+			text-transform: uppercase;
+			text-shadow: 0 0 10px 5px #fff;
+
+			transform: translate3d(-50%, -50%, 0) rotate(-5deg);
+		}
+	}
+}
