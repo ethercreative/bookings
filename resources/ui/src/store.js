@@ -1,7 +1,4 @@
 import Socrates from "socrates";
 
-const store = Socrates({
-	boot: (state, action) => action,
-});
-
+const store = Socrates();
 export default store;
