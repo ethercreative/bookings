@@ -23,7 +23,7 @@ class Field extends Component {
 	// Render
 	// =========================================================================
 
-	render ({ dispatch, enabled, bookableType}) {
+	render ({ dispatch, handle, enabled, bookableType }) {
 		let cls = [styles.field];
 		if (!enabled) cls.push(styles.disabled);
 		cls = cls.join(" ");
@@ -35,7 +35,7 @@ class Field extends Component {
 					instructions="Allow users to book this element."
 				>
 					<CraftLightSwitch
-						name="enabled"
+						name={`${handle}[enabled]`}
 						on={enabled}
 						onChange={checked => dispatch("set:enabled", checked)}
 					/>
@@ -71,6 +71,7 @@ class Field extends Component {
 				<CraftField
 					label="Bookable Rules"
 					instructions="Add rules to either add bookable space, or remove it from the primary booking window"
+					className={cls}
 				>
 					<div className={styles.well}>
 						<header>
@@ -89,7 +90,8 @@ class Field extends Component {
 
 }
 
-export default connect(({ enabled, settings: { bookableType } }) => ({
+export default connect(({ handle, enabled, settings: { bookableType } }) => ({
+	handle,
 	enabled,
 	bookableType,
 }))(Field);
