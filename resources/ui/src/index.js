@@ -8,10 +8,13 @@ class App extends Component {
 	constructor (props) {
 		super(props);
 
-		if (process.env.NODE_ENV === "development")
-			console.log(props);
+		const settings = {...props};
+		delete settings.children;
 
-		store("set", props);
+		if (process.env.NODE_ENV === "development")
+			console.log(settings);
+
+		store("set", settings);
 	}
 
 	render () {
