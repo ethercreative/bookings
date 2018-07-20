@@ -1,15 +1,22 @@
+import jQuizzle from "../_helpers/jQuizzle";
+
 export default ({ name, on = false, onChange = null }) => (
 	<div
 		class={`lightswitch ${on ? "on" : ""}`}
 		tabIndex="0"
 		data-value="1"
 		ref={el => {
-			if (!onChange)
+			if (!el || !onChange || el._clse)
 				return;
 
-			$(el).on('change', () => {
-				onChange(el.lastElementChild.value === "1");
-			})
+			el._clse = true;
+
+			jQuizzle($ => {
+				// This is the first jQuery I've written in years...
+				$(el).on('change', () => {
+					onChange(el.lastElementChild.value === "1");
+				});
+			});
 		}}
 	>
 		<div class="lightswitch-container">

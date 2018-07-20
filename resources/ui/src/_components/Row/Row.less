@@ -1,0 +1,18 @@
+@import "../../variables";
+
+.row {
+	display: flex;
+
+	&:not(:last-child) {
+		margin-bottom: 10px;
+	}
+
+	> * {
+		flex-grow: 1;
+		margin-right: 10px;
+
+		&:last-child {
+			margin-right: 0;
+		}
+	}
+}

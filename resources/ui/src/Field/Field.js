@@ -1,7 +1,7 @@
 import { Component } from "preact";
 import styles from "./Field.less";
 import connect from "../_hoc/connect";
-import CraftField from "../_components/CraftField";
+import CraftLabel from "../_components/CraftLabel";
 import CraftLightSwitch from "../_components/CraftLightSwitch";
 import BookableType from "../_enums/BookableType";
 import TypeButton from "../_components/TypeButton/TypeButton";
@@ -9,6 +9,7 @@ import CraftButton from "../_components/CraftButton";
 import FixedIcon from "../_icons/FixedIcon";
 import FlexibleIcon from "../_icons/FlexibleIcon";
 import CalendarIcon from "../_icons/CalendarIcon";
+import BaseRule from "../_components/BaseRule/BaseRule";
 
 class Field extends Component {
 
@@ -30,7 +31,7 @@ class Field extends Component {
 
 		return (
 			<div className={styles.wrap}>
-				<CraftField
+				<CraftLabel
 					label="Enable Bookings"
 					instructions="Allow users to book this element."
 				>
@@ -39,9 +40,9 @@ class Field extends Component {
 						on={enabled}
 						onChange={checked => dispatch("set:enabled", checked)}
 					/>
-				</CraftField>
+				</CraftLabel>
 
-				<CraftField
+				<CraftLabel
 					label="Bookable Type"
 					instructions="Select the type of bookable event this is."
 					className={cls}
@@ -66,9 +67,9 @@ class Field extends Component {
 							disabled
 						/>
 					</div>
-				</CraftField>
+				</CraftLabel>
 
-				<CraftField
+				<CraftLabel
 					label="Bookable Rules"
 					instructions="Add rules to either add bookable space, or remove it from the primary booking window"
 					className={cls}
@@ -82,8 +83,10 @@ class Field extends Component {
 								Edit Rules
 							</CraftButton>
 						</header>
+
+						<BaseRule />
 					</div>
-				</CraftField>
+				</CraftLabel>
 			</div>
 		);
 	}

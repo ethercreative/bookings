@@ -11,8 +11,9 @@ class App extends Component {
 		const settings = {...props};
 		delete settings.children;
 
-		if (process.env.NODE_ENV === "development")
-			console.log(settings);
+		if (process.env.NODE_ENV === "development") {
+			store.subscribe(s => console.log(s));
+		}
 
 		store("set", settings);
 	}
