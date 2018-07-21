@@ -5,6 +5,7 @@ import store from "./store";
 import Field from "./Field/Field";
 import RRule from "./_models/RRule";
 import ExRule from "./_models/ExRule";
+import BookableType from "./_enums/BookableType";
 
 class App extends Component {
 	constructor (props) {
@@ -13,6 +14,7 @@ class App extends Component {
 		const state = {...props};
 		delete state.children;
 
+		state.settings.bookableType = state.settings.bookableType || BookableType.FIXED;
 		state.settings.baseRule = new RRule(state.settings.baseRule);
 		state.settings.exceptions = state.settings.exceptions.map(e => new ExRule(e));
 
