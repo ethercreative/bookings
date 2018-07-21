@@ -3,19 +3,24 @@ import { Component } from "preact";
 import habitat from "preact-habitat";
 import store from "./store";
 import Field from "./Field/Field";
+import RRule from "./_models/RRule";
+import ExRule from "./_models/ExRule";
 
 class App extends Component {
 	constructor (props) {
 		super(props);
 
-		const settings = {...props};
-		delete settings.children;
+		const state = {...props};
+		delete state.children;
+
+		state.settings.baseRule = new RRule(state.settings.baseRule);
+		state.settings.exceptions = state.settings.exceptions.map(e => new ExRule(e));
 
 		if (process.env.NODE_ENV === "development") {
 			store.subscribe(s => console.log(s));
 		}
 
-		store("set", settings);
+		store("set", state);
 	}
 
 	render () {
