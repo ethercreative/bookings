@@ -1,4 +1,12 @@
-export default ({ label, instructions = null, className = "", children }) => (
+// @flow
+
+type Props = {
+	label: string;
+	instructions?: string;
+	className?: string;
+};
+
+export default ({ label, instructions = null, className = "", children }:Props) => (
 	<div class={`field ${className}`}>
 		<div class="heading">
 			<label>{label}</label>

@@ -24,7 +24,7 @@ class App extends Component {
 	}
 
 	render () {
-		return <Field/>;
+		return <Field />;
 	}
 }
 
