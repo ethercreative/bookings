@@ -20,9 +20,12 @@ export default class RRule {
 	frequency = Frequency.Hourly;
 
 	/**
-	 * @type {Date}
+	 * @type {{date:Date, timezone:String}}
 	 */
-	start = new Date();
+	start = {
+		date: new Date(),
+		timezone: "",
+	};
 
 	/**
 	 * @type {number}
@@ -45,9 +48,12 @@ export default class RRule {
 	count = 1;
 
 	/**
-	 * @type {Date|null}
+	 * @type {{date:Date, timezone:String}|null}
 	 */
-	until = new Date();
+	until = {
+		date: new Date(),
+		timezone: "",
+	};
 
 	/**
 	 * @type {Number[]|null}
@@ -105,10 +111,10 @@ export default class RRule {
 			let value = def[key];
 
 			if (~["start", "until"].indexOf(key)) {
-				if (!(value instanceof Date))
-					value = new Date(value);
-				value.setSeconds(0);
-				value.setMilliseconds(0);
+				if (!(value.date instanceof Date))
+					value.date = new Date(value.date);
+				value.date.setSeconds(0);
+				value.date.setMilliseconds(0);
 			}
 
 			this[key] = value;

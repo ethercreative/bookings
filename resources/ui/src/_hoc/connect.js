@@ -14,6 +14,10 @@ export default function connect (mapStoreToProps = () => ({})) {
 				});
 			}
 
+			shouldComponentUpdate (nextProps, nextState) {
+				return JSON.stringify(this.state) !== JSON.stringify(nextState);
+			}
+
 			render (props, state) {
 				return <WrappedComponent dispatch={(...args) => store.apply(null, args)} {...props} {...state} />
 			}

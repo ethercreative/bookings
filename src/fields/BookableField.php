@@ -12,6 +12,7 @@ use craft\base\ElementInterface;
 use craft\base\Field;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Html;
+use craft\i18n\Locale;
 use ether\bookings\Bookings;
 use ether\bookings\models\Bookable;
 use ether\bookings\web\assets\ui\UIAsset;
@@ -89,9 +90,15 @@ class BookableField extends Field
 		$handle       = $view->namespaceInputName($this->handle);
 		$namespacedId = $view->namespaceInputId($id);
 
-//		\Craft::dd($value->asArray());
-
-//		$value = json_encode($value->asArray());
+		$timezone = \Craft::$app->getTimeZone();
+		$dateFormat = [
+			'date' => \Craft::$app->locale->getDateFormat(
+				Locale::LENGTH_SHORT, Locale::FORMAT_PHP
+			),
+			'time' => \Craft::$app->locale->getTimeFormat(
+				Locale::LENGTH_SHORT, Locale::FORMAT_PHP
+			),
+		];
 		$value = $value->asArray();
 
 		if (getenv('ETHER_ENVIRONMENT'))
@@ -108,7 +115,7 @@ class BookableField extends Field
 		}
 
 		$props = json_encode(array_merge(
-			compact('handle'),
+			compact('handle', 'timezone', 'dateFormat'),
 			$value
 		));
 

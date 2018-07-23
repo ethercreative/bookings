@@ -4,6 +4,7 @@ import connect from "../../_hoc/connect";
 import Label from "../Label/Label";
 import CraftSelect from "../CraftSelect";
 import Row from "../Row/Row";
+import CraftDateTime from "../CraftDateTime";
 
 class BaseRule extends Component {
 
@@ -18,11 +19,33 @@ class BaseRule extends Component {
 		this.props.dispatch("set:settings.baseRule.repeats", rep);
 	};
 
+	onStartDateTimeChange = dt => {
+		this.props.dispatch("set:settings.baseRule.start", dt);
+	};
+
+	onUntilDateTimeChange = dt => {
+		this.props.dispatch("set:settings.baseRule.until", dt);
+	};
+
+	onCountChange = ({ target: { value } }) => {
+		this.props.dispatch("set:settings.baseRule.count", value|0);
+	};
+
+	onIntervalChange = ({ target: { value } }) => {
+		this.props.dispatch("set:settings.baseRule.interval", value|0);
+	};
+
+	onDurationChange = ({ target: { value } }) => {
+		this.props.dispatch("set:settings.baseRule.duration", value|0);
+	};
+
 	// Render
 	// =========================================================================
 
 	render ({ baseRule }) {
-		const { frequency, repeats } = baseRule;
+		const {
+			frequency, repeats, start, until, count, interval, duration
+		} = baseRule;
 
 		return (
 			<div>
@@ -41,7 +64,13 @@ class BaseRule extends Component {
 					</Label>
 
 					<Label label="Start Date / Time">
-						[TODO: Date/time Input]
+						<CraftDateTime
+							showDate
+							showTime
+							defaultDate={start.date}
+							defaultTime={start.date}
+							onChange={this.onStartDateTimeChange}
+						/>
 					</Label>
 				</Row>
 
@@ -61,6 +90,55 @@ class BaseRule extends Component {
 								</option>
 							))}
 						</CraftSelect>
+					</Label>
+
+					{repeats === "until" && (
+						<Label label="End Date / Time">
+							<CraftDateTime
+								showDate
+								showTime
+								defaultDate={until.date}
+								defaultTime={until.date}
+								onChange={this.onUntilDateTimeChange}
+							/>
+						</Label>
+					)}
+
+					{repeats === "count" && (
+						<Label label="Count">
+							<input
+								class="text"
+								type="number"
+								step="1"
+								min="0"
+								value={count}
+								onInput={this.onCountChange}
+							/>
+						</Label>
+					)}
+				</Row>
+
+				<Row>
+					<Label label="Interval">
+						<input
+							class="text"
+							type="number"
+							step="1"
+							min="0"
+							value={interval}
+							onInput={this.onIntervalChange}
+						/>
+					</Label>
+
+					<Label label="Duration">
+						<input
+							class="text"
+							type="number"
+							step="1"
+							min="1"
+							value={duration}
+							onInput={this.onDurationChange}
+						/>
 					</Label>
 				</Row>
 			</div>
