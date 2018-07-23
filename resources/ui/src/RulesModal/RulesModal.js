@@ -4,6 +4,30 @@ import Modal from "../_components/Modal/Modal";
 import RuleBlock from "../_components/RuleBlock/RuleBlock";
 import connect from "../_hoc/connect";
 import Sortable from "../_components/Sortable";
+import Frequency from "../_enums/Frequency";
+
+const CALENDAR_TABS = [
+	{
+		label: "Day",
+		handle: "day",
+		frequencies: [Frequency.Minutely]
+	},
+	{
+		label: "Week",
+		handle: "week",
+		frequencies: [Frequency.Hourly]
+	},
+	{
+		label: "Month",
+		handle: "month",
+		frequencies: [Frequency.Daily, Frequency.Weekly]
+	},
+	{
+		label: "Year",
+		handle: "year",
+		frequencies: [Frequency.Monthly, Frequency.Yearly]
+	},
+];
 
 class RulesModal extends Component {
 
@@ -13,6 +37,10 @@ class RulesModal extends Component {
 	props: {
 		isOpen: boolean;
 		onRequestClose: Function;
+	};
+
+	state = {
+		activeView: "week",
 	};
 
 	// Events
@@ -31,6 +59,10 @@ class RulesModal extends Component {
 		this.props.dispatch("sort:settings.exceptions", sortedIds);
 	};
 
+	onTabClick = activeView => {
+		this.setState({ activeView });
+	};
+
 	// Render
 	// =========================================================================
 
@@ -38,6 +70,7 @@ class RulesModal extends Component {
 		return (
 			<Modal isOpen={isOpen} onRequestClose={onRequestClose}>
 				{this._renderSidebar()}
+				{this._renderMain()}
 			</Modal>
 		);
 	}
@@ -74,6 +107,40 @@ class RulesModal extends Component {
 				</button>
 			</aside>
 		);
+	}
+
+	_renderMain () {
+		const { activeView } = this.state;
+
+		return (
+			<div class={styles.main}>
+				<header class={styles.header}>
+					<ul class={styles.tabs}>
+						{CALENDAR_TABS.map(t => (
+							<li>
+								<button
+									type="button"
+									class={activeView === t.handle ? styles.active : ""}
+									disabled={!this._allowedView(t.frequencies)}
+									onClick={this.onTabClick.bind(this, t.handle)}
+								>
+									{t.label}
+								</button>
+							</li>
+						))}
+					</ul>
+				</header>
+
+				{activeView}
+			</div>
+		);
+	}
+
+	// Helpers
+	// =========================================================================
+
+	_allowedView (freqs) {
+		return freqs.indexOf(this.props.baseRule.frequency) !== -1;
 	}
 
 }

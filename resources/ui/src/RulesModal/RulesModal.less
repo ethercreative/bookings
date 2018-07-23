@@ -1,5 +1,7 @@
 @import "../variables";
 
+@border: #e3e5e8;
+
 // Sidebar
 // =========================================================================
 
@@ -7,7 +9,7 @@
 
 .sidebar {
 	position: relative;
-	z-index: 2;
+	z-index: 1;
 
 	display: flex;
 	flex-direction: column;
@@ -16,7 +18,7 @@
 	padding: 30px 0;
 
 	background: @aside-bg;
-	border-right: 1px solid #e3e5e8;
+	border-right: 1px solid @border;
 	//box-shadow: 2px 0 6px 0 rgba(0, 0, 0, 0.1);
 }
 
@@ -88,4 +90,144 @@
 .newRule {
 	margin: 0 15px;
 	font-size: 14px;
+}
+
+// Main
+// =========================================================================
+
+.main {
+	position: relative;
+	z-index: 2;
+
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 9999;
+	width: 100%;
+
+	& > div:last-child {
+		height: calc(~"100% - 50px");
+	}
+}
+
+.header {
+	position: relative;
+	z-index: 3;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 50px;
+
+	background: @aside-bg;
+	border-bottom: 1px solid @border;
+
+	&:before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -1px;
+
+		display: block;
+		width: 1px;
+		height: 100%;
+
+		background-color: @aside-bg;
+	}
+
+	&:after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: -1px;
+
+		display: block;
+		width: 1px;
+		height: 1px;
+
+		background-color: @border;
+	}
+}
+
+.tabs {
+	position: relative;
+
+	height: calc(~"100% + 1px");
+	margin: 0 0 -1px;
+	padding: 0;
+
+	overflow: hidden;
+
+	li {
+		display: inline-block;
+		height: 100%;
+	}
+
+	button {
+		position: relative;
+
+		display: flex;
+		height: 100%;
+		margin: 0;
+		padding: 0 25px;
+
+		font-size: 14px;
+
+		appearance: none;
+		background: none;
+		border: none;
+		border-right: 1px solid @border;
+		border-bottom: 1px solid @border;
+		border-radius: 0;
+		cursor: pointer;
+
+		outline: none;
+		transition: background-color 0.15s ease, border-bottom-color 0.15s ease;
+
+		&:disabled {
+			pointer-events: none;
+		}
+
+		&:hover:not(:disabled):not(.active) {
+			background-color: fade(#fff, 50%);
+		}
+
+		&.active {
+			background-color: #fff;
+			border-bottom-color: #fff;
+
+			&:after {
+				content: '';
+				position: absolute;
+				top: 100%;
+				left: -10px;
+				right: -10px;
+
+				display: block;
+				height: 10px;
+				margin-top: 1px;
+
+				background-image: linear-gradient(
+					to bottom,
+					#fff 0%,
+					rgba(255, 255, 255, 0) 100%
+				);
+				pointer-events: none;
+			}
+		}
+
+		// Square off bottom right corner of active tab
+
+		&:before {
+			content: '';
+			position: absolute;
+			bottom: -1px;
+			right: -1px;
+
+			display: block;
+			width: 1px;
+			height: 1px;
+
+			background-color: @border;
+		}
+	}
 }

@@ -6,9 +6,7 @@
  */
 export default function jQuizzle (cb) {
 	if (window.$) {
-		window.$(() => {
-			cb(window.$);
-		});
+		window.$(() => cb(window.$));
 		return;
 	}
 
@@ -21,9 +19,7 @@ export default function jQuizzle (cb) {
 		},
 		set: function (val) {
 			this._$ = val;
-			this._$(() => {
-				cb(this._$);
-			});
+			this._$(() => cb(this._$));
 		}
 	});
 }
