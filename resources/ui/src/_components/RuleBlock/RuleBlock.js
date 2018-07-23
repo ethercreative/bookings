@@ -96,120 +96,127 @@ class RuleBlock extends Component {
 	// Render
 	// =========================================================================
 
-	render ({ rule, isBaseRule }) {
+	render ({ isBaseRule, rule }) {
+		return (
+			<div class={styles.wrap}>
+				<div class={styles.block}>
+					{this._renderFields()}
+					{isBaseRule === false && this._renderFooter()}
+				</div>
+			</div>
+		);
+	}
+
+	_renderFields () {
+		const { rule, isBaseRule } = this.props;
 		const {
 			frequency, repeats, start, until, count, interval, duration
 		} = rule;
 
 		return (
-			<div class={styles.wrap}>
-				<div class={styles.block}>
-					<div>
-						<Row>
-							{isBaseRule ? (
-								<Label label="Frequency">
-									<CraftSelect
-										onChange={this.onFrequencyChange}>
-										{Frequency.asKeyValueArray().map(o => (
-											<option
-												value={o.value}
-												selected={o.value === frequency}
-											>
-												{o.key}
-											</option>
-										))}
-									</CraftSelect>
-								</Label>
-							) : (
-								<Label label="Bookable">
-									<CraftLightSwitch
-										on={rule.bookable}
-										onChange={this.onBookableChange}
-									/>
-								</Label>
-							)}
+			<div>
+				<Row>
+					{isBaseRule ? (
+						<Label label="Frequency">
+							<CraftSelect
+								onChange={this.onFrequencyChange}>
+								{Frequency.asKeyValueArray().map(o => (
+									<option
+										value={o.value}
+										selected={o.value === frequency}
+									>
+										{o.key}
+									</option>
+								))}
+							</CraftSelect>
+						</Label>
+					) : (
+						<Label label="Bookable">
+							<CraftLightSwitch
+								on={rule.bookable}
+								onChange={this.onBookableChange}
+							/>
+						</Label>
+					)}
 
-							<Label label="Start Date / Time">
-								<CraftDateTime
-									showDate
-									showTime
-									defaultDate={start.date}
-									defaultTime={start.date}
-									onChange={this.onStartDateTimeChange}
-								/>
-							</Label>
-						</Row>
+					<Label label="Start Date / Time">
+						<CraftDateTime
+							showDate
+							showTime
+							defaultDate={start.date}
+							defaultTime={start.date}
+							onChange={this.onStartDateTimeChange}
+						/>
+					</Label>
+				</Row>
 
-						<Row>
-							<Label label="Repeats">
-								<CraftSelect onChange={this.onRepeatsChange}>
-									{[
-										{ label: "Until", value: "until" },
-										{ label: "# Times", value: "count" },
-										{ label: "Forever", value: "forever" },
-									].map(o => (
-										<option
-											value={o.value}
-											selected={o.value === repeats}
-										>
-											{o.label}
-										</option>
-									))}
-								</CraftSelect>
-							</Label>
+				<Row>
+					<Label label="Repeats">
+						<CraftSelect onChange={this.onRepeatsChange}>
+							{[
+								{ label: "Until", value: "until" },
+								{ label: "# Times", value: "count" },
+								{ label: "Forever", value: "forever" },
+							].map(o => (
+								<option
+									value={o.value}
+									selected={o.value === repeats}
+								>
+									{o.label}
+								</option>
+							))}
+						</CraftSelect>
+					</Label>
 
-							{repeats === "until" && (
-								<Label label="End Date / Time">
-									<CraftDateTime
-										showDate
-										showTime
-										defaultDate={until.date}
-										defaultTime={until.date}
-										onChange={this.onUntilDateTimeChange}
-									/>
-								</Label>
-							)}
+					{repeats === "until" && (
+						<Label label="End Date / Time">
+							<CraftDateTime
+								showDate
+								showTime
+								defaultDate={until.date}
+								defaultTime={until.date}
+								onChange={this.onUntilDateTimeChange}
+							/>
+						</Label>
+					)}
 
-							{repeats === "count" && (
-								<Label label="Count">
-									<input
-										class="text"
-										type="number"
-										step="1"
-										min="0"
-										value={count}
-										onInput={this.onCountChange}
-									/>
-								</Label>
-							)}
-						</Row>
+					{repeats === "count" && (
+						<Label label="Count">
+							<input
+								class="text"
+								type="number"
+								step="1"
+								min="0"
+								value={count}
+								onInput={this.onCountChange}
+							/>
+						</Label>
+					)}
+				</Row>
 
-						<Row>
-							<Label label="Interval">
-								<input
-									class="text"
-									type="number"
-									step="1"
-									min="0"
-									value={interval}
-									onInput={this.onIntervalChange}
-								/>
-							</Label>
+				<Row>
+					<Label label="Interval">
+						<input
+							class="text"
+							type="number"
+							step="1"
+							min="0"
+							value={interval}
+							onInput={this.onIntervalChange}
+						/>
+					</Label>
 
-							<Label label="Duration">
-								<input
-									class="text"
-									type="number"
-									step="1"
-									min="1"
-									value={duration}
-									onInput={this.onDurationChange}
-								/>
-							</Label>
-						</Row>
-					</div>
-					{isBaseRule === false && this._renderFooter()}
-				</div>
+					<Label label="Duration">
+						<input
+							class="text"
+							type="number"
+							step="1"
+							min="1"
+							value={duration}
+							onInput={this.onDurationChange}
+						/>
+					</Label>
+				</Row>
 			</div>
 		);
 	}
@@ -217,7 +224,10 @@ class RuleBlock extends Component {
 	_renderFooter () {
 		return (
 			<footer class={styles.footer}>
-				<div class={styles.dragHandle} title="Move this rule" />
+				<div
+					class={["handle", styles.dragHandle].join(" ")}
+					title="Move this rule"
+				/>
 
 				<div>
 					<button

@@ -3,6 +3,7 @@ import styles from "./RulesModal.less";
 import Modal from "../_components/Modal/Modal";
 import RuleBlock from "../_components/RuleBlock/RuleBlock";
 import connect from "../_hoc/connect";
+import Sortable from "../_components/Sortable";
 
 class RulesModal extends Component {
 
@@ -19,6 +20,15 @@ class RulesModal extends Component {
 
 	onAddRuleClick = () => {
 		this.props.dispatch("new:settings.exceptions", null);
+	};
+
+	onSortRules = sortedChildren => {
+		const sortedIds = [];
+
+		for (let i = 0, l = sortedChildren.length; i < l; ++i)
+			sortedIds.push(sortedChildren[i]._component.props.rule.id);
+
+		this.props.dispatch("sort:settings.exceptions", sortedIds);
 	};
 
 	// Render
@@ -47,9 +57,11 @@ class RulesModal extends Component {
 					<div class={styles.rules}>
 						<RuleBlock rule={baseRule} isBaseRule />
 
-						{exceptions.map(ex => (
-							<RuleBlock key={ex.id} rule={ex} />
-						))}
+						<Sortable onSort={this.onSortRules}>
+							{exceptions.map(ex => (
+								<RuleBlock key={ex.id} rule={ex}/>
+							))}
+						</Sortable>
 					</div>
 				</div>
 

@@ -46,13 +46,15 @@ const store = Socrates({
 				if (ruleToDupe.length === 0)
 					return;
 
-				return state.concat([new ExRule({
-					...ruleToDupe[0],
-				}, true)]);
+				return state.concat([new ExRule(ruleToDupe[0], true)]);
 			},
 
 			delete (state, id) {
 				return state.filter(ex => ex.id !== id);
+			},
+
+			sort (state, sortedIds) {
+				return state.slice().sort((a, b) => sortedIds.indexOf(a.id) - sortedIds.indexOf(b.id));
 			},
 		},
 	},
