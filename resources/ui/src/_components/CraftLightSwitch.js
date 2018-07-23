@@ -12,8 +12,11 @@ export default ({ name, on = false, onChange = null }) => (
 			el._clse = true;
 
 			jQuizzle($ => {
-				// This is the first jQuery I've written in years...
-				$(el).on('change', () => {
+				const $lightSwitch = $(el);
+
+				$lightSwitch.lightswitch();
+
+				$lightSwitch.on('change', () => {
 					onChange(el.lastElementChild.value === "1");
 				});
 			});

@@ -1,0 +1,91 @@
+@import "../variables";
+
+// Sidebar
+// =========================================================================
+
+@aside-bg: #f1f5f8;
+
+.sidebar {
+	position: relative;
+	z-index: 2;
+
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	width: 400px;
+	padding: 30px 0;
+
+	background: @aside-bg;
+	border-right: 1px solid #e3e5e8;
+	//box-shadow: 2px 0 6px 0 rgba(0, 0, 0, 0.1);
+}
+
+.sidebarHeader {
+	padding: 0 30px;
+
+	h2 {
+		margin: 0 0 10px;
+		color: #da5a47;
+		font-size: 28px;
+		font-weight: normal;
+		letter-spacing: 0;
+	}
+
+	p {
+		color: #8C97B2;
+		font-size: 13px;
+		letter-spacing: 0;
+		line-height: 19px;
+	}
+}
+
+.rulesWrap {
+	position: relative;
+	flex-grow: 1;
+	display: flex;
+	overflow: hidden;
+
+	&:before,
+	&:after {
+		content: '';
+		position: absolute;
+		z-index: 2;
+		left: 0;
+		right: 0;
+		display: block;
+		height: 25px;
+	}
+
+	&:before {
+		top: 0;
+		background-image: linear-gradient(
+			to bottom,
+			@aside-bg 0%,
+			fade(@aside-bg, 0) 100%
+		);
+	}
+
+	&:after {
+		bottom: 0;
+		background-image: linear-gradient(
+			to bottom,
+			fade(@aside-bg, 0) 0%,
+			@aside-bg 100%
+		);
+	}
+}
+
+.rules {
+	position: relative;
+	z-index: 1;
+
+	width: 100%;
+	padding: 25px 20px;
+
+	overflow: auto;
+}
+
+.newRule {
+	margin: 0 15px;
+	font-size: 14px;
+}

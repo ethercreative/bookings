@@ -9,9 +9,16 @@ import CraftButton from "../_components/CraftButton";
 import FixedIcon from "../_icons/FixedIcon";
 import FlexibleIcon from "../_icons/FlexibleIcon";
 import CalendarIcon from "../_icons/CalendarIcon";
-import BaseRule from "../_components/BaseRule/BaseRule";
+import RulesModal from "../RulesModal/RulesModal";
 
 class Field extends Component {
+
+	// Properties
+	// =========================================================================
+
+	state = {
+		ruleModalOpen: false,
+	};
 
 	// Events
 	// =========================================================================
@@ -21,10 +28,18 @@ class Field extends Component {
 		this.props.dispatch("set:settings.bookableType", type);
 	};
 
+	onOpenRulesModalClick = () => {
+		this.setState({ rulesModalOpen: true });
+	};
+
+	onRequestCloseRulesModal = () => {
+		this.setState({ rulesModalOpen: false });
+	};
+
 	// Render
 	// =========================================================================
 
-	render ({ dispatch, handle, enabled, bookableType }) {
+	render ({ dispatch, handle, enabled, bookableType }, { rulesModalOpen }) {
 		let cls = [styles.field];
 		if (!enabled) cls.push(styles.disabled);
 		cls = cls.join(" ");
@@ -78,15 +93,24 @@ class Field extends Component {
 						<header>
 							<h5>Primary Rule</h5>
 
-							<CraftButton type="button" className="submit">
+							<CraftButton
+								type="button"
+								className="submit"
+								onClick={this.onOpenRulesModalClick}
+							>
 								{CalendarIcon}
 								Edit Rules
 							</CraftButton>
 						</header>
 
-						<BaseRule />
+						[TODO: Replace w/ mini-calendar showing slots w/ bookings, but w/o details]
 					</div>
 				</CraftLabel>
+
+				<RulesModal
+					isOpen={rulesModalOpen}
+					onRequestClose={this.onRequestCloseRulesModal}
+				/>
 			</div>
 		);
 	}

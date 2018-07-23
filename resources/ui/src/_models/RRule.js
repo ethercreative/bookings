@@ -1,5 +1,5 @@
-import uuid from "../_helpers/uuid";
 import Frequency from "../_enums/Frequency";
+import constructModel from "../_helpers/constructModel";
 
 export default class RRule {
 
@@ -99,26 +99,7 @@ export default class RRule {
 	// =========================================================================
 
 	constructor (def = {}, overwriteId = false) {
-		this.id = uuid();
-
-		def && Object.keys(def).map(key => {
-			if (!this.hasOwnProperty(key))
-				return;
-
-			if (key === "id" && overwriteId)
-				return;
-
-			let value = def[key];
-
-			if (~["start", "until"].indexOf(key)) {
-				if (!(value.date instanceof Date))
-					value.date = new Date(value.date);
-				value.date.setSeconds(0);
-				value.date.setMilliseconds(0);
-			}
-
-			this[key] = value;
-		});
+		constructModel(this, def, overwriteId);
 	}
 
 }

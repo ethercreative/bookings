@@ -15,7 +15,10 @@ export default function connect (mapStoreToProps = () => ({})) {
 			}
 
 			shouldComponentUpdate (nextProps, nextState) {
-				return JSON.stringify(this.state) !== JSON.stringify(nextState);
+				return (
+					JSON.stringify(this.props) !== JSON.stringify(nextProps)
+					|| JSON.stringify(this.state) !== JSON.stringify(nextState)
+				);
 			}
 
 			render (props, state) {
