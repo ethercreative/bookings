@@ -45,6 +45,9 @@ class RuleBlock extends Component {
 	// Events
 	// =========================================================================
 
+	// Events: Fields
+	// -------------------------------------------------------------------------
+
 	onFrequencyChange = freq => {
 		this.props.dispatch("updateFrequencies", freq);
 	};
@@ -75,6 +78,19 @@ class RuleBlock extends Component {
 
 	onBookableChange = isBookable => {
 		this.updateRule("bookable", isBookable);
+	};
+
+	// Events: Buttons
+	// -------------------------------------------------------------------------
+
+	onDuplicateRuleClick = () => {
+		const { rule, dispatch } = this.props;
+		dispatch("duplicate:settings.exceptions", rule.id);
+	};
+
+	onDeleteRuleClick = () => {
+		const { rule, dispatch } = this.props;
+		dispatch("delete:settings.exceptions", rule.id);
 	};
 
 	// Render
@@ -204,11 +220,20 @@ class RuleBlock extends Component {
 				<div class={styles.dragHandle} title="Move this rule" />
 
 				<div>
-					<button type="button" title="Duplicate this rule">
+					<button
+						type="button"
+						title="Duplicate this rule"
+						onClick={this.onDuplicateRuleClick}
+					>
 						Duplicate
 					</button>
 
-					<button type="button" title="Delete this rule" class={styles.danger}>
+					<button
+						type="button"
+						title="Delete this rule"
+						class={styles.danger}
+						onClick={this.onDeleteRuleClick}
+					>
 						Delete
 					</button>
 				</div>

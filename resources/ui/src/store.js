@@ -39,6 +39,21 @@ const store = Socrates({
 					});
 				});
 			},
+
+			duplicate (state, id) {
+				const ruleToDupe = state.filter(ex => ex.id === id);
+
+				if (ruleToDupe.length === 0)
+					return;
+
+				return state.concat([new ExRule({
+					...ruleToDupe[0],
+				}, true)]);
+			},
+
+			delete (state, id) {
+				return state.filter(ex => ex.id !== id);
+			},
 		},
 	},
 });

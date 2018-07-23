@@ -39,7 +39,7 @@ class Field extends Component {
 	// Render
 	// =========================================================================
 
-	render ({ dispatch, handle, enabled, bookableType }, { rulesModalOpen }) {
+	render ({ dispatch, handle, enabled, bookableType, settings }, { rulesModalOpen }) {
 		let cls = [styles.field];
 		if (!enabled) cls.push(styles.disabled);
 		cls = cls.join(" ");
@@ -111,14 +111,21 @@ class Field extends Component {
 					isOpen={rulesModalOpen}
 					onRequestClose={this.onRequestCloseRulesModal}
 				/>
+
+				<input
+					type="hidden"
+					name={handle}
+					value={JSON.stringify({ enabled, settings })}
+				/>
 			</div>
 		);
 	}
 
 }
 
-export default connect(({ handle, enabled, settings: { bookableType } }) => ({
+export default connect(({ handle, enabled, settings, settings: { bookableType } }) => ({
 	handle,
 	enabled,
+	settings,
 	bookableType,
 }))(Field);
