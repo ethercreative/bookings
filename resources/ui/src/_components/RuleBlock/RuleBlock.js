@@ -206,16 +206,18 @@ class RuleBlock extends Component {
 						/>
 					</Label>
 
-					<Label label="Duration">
-						<input
-							class="text"
-							type="number"
-							step="1"
-							min="1"
-							value={duration}
-							onInput={this.onDurationChange}
-						/>
-					</Label>
+					{isBaseRule && (
+						<Label label="Duration">
+							<input
+								class="text"
+								type="number"
+								step="1"
+								min="1"
+								value={duration}
+								onInput={this.onDurationChange}
+							/>
+						</Label>
+					)}
 				</Row>
 			</div>
 		);

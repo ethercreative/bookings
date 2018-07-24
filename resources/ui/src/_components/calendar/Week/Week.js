@@ -63,10 +63,10 @@ class Week extends Component {
 	// Render
 	// =========================================================================
 
-	render () {
+	render (_, { weeks }) {
 		return (
 			<div class={styles.scroller}>
-				{this.state.weeks.map((week, index) => (
+				{weeks.map((week, index) => (
 					<div key={index} class={styles.group}>
 						{Week._renderHeader(week)}
 						{Week._renderLabels()}
