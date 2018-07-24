@@ -11,7 +11,11 @@ class App extends Component {
 	constructor (props) {
 		super(props);
 
-		const state = {...props};
+		const state = {
+			...props,
+			slots: {},
+			exceptions: {},
+		};
 		delete state.children;
 
 		state.settings.bookableType = state.settings.bookableType || BookableType.FIXED;

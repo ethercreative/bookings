@@ -7,6 +7,8 @@ import getFirstSlot from "../../../_helpers/getFirstSlot";
 import getNearestWeek from "../../../_helpers/getNearestWeek";
 import correctDate from "../../../_helpers/correctDate";
 import Frequency from "../../../_enums/Frequency";
+import slotExists from "../../../_helpers/slotExists";
+import padZero from "../../../_helpers/padZero";
 
 const DAYS = [
 	"Monday",
@@ -35,10 +37,21 @@ class Week extends Component {
 	// Preact
 	// =========================================================================
 
+	componentDidMount () {
+		this.updateStateFromProps();
+	}
+
 	componentWillReceiveProps (nextProps) {
-		const weeks = Week._computeWeeks(nextProps)
-			, formattedSlots = this._formatSlots(nextProps.slots)
-			, formattedExceptions = this._formatSlots(nextProps.exceptions);
+		this.updateStateFromProps(nextProps);
+	}
+
+	// Actions
+	// =========================================================================
+
+	updateStateFromProps (props = this.props) {
+		const weeks = Week._computeWeeks(props)
+			, formattedSlots = this._formatSlots(props.slots)
+			, formattedExceptions = this._formatSlots(props.exceptions);
 
 		this.setState({
 			weeks,
@@ -55,8 +68,8 @@ class Week extends Component {
 			<div class={styles.scroller}>
 				{this.state.weeks.map((week, index) => (
 					<div key={index} class={styles.group}>
-						{this._renderHeader(week)}
-						{this._renderLabels()}
+						{Week._renderHeader(week)}
+						{Week._renderLabels()}
 						{this._renderCells(week)}
 					</div>
 				))}
@@ -64,16 +77,95 @@ class Week extends Component {
 		);
 	}
 
-	_renderHeader (week) {
-		//
+	static _renderHeader (week) {
+		return (
+			<header class={styles.header}>
+				<div>
+					{DAYS.map((day, i) => (
+						<span key={i}>
+							{Week._getHeader(day, week, i)}
+						</span>
+					))}
+				</div>
+			</header>
+		);
 	}
 
-	_renderLabels () {
-		//
+	static _renderLabels () {
+		return (
+			<ul class={styles.labels}>
+				{Array.from({ length: 23 }, (_, i) => {
+					let t = i + 1;
+
+					if (t > 12) t = (t - 12) + " pm";
+					else t = t + " am";
+
+					return <li key={i}>{t}</li>;
+				})}
+			</ul>
+		);
 	}
 
 	_renderCells (week) {
-		//
+		return (
+			<div class={styles.cells}>
+				{DAYS.map((day, i) => {
+					const [y, m, d] = Week._correctDayByWeek(week, i);
+
+					if (slotExists(this.state.formattedSlots, y, m, d))
+						return this._renderSlot(y, m, d);
+
+					if (slotExists(this.state.formattedExceptions, y, m, d))
+						return this._renderException(y, m, d);
+
+					return null;
+				})}
+			</div>
+		);
+	}
+
+	_renderSlot (y, m, d) {
+		const { formattedSlots } = this.state;
+
+		return formattedSlots[y][m][d].map(id => {
+			const slot = formattedSlots[y][m].all[id]
+				, cls = [styles.slot];
+
+			if (slot.splitTop)
+				cls.push(styles["split-top"]);
+
+			if (slot.splitBottom)
+				cls.push(styles["split-bottom"]);
+
+			return (
+				<span
+					key={id}
+					style={slot.position}
+					class={cls.join(" ")}
+				>
+					<span>
+						Bookable
+						<em>{this._getDuration(slot)}</em>
+					</span>
+				</span>
+			);
+		});
+	}
+
+	_renderException (y, m, d) {
+		const { formattedExceptions } = this.state;
+
+		return formattedExceptions[y][m][d].map(id => {
+			const slot = formattedExceptions[y][m].all[id];
+
+			return (
+				<span
+					key={id}
+					style={slot.position}
+					class={styles.exception}
+				/>
+			);
+		});
 	}
 
 	// Helpers
@@ -117,7 +209,7 @@ class Week extends Component {
 
 			const week = { year, month, day };
 
-			weeks.push(weeks);
+			weeks.push(week);
 			prevWeek = week;
 		}
 
@@ -267,6 +359,55 @@ class Week extends Component {
 			top: (60 * hour) + minute + "px",
 			height: h + 1 + "px",
 		};
+	}
+
+	static _getHeader (day, week, i) {
+		const [, m, d] = Week._correctDayByWeek(week, i);
+		return day + ` ${d}/${m}`;
+	}
+
+	static _correctDayByWeek (week, i) {
+		return correctDate(
+			week.year,
+			week.month,
+			week.day + i
+		);
+	}
+
+	_getDuration (slot) {
+		const { baseRule } = this.props;
+		const h = slot.hour === 24 ? 0 : slot.hour;
+
+		const from = padZero(h) + ":" + padZero(slot.minute);
+		let to = "";
+
+		if (baseRule.frequency === Frequency.Minutely) {
+			let min = slot.minute + baseRule.duration,
+				hr  = slot.hour;
+
+			if (min >= 60) {
+				min -= 60;
+				hr  += 1;
+			}
+
+			if (hr >= 24)
+				hr -= 24;
+
+			to = padZero(hr) + ":" + padZero(min);
+		}
+
+		// Else Hourly
+		// (this view shouldn't be visible for other frequencies)
+		else {
+			let hr = slot.hour + baseRule.duration;
+
+			if (hr >= 24)
+				hr -= 24;
+
+			to = padZero(hr) + ":" + padZero(slot.minute);
+		}
+
+		return from + " - " + to;
 	}
 
 }

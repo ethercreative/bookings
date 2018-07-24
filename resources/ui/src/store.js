@@ -58,8 +58,5 @@ const store = Socrates({
 			},
 		},
 	},
-
-	slots: {},
-	exceptions: {},
 });
 export default store;
