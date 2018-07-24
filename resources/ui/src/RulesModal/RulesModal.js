@@ -31,6 +31,15 @@ const CALENDAR_TABS = [
 	},
 ];
 
+const TAB_BY_FREQ = {
+	[Frequency.Minutely]: "day",
+	[Frequency.Hourly]: "week",
+	[Frequency.Daily]: "month",
+	[Frequency.Weekly]: "month",
+	[Frequency.Monthly]: "year",
+	[Frequency.Yearly]: "year",
+};
+
 class RulesModal extends Component {
 
 	// Properties
@@ -44,6 +53,16 @@ class RulesModal extends Component {
 	state = {
 		activeView: "week",
 	};
+
+	// Preact
+	// =========================================================================
+
+	componentWillReceiveProps (nextProps) {
+		const activeView = TAB_BY_FREQ[nextProps.baseRule.frequency];
+
+		if (this.state.activeView !== activeView)
+			this.setState({ activeView });
+	}
 
 	// Events
 	// =========================================================================
