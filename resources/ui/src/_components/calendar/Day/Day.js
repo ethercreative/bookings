@@ -200,7 +200,11 @@ class Day extends Component {
 
 		const days = [firstDay];
 
-		// TODO: Make i dynamic (see Week.js for details)
+		// TODO: i should:
+		// - Until: Encompass the until date
+		// - # Times: The end date of the final slot
+		// - Forever: Set to 100
+		// - Should be capped at 100.
 		let i = 3,
 			prevDay = firstDay;
 

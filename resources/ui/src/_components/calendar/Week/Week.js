@@ -9,6 +9,7 @@ import correctDate from "../../../_helpers/correctDate";
 import Frequency from "../../../_enums/Frequency";
 import slotExists from "../../../_helpers/slotExists";
 import padZero from "../../../_helpers/padZero";
+import getLastSlot from "../../../_helpers/getLastSlot";
 
 const DAYS = [
 	"Monday",
@@ -188,6 +189,11 @@ class Week extends Component {
 			{ date: new Date() }
 		).date;
 
+		const endDate = getLastSlot(
+			props.slots,
+			{ date: new Date() }
+		).date;
+
 		const firstWeek = getNearestWeek(
 			startDate.getFullYear(),
 			startDate.getMonth() + 1,
@@ -201,7 +207,7 @@ class Week extends Component {
 		// - # Times: The end date of the final slot
 		// - Forever: Set to 100
 		// - Should be capped at 100.
-		let i = 3,
+		let i = Math.round((endDate - startDate) / (7 * 24 * 60 * 60 * 1000)) + 1,
 			prevWeek = firstWeek;
 
 		while (--i) {

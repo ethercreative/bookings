@@ -17,12 +17,12 @@ export function refreshCalendar (state = store()) {
 			, exceptions = formatSlotsForStorage(res.exceptions);
 
 		// FIXME: https://github.com/matthewmueller/socrates/issues/21
-		store("set:slots", slots);
-		store("set:exceptions", exceptions);
+		store("set", { slots: null, exceptions: null });
+		store("set", { slots, exceptions });
 
 		// store([
-		// 	{ type: "set:slots", payload: slots },
-		// 	{ type: "set:exceptions", payload: exceptions },
+		// 	{ type: "set", payload: { slots: null, exceptions: null } },
+		// 	{ type: "set", payload: { slots, exceptions } },
 		// ]);
 	});
 }
