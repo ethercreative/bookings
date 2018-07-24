@@ -224,6 +224,11 @@ class Week extends Component {
 	 * @private
 	 */
 	_formatSlots (slots) {
+
+		// Un-freeze the slots object (only an issue in dev)
+		if (process.env.NODE_ENV === "development")
+			slots = JSON.parse(JSON.stringify(slots));
+
 		slots = {...slots};
 
 		for (let y in slots) {

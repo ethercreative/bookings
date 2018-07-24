@@ -5,9 +5,7 @@ import ExRule from "./_models/ExRule";
 const store = Socrates({
 	updateFrequencies (state, frequency) {
 		return {
-			...state,
 			settings: {
-				...state.settings,
 				baseRule: new RRule({
 					...state.settings.baseRule,
 					frequency,
@@ -59,4 +57,5 @@ const store = Socrates({
 		},
 	},
 });
+
 export default store;
