@@ -107,18 +107,22 @@ class Week extends Component {
 	}
 
 	_renderCells (week) {
+		const { formattedSlots, formattedExceptions } = this.state;
+
 		return (
 			<div class={styles.cells}>
 				{DAYS.map((day, i) => {
 					const [y, m, d] = Week._correctDayByWeek(week, i);
 
-					if (slotExists(this.state.formattedSlots, y, m, d))
-						return this._renderSlot(y, m, d);
+					let ret = [];
 
-					if (slotExists(this.state.formattedExceptions, y, m, d))
-						return this._renderException(y, m, d);
+					if (slotExists(formattedSlots, y, m, d))
+						ret = ret.concat(this._renderSlot(y, m, d));
 
-					return null;
+					if (slotExists(formattedExceptions, y, m, d))
+						ret = ret.concat(this._renderException(y, m, d));
+
+					return ret;
 				})}
 			</div>
 		);

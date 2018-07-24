@@ -125,13 +125,15 @@ class Day extends Component {
 				{TIMES.map((time, i) => {
 					const [y, m, d] = Day._correctDateByDay(day, i);
 
+					let ret = [];
+
 					if (slotExists(formattedSlots, y, m, d))
-						return this._renderSlot(y, m, d);
+						ret = ret.concat(this._renderSlot(y, m, d));
 
 					if (slotExists(formattedExceptions, y, m, d))
-						return this._renderException(y, m, d);
+						ret = ret.concat(this._renderException(y, m, d));
 
-					return null;
+					return ret;
 				})}
 			</div>
 		);
