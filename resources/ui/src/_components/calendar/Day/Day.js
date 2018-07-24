@@ -5,6 +5,7 @@ import getFirstSlot from "../../../_helpers/getFirstSlot";
 import correctDate from "../../../_helpers/correctDate";
 import slotExists from "../../../_helpers/slotExists";
 import padZero from "../../../_helpers/padZero";
+import getLastSlot from "../../../_helpers/getLastSlot";
 
 const MONTHS = [
 	"January",
@@ -192,6 +193,13 @@ class Day extends Component {
 			{ date: new Date() }
 		).date;
 
+		const endDate = getLastSlot(
+			props.slots,
+			{ date: new Date() }
+		).date;
+
+		console.log(startDate, endDate);
+
 		const firstDay = {
 			year: startDate.getFullYear(),
 			month: startDate.getMonth() + 1,
@@ -205,7 +213,7 @@ class Day extends Component {
 		// - # Times: The end date of the final slot
 		// - Forever: Set to 100
 		// - Should be capped at 100.
-		let i = 3,
+		let i = Math.round((endDate - startDate) / (7 * 24 * 60 * 60 * 1000)) + 1,
 			prevDay = firstDay;
 
 		while (--i) {
@@ -242,6 +250,10 @@ class Day extends Component {
 				for (let key in slots[y][m].all) {
 					if (!slots[y][m].all.hasOwnProperty(key))
 						continue;
+
+					// Fix loss of Date obj after thaw (dev only)
+					if (process.env.NODE_ENV === "development")
+						slots[y][m].all[key].date = new Date(slots[y][m].all[key].date);
 
 					slots = this._formatSlot(y, m, key, slots);
 				}

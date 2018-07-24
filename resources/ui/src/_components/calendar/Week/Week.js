@@ -239,7 +239,7 @@ class Week extends Component {
 		if (process.env.NODE_ENV === "development")
 			slots = JSON.parse(JSON.stringify(slots));
 
-		slots = {...slots};
+		slots = { ...slots };
 
 		for (let y in slots) {
 			if (!slots.hasOwnProperty(y))
@@ -252,6 +252,10 @@ class Week extends Component {
 				for (let key in slots[y][m].all) {
 					if (!slots[y][m].all.hasOwnProperty(key))
 						continue;
+
+					// Fix loss of Date obj after thaw (dev only)
+					if (process.env.NODE_ENV === "development")
+						slots[y][m].all[key].date = new Date(slots[y][m].all[key].date);
 
 					slots = this._formatSlot(y, m, key, slots);
 				}

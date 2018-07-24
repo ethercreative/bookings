@@ -36,15 +36,17 @@ function formatSlotsForStorage (slots) {
 		d.setSeconds(0);
 		d.setMilliseconds(0);
 
-		slot.date = d;
-		slot.day = slot.date.getDay();
-		slot.hour = slot.date.getHours();
-		slot.minute = slot.date.getMinutes();
+		const fSlot = {};
 
-		const year = slot.date.getFullYear()
-			, month = slot.date.getMonth() + 1
-			, date = slot.date.getDate()
-			, key = slot.date.getTime();
+		fSlot.date = d;
+		fSlot.day = fSlot.date.getDay();
+		fSlot.hour = fSlot.date.getHours();
+		fSlot.minute = fSlot.date.getMinutes();
+
+		const year = fSlot.date.getFullYear()
+			, month = fSlot.date.getMonth() + 1
+			, date = fSlot.date.getDate()
+			, key = fSlot.date.getTime();
 
 		if (!slots.hasOwnProperty(year))
 			slots[year] = {};
@@ -55,7 +57,7 @@ function formatSlotsForStorage (slots) {
 		if (!slots[year][month].hasOwnProperty(date))
 			slots[year][month][date] = [];
 
-		slots[year][month].all[key] = slot;
+		slots[year][month].all[key] = fSlot;
 		slots[year][month][date].push(key);
 
 		return slots;
