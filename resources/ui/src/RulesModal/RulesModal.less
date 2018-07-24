@@ -195,6 +195,8 @@
 			background-color: #fff;
 			border-bottom-color: #fff;
 
+			pointer-events: none;
+
 			&:after {
 				content: '';
 				position: absolute;
@@ -230,4 +232,10 @@
 			background-color: @border;
 		}
 	}
+}
+
+.close {
+	margin-right: @spacer/2;
+
+	font-size: 14px;
 }

@@ -1,5 +1,5 @@
-export default ({ className, children, ...props }) => (
-	<button {...props} className={`btn ${className ? className : ""}`}>
+export default ({ className, children, type, ...props }) => (
+	<button {...props} type={type || "button"} className={`btn ${className ? className : ""}`}>
 		{children}
 	</button>
 );

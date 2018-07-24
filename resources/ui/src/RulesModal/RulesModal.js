@@ -5,6 +5,7 @@ import RuleBlock from "../_components/RuleBlock/RuleBlock";
 import connect from "../_hoc/connect";
 import Sortable from "../_components/Sortable";
 import Frequency from "../_enums/Frequency";
+import CraftButton from "../_components/CraftButton";
 
 const CALENDAR_TABS = [
 	{
@@ -63,6 +64,10 @@ class RulesModal extends Component {
 		this.setState({ activeView });
 	};
 
+	onCloseClick = () => {
+		this.props.onRequestClose();
+	};
+
 	// Render
 	// =========================================================================
 
@@ -98,13 +103,12 @@ class RulesModal extends Component {
 					</div>
 				</div>
 
-				<button
-					type="button"
-					class={["btn", styles.newRule].join(" ")}
+				<CraftButton
+					className={["submit add icon", styles.newRule].join(" ")}
 					onClick={this.onAddRuleClick}
 				>
 					Add new rule
-				</button>
+				</CraftButton>
 			</aside>
 		);
 	}
@@ -129,6 +133,13 @@ class RulesModal extends Component {
 							</li>
 						))}
 					</ul>
+
+					<CraftButton
+						className={styles.close}
+						onClick={this.onCloseClick}
+					>
+						Close
+					</CraftButton>
 				</header>
 
 				{activeView}
