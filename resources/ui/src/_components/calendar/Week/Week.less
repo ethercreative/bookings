@@ -1,0 +1,218 @@
+@import "../../../variables";
+
+@row-height: 60px;
+
+.scroller {
+	overflow: auto;
+}
+
+.group {
+	position: relative;
+	width: 100%;
+	height: @row-height * 25;
+}
+
+.header,
+.row {
+	display: flex;
+	height: @row-height;
+	padding-left: 100px;
+}
+
+.header {
+	position: sticky;
+	z-index: 2;
+	top: 0;
+
+	background-color: #fff;
+	border-bottom: 1px solid @border;
+
+	div {
+		width: 100%;
+
+		background: repeating-linear-gradient(
+			to right,
+			@border 0%,
+			@border calc(~"0% + 1px"),
+			transparent calc(~"0% + 1px"),
+			transparent 100% / 7
+		);
+
+		span {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 100% / 7;
+			height: @row-height;
+
+			color: #8C97B2;
+			font-size: 12px;
+			text-align: center;
+			text-transform: uppercase;
+		}
+	}
+}
+
+.labels {
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	margin: 0;
+	padding: 110px 0 0;
+	list-style: none;
+
+	li {
+		display: block;
+		width: 100px;
+		height: @row-height;
+		padding-right: 10px;
+
+		color: #8C97B2;
+		font-size: 14px;
+		text-align: right;
+		text-transform: uppercase;
+	}
+}
+
+.cells {
+	position: relative;
+
+	width: calc(~"100% - 100px");
+	height: calc(~"100% - " @row-height);
+	margin-left: 100px;
+
+	background:
+		repeating-linear-gradient(
+			to right,
+			transparent 0px,
+			transparent 3px,
+			#fff 3px,
+			#fff 6px
+		),
+		repeating-linear-gradient(
+			to bottom,
+			transparent 0px,
+			transparent 29px,
+			fade(@border, 50%) 29px,
+			fade(@border, 50%) 30px
+		);
+	overflow: hidden;
+
+	&:before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+
+		background:
+			repeating-linear-gradient(
+				to right,
+				@border 0%,
+				@border calc(~"0% + 1px"),
+				transparent calc(~"0% + 1px"),
+				transparent 100% / 7
+			),
+			repeating-linear-gradient(
+				to bottom,
+				transparent 0px,
+				transparent (@row-height - 1),
+				@border (@row-height - 1),
+				@border @row-height
+			);
+	}
+}
+
+.exception {
+	position: absolute;
+
+	display: block;
+	width: 100% / 7;
+
+	background: linear-gradient(
+		to bottom,
+		fade(@craft-primary, 10%),
+		fade(@craft-primary, 1%)
+	);
+}
+
+.slot {
+	position: absolute;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: calc(100% / 7~" + 1px");
+	margin: -1px 0 0 0;
+
+	color: #3FE79E;
+	font-size: 9px;
+	font-weight: bold;
+	letter-spacing: 0.9px;
+	line-height: normal;
+	text-align: center;
+	text-transform: uppercase;
+
+	background: rgba(63, 231, 158, 0.15);
+	border: 1px solid #3FE79E;
+	border-top-width: 2px;
+	border-bottom-width: 2px;
+
+	span {
+		margin-top: 4px;
+	}
+
+	em {
+		display: block;
+		margin-top: 5px;
+
+		color: #29A871;
+		font-size: 14px;
+		font-weight: bold;
+		font-style: normal;
+	}
+
+	&.split-top {
+		border-top: none;
+
+		&:before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+
+			display: block;
+			width: 100%;
+			height: 4px;
+
+			background: repeating-linear-gradient(
+				135deg,
+				transparent, transparent .4em /* black stripe */,
+				#3FE79E 0, #3FE79E .75em /* blue stripe */
+			);
+		}
+	}
+
+	&.split-bottom {
+		border-bottom: none;
+
+		&:after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 0;
+
+			display: block;
+			width: 100%;
+			height: 4px;
+
+			background: repeating-linear-gradient(
+				135deg,
+				transparent, transparent .4em /* black stripe */,
+				#3FE79E 0, #3FE79E .75em /* blue stripe */
+			);
+		}
+	}
+}

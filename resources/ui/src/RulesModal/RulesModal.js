@@ -6,6 +6,7 @@ import connect from "../_hoc/connect";
 import Sortable from "../_components/Sortable";
 import Frequency from "../_enums/Frequency";
 import CraftButton from "../_components/CraftButton";
+import Week from "../_components/calendar/Week/Week";
 
 const CALENDAR_TABS = [
 	{
@@ -142,7 +143,7 @@ class RulesModal extends Component {
 					</CraftButton>
 				</header>
 
-				{activeView}
+				{activeView === "week" && <Week />}
 			</div>
 		);
 	}
