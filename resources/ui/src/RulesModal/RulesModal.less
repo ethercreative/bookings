@@ -103,6 +103,8 @@
 	width: 100%;
 
 	& > div:last-child {
+		position: relative;
+		z-index: 1;
 		height: calc(~"100% - 50px");
 	}
 }
@@ -118,19 +120,6 @@
 
 	background: @aside-bg;
 	border-bottom: 1px solid @border;
-
-	&:before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -1px;
-
-		display: block;
-		width: 1px;
-		height: 100%;
-
-		background-color: @aside-bg;
-	}
 
 	&:after {
 		content: '';
@@ -153,11 +142,22 @@
 	margin: 0 0 -1px;
 	padding: 0;
 
-	overflow: hidden;
-
 	li {
 		display: inline-block;
 		height: 100%;
+
+		&:first-child button:not(.active):before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -1px;
+
+			display: block;
+			width: 1px;
+			height: 100%;
+
+			background-color: @aside-bg;
+		}
 	}
 
 	button {
@@ -194,25 +194,6 @@
 			border-bottom-color: #fff;
 
 			pointer-events: none;
-
-			&:after {
-				content: '';
-				position: absolute;
-				top: 100%;
-				left: -10px;
-				right: -10px;
-
-				display: block;
-				height: 10px;
-				margin-top: 1px;
-
-				background-image: linear-gradient(
-					to bottom,
-					#fff 0%,
-					rgba(255, 255, 255, 0) 100%
-				);
-				pointer-events: none;
-			}
 		}
 
 		// Square off bottom right corner of active tab
