@@ -86,9 +86,7 @@ class BookableField extends Field
 	public function getInputHtml ($value, ElementInterface $element = null): string {
 		$view = \Craft::$app->view;
 
-		$id           = $view->formatInputId($this->id);
 		$handle       = $view->namespaceInputName($this->handle);
-		$namespacedId = $view->namespaceInputId($id);
 
 		$timezone = \Craft::$app->getTimeZone();
 		$dateFormat = [
@@ -109,9 +107,7 @@ class BookableField extends Field
 		}
 		else
 		{
-			// TODO: Update to work w/ new UI
 			$view->registerAssetBundle(UIAsset::class);
-			$view->registerJs("new window.__BookingsUI('field', '#$namespacedId', { handle: '$handle', value: $value })");
 		}
 
 		$props = json_encode(array_merge(
