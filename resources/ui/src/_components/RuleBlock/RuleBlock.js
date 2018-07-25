@@ -94,7 +94,7 @@ class RuleBlock extends Component {
 
 	onDuplicateRuleClick = () => {
 		const { rule, dispatch } = this.props;
-		dispatch("duplicate:settings.exceptions", rule.id);
+		dispatch("duplicate:settings.exceptions", rule);
 	};
 
 	onDeleteRuleClick = () => {
@@ -105,12 +105,12 @@ class RuleBlock extends Component {
 	// Render
 	// =========================================================================
 
-	render ({ isBaseRule, rule }) {
+	render ({ rule }) {
 		return (
 			<div class={styles.wrap}>
 				<div class={styles.block}>
 					{this._renderFields()}
-					{isBaseRule === false && this._renderFooter()}
+					{this._renderFooter()}
 				</div>
 			</div>
 		);
@@ -254,6 +254,23 @@ class RuleBlock extends Component {
 	}
 
 	_renderFooter () {
+		if (this.props.isBaseRule) {
+			return (
+				<footer class={styles.footer}>
+					<span />
+					<div>
+						<button
+							type="button"
+							title="Duplicate this rule"
+							onClick={this.onDuplicateRuleClick}
+						>
+							Duplicate
+						</button>
+					</div>
+				</footer>
+			)
+		}
+
 		return (
 			<footer class={styles.footer}>
 				<div

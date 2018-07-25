@@ -4,8 +4,6 @@ namespace ether\bookings\controllers;
 
 use craft\web\Controller;
 use ether\bookings\models\Bookable;
-use ether\bookings\models\ExRule;
-use ether\bookings\models\RecursionRule;
 
 class ApiController extends Controller
 {
