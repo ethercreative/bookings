@@ -295,7 +295,7 @@ class Day extends Component {
 		if (widthInclStartOffset === 120)
 			--extraWholeChunks;
 
-		while (--extraWholeChunks) {
+		while (extraWholeChunks--) {
 			const nDate = new Date(
 				prevDate.getFullYear(),
 				prevDate.getMonth(),
@@ -331,8 +331,8 @@ class Day extends Component {
 				splitRight: extraWholeChunks !== 0,
 			};
 
-			if (slot[ny][nm][nd].indexOf(nKey) === -1)
-				slot[ny][nm][nd].push(nKey);
+			if (slots[ny][nm][nd].indexOf(nKey) === -1)
+				slots[ny][nm][nd].push(nKey);
 
 			prevDate = nDate;
 			prevHour = nDate.getHours();
