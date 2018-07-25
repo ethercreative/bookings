@@ -62,6 +62,8 @@ class Day extends Component {
 			, formattedSlots = this._formatSlots(props.slots)
 			, formattedExceptions = this._formatSlots(props.exceptions);
 
+		// console.log(formattedSlots);
+
 		this.setState({
 			days,
 			formattedSlots,
@@ -121,21 +123,19 @@ class Day extends Component {
 	_renderCells (day) {
 		const { formattedSlots, formattedExceptions } = this.state;
 
+		const [y, m, d] = Day._correctDateByDay(day, 0);
+
+		let cells = [];
+
+		if (slotExists(formattedSlots, y, m, d))
+			cells = cells.concat(this._renderSlot(y, m, d));
+
+		if (slotExists(formattedExceptions, y, m, d))
+			cells = cells.concat(this._renderException(y, m, d));
+
 		return (
 			<div class={styles.cells}>
-				{TIMES.map((time, i) => {
-					const [y, m, d] = Day._correctDateByDay(day, i);
-
-					let ret = [];
-
-					if (slotExists(formattedSlots, y, m, d))
-						ret = ret.concat(this._renderSlot(y, m, d));
-
-					if (slotExists(formattedExceptions, y, m, d))
-						ret = ret.concat(this._renderException(y, m, d));
-
-					return ret;
-				})}
+				{cells}
 			</div>
 		);
 	}
@@ -198,8 +198,6 @@ class Day extends Component {
 			{ date: new Date() }
 		).date;
 
-		console.log(startDate, endDate);
-
 		const firstDay = {
 			year: startDate.getFullYear(),
 			month: startDate.getMonth() + 1,
@@ -208,13 +206,10 @@ class Day extends Component {
 
 		const days = [firstDay];
 
-		// TODO: i should:
-		// - Until: Encompass the until date
-		// - # Times: The end date of the final slot
-		// - Forever: Set to 100
-		// - Should be capped at 100.
-		let i = Math.round((endDate - startDate) / (7 * 24 * 60 * 60 * 1000)) + 1,
+		let i = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)),
 			prevDay = firstDay;
+
+		if (i === 0) i = 1;
 
 		while (--i) {
 			const [year, month, day] = correctDate(

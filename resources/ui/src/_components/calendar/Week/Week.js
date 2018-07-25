@@ -71,7 +71,7 @@ class Week extends Component {
 					<div key={index} class={styles.group}>
 						{Week._renderHeader(week)}
 						{Week._renderLabels()}
-						{this._renderCells(week)}
+						{this._renderCells(week, index)}
 					</div>
 				))}
 			</div>
@@ -107,24 +107,22 @@ class Week extends Component {
 		);
 	}
 
-	_renderCells (week) {
+	_renderCells (week, i) {
 		const { formattedSlots, formattedExceptions } = this.state;
+
+		const [y, m, d] = Week._correctDayByWeek(week, i);
+
+		let cells = [];
+
+		if (slotExists(formattedSlots, y, m, d))
+			cells = cells.concat(this._renderSlot(y, m, d));
+
+		if (slotExists(formattedExceptions, y, m, d))
+			cells = cells.concat(this._renderException(y, m, d));
 
 		return (
 			<div class={styles.cells}>
-				{DAYS.map((day, i) => {
-					const [y, m, d] = Week._correctDayByWeek(week, i);
-
-					let ret = [];
-
-					if (slotExists(formattedSlots, y, m, d))
-						ret = ret.concat(this._renderSlot(y, m, d));
-
-					if (slotExists(formattedExceptions, y, m, d))
-						ret = ret.concat(this._renderException(y, m, d));
-
-					return ret;
-				})}
+				{cells}
 			</div>
 		);
 	}
