@@ -10,6 +10,7 @@ import Row from "../Row/Row";
 import CraftDateTime from "../CraftDateTime";
 import RRule from "../../_models/RRule";
 import CraftLightSwitch from "../CraftLightSwitch";
+import debounce from "../../_helpers/debounce";
 
 class RuleBlock extends Component {
 
@@ -48,37 +49,37 @@ class RuleBlock extends Component {
 	// Events: Fields
 	// -------------------------------------------------------------------------
 
-	onFrequencyChange = freq => {
+	onFrequencyChange = debounce(freq => {
 		this.props.dispatch("updateFrequencies", freq);
-	};
+	});
 
-	onRepeatsChange = rep => {
+	onRepeatsChange = debounce(rep => {
 		this.updateRule("repeats", rep);
-	};
+	});
 
-	onStartDateTimeChange = dt => {
+	onStartDateTimeChange = debounce(dt => {
 		this.updateRule("start", dt);
-	};
+	});
 
-	onUntilDateTimeChange = dt => {
+	onUntilDateTimeChange = debounce(dt => {
 		this.updateRule("until", dt);
-	};
+	});
 
-	onCountChange = ({ target: { value } }) => {
+	onCountChange = debounce(({ target: { value } }) => {
 		this.updateRule("count", value|0);
-	};
+	});
 
-	onIntervalChange = ({ target: { value } }) => {
+	onIntervalChange = debounce(({ target: { value } }) => {
 		this.updateRule("interval", value|0);
-	};
+	});
 
-	onDurationChange = ({ target: { value } }) => {
+	onDurationChange = debounce(({ target: { value } }) => {
 		this.updateRule("duration", value|0);
-	};
+	});
 
-	onBookableChange = isBookable => {
+	onBookableChange = debounce(isBookable => {
 		this.updateRule("bookable", isBookable);
-	};
+	});
 
 	// Events: Buttons
 	// -------------------------------------------------------------------------
