@@ -79,7 +79,7 @@ class Day extends Component {
 			<div class={styles.scroller}>
 				{days.map((day, index) => (
 					<div key={index} class={styles.group}>
-						{Day._renderHeader(day)}
+						{Day._renderHeader(day, index)}
 						{Day._renderLabels()}
 						{this._renderCells(day)}
 					</div>
@@ -88,14 +88,14 @@ class Day extends Component {
 		);
 	}
 
-	static _renderHeader (day) {
+	static _renderHeader (day, index) {
 		return (
 			<header class={styles.header}>
 				<div>
 					{TIMES.map((time, i) => (
 						<span key={i}>
 							{i === 0 && (
-								<span>{Day._getHeader(day)}</span>
+								<span>{Day._getHeader(day, index === 0)}</span>
 							)}
 							{time}
 						</span>
@@ -359,9 +359,9 @@ class Day extends Component {
 		);
 	}
 
-	static _getHeader (day) {
-		const [, m, d] = Day._correctDateByDay(day, 0);
-		return d + " " + MONTHS[m - 1];
+	static _getHeader (day, includeYear = false) {
+		const [y, m, d] = Day._correctDateByDay(day, 0);
+		return d + " " + MONTHS[m - 1] + (includeYear || d === 1 ? " " + y : "");
 	}
 
 	_getDuration (slot) {
