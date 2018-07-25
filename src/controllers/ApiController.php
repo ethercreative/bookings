@@ -29,15 +29,7 @@ class ApiController extends Controller
 		$baseRule = $body['baseRule'];
 		$exceptions = $body['exceptions'];
 
-		$baseRule = new RecursionRule($baseRule);
-		$exceptions = array_map(function ($rule) {
-			return new ExRule($rule);
-		}, $exceptions);
-
-		$bookable = new Bookable([
-			'baseRule' => $baseRule,
-			'exRules' => $exceptions,
-		]);
+		$bookable = new Bookable(compact('baseRule', 'exceptions'));
 
 		return $this->asJson([
 			'slots' => $bookable->getAllSlots(),

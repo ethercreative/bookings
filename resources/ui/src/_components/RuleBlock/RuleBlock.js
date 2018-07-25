@@ -81,6 +81,14 @@ class RuleBlock extends Component {
 		this.updateRule("bookable", isBookable);
 	});
 
+	onByHourChange = debounce(({ target: { value } }) => {
+		this.updateRule("byHour", value);
+	});
+
+	onByMinuteChange = debounce(({ target: { value } }) => {
+		this.updateRule("byMinute", value);
+	});
+
 	// Events: Buttons
 	// -------------------------------------------------------------------------
 
@@ -111,7 +119,8 @@ class RuleBlock extends Component {
 	_renderFields () {
 		const { rule, isBaseRule } = this.props;
 		const {
-			frequency, repeats, start, until, count, interval, duration
+			frequency, repeats, start, until, count, interval, duration,
+			byHour, byMinute
 		} = rule;
 
 		return (
@@ -219,6 +228,26 @@ class RuleBlock extends Component {
 							/>
 						</Label>
 					)}
+				</Row>
+
+				<Row>
+					<Label label="By Hour (0 - 23)">
+						<input
+							class="text"
+							type="text"
+							value={byHour}
+							onInput={this.onByHourChange}
+						/>
+					</Label>
+
+					<Label label="By Minute (0 - 59)">
+						<input
+							class="text"
+							type="text"
+							value={byMinute}
+							onInput={this.onByMinuteChange}
+						/>
+					</Label>
 				</Row>
 			</div>
 		);

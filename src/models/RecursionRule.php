@@ -276,6 +276,9 @@ class RecursionRule extends Model
 		if (!empty($this->byDay))
 			$rRule['BYDAY'] = $this->byDay;
 
+		if (!empty($this->byHour))
+			$rRule['BYHOUR']  = $this->byHour;
+
 		if (!empty($this->byMinute))
 			$rRule['BYMINUTE']  = $this->byMinute;
 
