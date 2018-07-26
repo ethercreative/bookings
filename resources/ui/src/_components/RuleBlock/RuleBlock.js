@@ -20,6 +20,7 @@ class RuleBlock extends Component {
 	props: {
 		rule: RRule;
 		isBaseRule: boolean;
+		disabled?: boolean;
 	};
 
 	static defaultProps = {
@@ -117,19 +118,18 @@ class RuleBlock extends Component {
 	}
 
 	_renderFields () {
-		const { rule, isBaseRule } = this.props;
+		const { rule, isBaseRule, disabled } = this.props;
 		const {
 			frequency, repeats, start, until, count, interval, duration,
 			byHour, byMinute
 		} = rule;
 
 		return (
-			<div>
+			<div class={disabled ? styles.disabled : ""}>
 				<Row>
 					{isBaseRule ? (
 						<Label label="Frequency">
-							<CraftSelect
-								onChange={this.onFrequencyChange}>
+							<CraftSelect onChange={this.onFrequencyChange} disabled={disabled}>
 								{Frequency.asKeyValueArray().map(o => (
 									<option
 										value={o.value}
@@ -145,6 +145,7 @@ class RuleBlock extends Component {
 							<CraftLightSwitch
 								on={rule.bookable}
 								onChange={this.onBookableChange}
+								disabled={disabled}
 							/>
 						</Label>
 					)}
@@ -156,13 +157,14 @@ class RuleBlock extends Component {
 							defaultDate={start.date}
 							defaultTime={start.date}
 							onChange={this.onStartDateTimeChange}
+							disabled={disabled}
 						/>
 					</Label>
 				</Row>
 
 				<Row>
 					<Label label="Repeats">
-						<CraftSelect onChange={this.onRepeatsChange}>
+						<CraftSelect onChange={this.onRepeatsChange} disabled={disabled}>
 							{[
 								{ label: "Until", value: "until" },
 								{ label: "# Times", value: "count" },
@@ -186,6 +188,7 @@ class RuleBlock extends Component {
 								defaultDate={until.date}
 								defaultTime={until.date}
 								onChange={this.onUntilDateTimeChange}
+								disabled={disabled}
 							/>
 						</Label>
 					)}
@@ -199,6 +202,7 @@ class RuleBlock extends Component {
 								min="0"
 								value={count}
 								onInput={this.onCountChange}
+								disabled={disabled}
 							/>
 						</Label>
 					)}
@@ -213,6 +217,7 @@ class RuleBlock extends Component {
 							min="0"
 							value={interval}
 							onInput={this.onIntervalChange}
+							disabled={disabled}
 						/>
 					</Label>
 
@@ -225,6 +230,7 @@ class RuleBlock extends Component {
 								min="1"
 								value={duration}
 								onInput={this.onDurationChange}
+								disabled={disabled}
 							/>
 						</Label>
 					)}
@@ -237,6 +243,7 @@ class RuleBlock extends Component {
 							type="text"
 							value={byHour}
 							onInput={this.onByHourChange}
+							disabled={disabled}
 						/>
 					</Label>
 
@@ -246,6 +253,7 @@ class RuleBlock extends Component {
 							type="text"
 							value={byMinute}
 							onInput={this.onByMinuteChange}
+							disabled={disabled}
 						/>
 					</Label>
 				</Row>

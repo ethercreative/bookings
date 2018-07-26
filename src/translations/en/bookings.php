@@ -21,7 +21,7 @@
  */
 return [
 	'Bookings' => 'Bookings',
-	'Bookable' => 'Bookable',
+	'Bookable Event' => 'Bookable Event',
 	'Bookable Variant' => 'Bookable Variant',
 	'You don’t have permission to access to any of the Bookings sub-sections. Please contact an admin.' => 'You don’t have permission to access to any of the Bookings sub-sections. Please contact an admin.',
 

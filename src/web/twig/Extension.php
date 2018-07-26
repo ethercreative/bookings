@@ -11,7 +11,7 @@ namespace ether\bookings\web\twig;
 use craft\helpers\Template;
 use ether\bookings\elements\Booking;
 use ether\bookings\enums\BookableType;
-use ether\bookings\models\Bookable;
+use ether\bookings\models\BookableEvent;
 
 
 /**
@@ -53,13 +53,13 @@ class Extension extends \Twig_Extension implements \Twig_Extension_GlobalsInterf
 	/**
 	 * {{ placeBookingInput(entry.bookableField) }}
 	 *
-	 * @param Bookable $bookable
+	 * @param BookableEvent $bookable
 	 *
 	 * @return string|\Twig_Markup
 	 * @throws \yii\base\Exception
 	 * @throws \yii\base\InvalidConfigException
 	 */
-	public function placeBookingInput (Bookable $bookable)
+	public function placeBookingInput (BookableEvent $bookable)
 	{
 		if (!$bookable->enabled)
 			return "";

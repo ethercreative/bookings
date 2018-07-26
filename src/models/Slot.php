@@ -46,13 +46,13 @@ class Slot
 	/**
 	 * Slot constructor.
 	 *
-	 * @param Bookable  $bookable
-	 * @param \DateTime $start
-	 * @param int       $bookingCount
+	 * @param BookableEvent $bookable
+	 * @param \DateTime     $start
+	 * @param int           $bookingCount
 	 *
 	 * @throws \Exception
 	 */
-	public function __construct (Bookable $bookable, \DateTime $start, int $bookingCount)
+	public function __construct (BookableEvent $bookable, \DateTime $start, int $bookingCount)
 	{
 		$baseRule = $bookable->baseRule;
 

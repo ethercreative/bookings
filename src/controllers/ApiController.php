@@ -3,7 +3,7 @@
 namespace ether\bookings\controllers;
 
 use craft\web\Controller;
-use ether\bookings\models\Bookable;
+use ether\bookings\models\BookableEvent;
 
 class ApiController extends Controller
 {
@@ -27,7 +27,7 @@ class ApiController extends Controller
 		$baseRule = $body['baseRule'];
 		$exceptions = $body['exceptions'];
 
-		$bookable = new Bookable(compact('baseRule', 'exceptions'));
+		$bookable = new BookableEvent(compact('baseRule', 'exceptions'));
 
 		return $this->asJson([
 			'slots' => $bookable->getAllSlots(),

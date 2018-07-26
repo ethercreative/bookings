@@ -13,8 +13,8 @@ use craft\base\Element;
 use craft\base\ElementInterface;
 use craft\elements\db\ElementQuery;
 use craft\elements\db\ElementQueryInterface;
-use ether\bookings\fields\BookableField;
-use ether\bookings\models\Bookable;
+use ether\bookings\fields\BookableEventField;
+use ether\bookings\models\BookableEvent;
 use ether\bookings\records\BookableRecord;
 
 
@@ -28,19 +28,19 @@ use ether\bookings\records\BookableRecord;
 class FieldService extends Component
 {
 
-	// Field
+	// Event
 	// =========================================================================
 
 	/**
 	 * Gets the field
 	 *
-	 * @param BookableField    $field
-	 * @param ElementInterface $owner
+	 * @param BookableEventField $field
+	 * @param ElementInterface   $owner
 	 * @param                  $value
 	 *
-	 * @return Bookable
+	 * @return BookableEvent
 	 */
-	public function getField (BookableField $field, ElementInterface $owner, $value): Bookable
+	public function getEventField (BookableEventField $field, ElementInterface $owner, $value): BookableEvent
 	{
 		/** @var Element $owner */
 		$record = BookableRecord::findOne(
@@ -50,7 +50,7 @@ class FieldService extends Component
 			]
 		);
 
-		if ($value instanceof Bookable)
+		if ($value instanceof BookableEvent)
 			return $value;
 
 		$id = $field->id;
@@ -67,7 +67,7 @@ class FieldService extends Component
 			if (is_string($value['settings']))
 				$value['settings'] = json_decode($value['settings'], true);
 
-			$model = new Bookable(array_merge(
+			$model = new BookableEvent(array_merge(
 				[
 					'id' => $id,
 					'ownerId' => $ownerId,
@@ -85,14 +85,14 @@ class FieldService extends Component
 				$settings = [];
 			}
 
-			$model = new Bookable(
+			$model = new BookableEvent(
 				array_merge(
 					compact('id', 'ownerId', 'enabled'),
 					$settings
 				)
 			);
 		} else {
-			$model = new Bookable();
+			$model = new BookableEvent();
 		}
 
 		// Ensure we have the field and element ID stored
@@ -105,16 +105,16 @@ class FieldService extends Component
 	/**
 	 * Saves the given field
 	 *
-	 * @param BookableField    $field
-	 * @param ElementInterface $owner
+	 * @param BookableEventField $field
+	 * @param ElementInterface   $owner
 	 *
 	 * @return bool
 	 */
-	public function saveField (BookableField $field, ElementInterface $owner): bool
+	public function saveEventField (BookableEventField $field, ElementInterface $owner): bool
 	{
 		/** @var Element $owner */
 
-		/** @var Bookable $value */
+		/** @var BookableEvent $value */
 		$value = $owner->getFieldValue($field->handle);
 
 		$record = BookableRecord::findOne(
@@ -152,7 +152,7 @@ class FieldService extends Component
 	 * @param ElementQueryInterface $query
 	 * @param                       $value
 	 */
-	public function modifyElementsQuery (ElementQueryInterface $query, $value)
+	public function modifyEventFieldElementsQuery (ElementQueryInterface $query, $value)
 	{
 		if (!$value) return;
 		/** @var ElementQuery $query */

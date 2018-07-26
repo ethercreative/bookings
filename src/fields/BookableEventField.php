@@ -14,17 +14,17 @@ use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Html;
 use craft\i18n\Locale;
 use ether\bookings\Bookings;
-use ether\bookings\models\Bookable;
+use ether\bookings\models\BookableEvent;
 use ether\bookings\web\assets\ui\UIAsset;
 
 /**
- * Class BookableField
+ * Class BookableEventField
  *
  * @author  Ether Creative
  * @package ether\bookings\fields
  * @since   1.0.0
  */
-class BookableField extends Field
+class BookableEventField extends Field
 {
 
 	// Properties
@@ -48,7 +48,7 @@ class BookableField extends Field
 
 	public static function displayName (): string
 	{
-		return \Craft::t('bookings', 'Bookable');
+		return \Craft::t('bookings', 'Bookable Event');
 	}
 
 	public static function hasContentColumn (): bool
@@ -77,7 +77,7 @@ class BookableField extends Field
 	}
 
 	/**
-	 * @param Bookable              $value
+	 * @param BookableEvent         $value
 	 * @param ElementInterface|null $element
 	 *
 	 * @return string
@@ -125,11 +125,11 @@ class BookableField extends Field
 	 * @param                       $value
 	 * @param ElementInterface|null $element
 	 *
-	 * @return \ether\bookings\models\Bookable|mixed
+	 * @return \ether\bookings\models\BookableEvent|mixed
 	 */
 	public function normalizeValue ($value, ElementInterface $element = null)
 	{
-		return Bookings::getInstance()->field->getField($this, $element, $value);
+		return Bookings::getInstance()->field->getEventField($this, $element, $value);
 	}
 
 	/**
@@ -140,23 +140,8 @@ class BookableField extends Field
 	 */
 	public function modifyElementsQuery (ElementQueryInterface $query, $value)
 	{
-		Bookings::getInstance()->field->modifyElementsQuery($query, $value);
+		Bookings::getInstance()->field->modifyEventFieldElementsQuery($query, $value);
 		return null;
-	}
-
-	// Public Methods: Settings
-	// -------------------------------------------------------------------------
-
-	/**
-	 * @return null|string
-	 * @throws \Twig_Error_Loader
-	 * @throws \yii\base\Exception
-	 */
-	public function getSettingsHtml ()
-	{
-		return \Craft::$app->view->renderTemplate(
-			'bookings/field/_settings'
-		);
 	}
 
 	// Public Methods: Events
@@ -168,7 +153,7 @@ class BookableField extends Field
 	 */
 	public function afterElementSave (ElementInterface $element, bool $isNew)
 	{
-		Bookings::getInstance()->field->saveField($this, $element);
+		Bookings::getInstance()->field->saveEventField($this, $element);
 		parent::afterElementSave($element, $isNew);
 	}
 

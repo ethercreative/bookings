@@ -1,12 +1,12 @@
 import jQuizzle from "../_helpers/jQuizzle";
 
-export default ({ name, on = false, onChange = null }) => (
+export default ({ name, on = false, onChange = null, disabled }) => (
 	<div
 		class={`lightswitch ${on ? "on" : ""}`}
-		tabIndex="0"
+		tabIndex={disabled ? "" : "0"}
 		data-value="1"
 		ref={el => {
-			if (!el || !onChange || el._clse)
+			if (disabled || !el || !onChange || el._clse)
 				return;
 
 			el._clse = true;

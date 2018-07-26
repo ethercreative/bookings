@@ -18,7 +18,7 @@ use ether\bookings\elements\db\BookingQuery;
 use ether\bookings\enums\BookableType;
 use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\integrations\commerce\CommerceValidators;
-use ether\bookings\models\Bookable;
+use ether\bookings\models\BookableEvent;
 use ether\bookings\records\BookableRecord;
 use ether\bookings\records\BookingRecord;
 use yii\helpers\Inflector;
@@ -677,7 +677,7 @@ class Booking extends Element
 	// -------------------------------------------------------------------------
 
 	/**
-	 * @return Bookable|null
+	 * @return BookableEvent|null
 	 */
 	public function getBookable ()
 	{
@@ -700,9 +700,9 @@ class Booking extends Element
 					$settings = [];
 				}
 
-				$model = new Bookable($settings);
+				$model = new BookableEvent($settings);
 			} else {
-				$model = new Bookable();
+				$model = new BookableEvent();
 			}
 
 			return $this->_bookable = $model;

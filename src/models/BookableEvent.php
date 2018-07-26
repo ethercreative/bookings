@@ -14,13 +14,13 @@ use RRule\RRule;
 use RRule\RSet;
 
 /**
- * Class Bookable
+ * Class BookableEvent
  *
  * @author  Ether Creative
  * @package ether\bookings\models
  * @since   1.0.0
  */
-class Bookable extends Model
+class BookableEvent extends Model
 {
 
 	// Properties
@@ -172,9 +172,9 @@ class Bookable extends Model
 	 * $myBookable->invert()->getAllSlots();
 	 * ```
 	 *
-	 * @return Bookable
+	 * @return BookableEvent
 	 */
-	public function invert (): Bookable {
+	public function invert (): BookableEvent {
 		$this->_useInverted = true;
 		return $this;
 	}

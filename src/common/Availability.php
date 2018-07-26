@@ -13,7 +13,7 @@ use craft\helpers\Db;
 use ether\bookings\elements\Booking;
 use ether\bookings\enums\BookableType;
 use ether\bookings\enums\Frequency;
-use ether\bookings\models\Bookable;
+use ether\bookings\models\BookableEvent;
 use ether\bookings\models\GroupedSlot;
 use ether\bookings\models\RecursionRule;
 use ether\bookings\models\Slot;
@@ -33,7 +33,7 @@ class Availability
 	// Properties
 	// =========================================================================
 
-	/** @var Bookable */
+	/** @var BookableEvent */
 	private $_field;
 
 	/** @var \DateTime|null */
@@ -54,9 +54,9 @@ class Availability
 	/**
 	 * Availability constructor.
 	 *
-	 * @param Bookable $field
+	 * @param BookableEvent $field
 	 */
-	public function __construct (Bookable $field)
+	public function __construct (BookableEvent $field)
 	{
 		$this->_field = $field;
 

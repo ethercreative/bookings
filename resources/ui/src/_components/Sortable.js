@@ -44,7 +44,7 @@ export default class Sortable extends Component {
 	}
 
 	componentWillUnmount () {
-		jQuizzle($ => {
+		jQuizzle(() => {
 			if (this.sort)
 				this.sort.removeAllItems();
 		});

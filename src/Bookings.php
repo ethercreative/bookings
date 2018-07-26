@@ -21,7 +21,7 @@ use craft\services\Plugins;
 use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
-use ether\bookings\fields\BookableField;
+use ether\bookings\fields\BookableEventField;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
 use ether\bookings\integrations\commerce\OnOrderEvent;
 use ether\bookings\models\Settings;
@@ -183,7 +183,7 @@ class Bookings extends Plugin
 
 	public function onRegisterFieldTypes (RegisterComponentTypesEvent $event)
 	{
-		$event->types[] = BookableField::class;
+		$event->types[] = BookableEventField::class;
 	}
 
 	public function onRegisterCpUrlRules (RegisterUrlRulesEvent $event)

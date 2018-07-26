@@ -45,12 +45,12 @@ class GroupedSlot
 	/**
 	 * GroupedSlot constructor.
 	 *
-	 * @param Bookable $bookable
-	 * @param string   $group
-	 * @param string   $start
-	 * @param int      $bookingCount
+	 * @param BookableEvent $bookable
+	 * @param string        $group
+	 * @param string        $start
+	 * @param int           $bookingCount
 	 */
-	public function __construct (Bookable $bookable, string $group, string $start, int $bookingCount)
+	public function __construct (BookableEvent $bookable, string $group, string $start, int $bookingCount)
 	{
 		if ($group === 'week')
 		{
@@ -80,11 +80,11 @@ class GroupedSlot
 	/**
 	 * Returns the number of slots in this groups range
 	 *
-	 * @param Bookable $bookable
+	 * @param BookableEvent $bookable
 	 *
 	 * @return int
 	 */
-	private function _slotCount (Bookable $bookable)
+	private function _slotCount (BookableEvent $bookable)
 	{
 		return $bookable->getSlotsInRangeAsIterable(
 			$this->start,

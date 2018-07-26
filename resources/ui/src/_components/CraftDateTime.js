@@ -15,6 +15,7 @@ class CraftDateTime extends Component {
 		defaultDate?: Date | string;
 		defaultTime?: Date | string;
 		onChange?: Function;
+		disabled?: boolean;
 	};
 
 	dateInput = null;
@@ -50,6 +51,9 @@ class CraftDateTime extends Component {
 	shouldComponentUpdate = () => false;
 
 	componentDidMount () {
+		if (this.props.disabled)
+			return;
+
 		jQuizzle($ => {
 
 			if (this.dateInput) {
@@ -141,7 +145,7 @@ class CraftDateTime extends Component {
 	}
 
 	_renderDate () {
-		const { dateFormat } = this.props;
+		const { dateFormat, disabled } = this.props;
 
 		const value = this.props.defaultDate ? formatDate(this._getDefaultDate(), dateFormat.date) : "";
 
@@ -156,6 +160,7 @@ class CraftDateTime extends Component {
 					type="text"
 					ref={el => { this.dateInput = el }}
 					onChange={this.onDateChange}
+					disabled={disabled}
 				/>
 				<div data-icon="date"/>
 			</div>
@@ -163,7 +168,7 @@ class CraftDateTime extends Component {
 	}
 
 	_renderTime () {
-		const { dateFormat } = this.props;
+		const { dateFormat, disabled } = this.props;
 
 		const value = this.props.defaultTime ? formatDate(this._getDefaultTime(), dateFormat.time) : "";
 
@@ -178,6 +183,7 @@ class CraftDateTime extends Component {
 					type="text"
 					ref={el => { this.timeInput = el }}
 					onChange={this.onTimeChange}
+					disabled={disabled}
 				/>
 				<div data-icon="time"/>
 			</div>

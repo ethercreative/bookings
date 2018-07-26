@@ -12,7 +12,7 @@ use craft\elements\db\ElementQueryInterface;
 use ether\bookings\common\Availability;
 use ether\bookings\elements\Booking;
 use ether\bookings\elements\db\BookingQuery;
-use ether\bookings\models\Bookable;
+use ether\bookings\models\BookableEvent;
 use yii\base\Behavior;
 
 
@@ -46,11 +46,11 @@ class CraftVariableBehavior extends Behavior
 	/**
 	 * {{ craft.availability(myBookableField) }}
 	 *
-	 * @param Bookable $field
+	 * @param BookableEvent $field
 	 *
 	 * @return Availability
 	 */
-	public function availability (Bookable $field): Availability
+	public function availability (BookableEvent $field): Availability
 	{
 		return new Availability($field);
 	}

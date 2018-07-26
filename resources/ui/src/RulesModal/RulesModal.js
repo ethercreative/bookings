@@ -104,6 +104,8 @@ class RulesModal extends Component {
 	_renderSidebar () {
 		const { baseRule, exceptions } = this.props;
 
+		const TEMP_hasBookings = false;
+
 		return (
 			<aside class={styles.sidebar}>
 				<header class={styles.sidebarHeader}>
@@ -114,18 +116,39 @@ class RulesModal extends Component {
 
 				<div class={styles.rulesWrap}>
 					<div class={styles.rules}>
-						<div class={styles.info}>
-							<strong>Notice:</strong> You will be unable to edit
-							the primary rule once the first booking has been placed.
-						</div>
+						{TEMP_hasBookings ? (
+							<div class={[styles.notice, styles.warning].join(" ")}>
+								<strong>Notice:</strong> You are no longer able
+								to edit the primary rule as this element has
+								bookings.
+							</div>
+						) : (
+							<div class={styles.notice}>
+								<strong>Notice:</strong> You will be unable to
+								edit the primary rule once the first booking
+								has been placed.
+							</div>
+						)}
 
-						<RuleBlock rule={baseRule} isBaseRule />
+						<RuleBlock
+							isBaseRule
+							rule={baseRule}
+							disabled={TEMP_hasBookings}
+						/>
 
-						<Sortable onSort={this.onSortRules}>
-							{exceptions.map(ex => (
-								<RuleBlock key={ex.id} rule={ex}/>
-							))}
-						</Sortable>
+						<hr/>
+
+						{exceptions.length === 0 ? (
+							<div class={styles.empty}>
+								You haven't added any exceptions yet
+							</div>
+						) : (
+							<Sortable onSort={this.onSortRules}>
+								{exceptions.map(ex => (
+									<RuleBlock key={ex.id} rule={ex}/>
+								))}
+							</Sortable>
+						)}
 					</div>
 				</div>
 
@@ -133,7 +156,7 @@ class RulesModal extends Component {
 					className={["submit add icon", styles.newRule].join(" ")}
 					onClick={this.onAddRuleClick}
 				>
-					Add new rule
+					Add Exception
 				</CraftButton>
 			</aside>
 		);
