@@ -114,6 +114,11 @@ class RulesModal extends Component {
 
 				<div class={styles.rulesWrap}>
 					<div class={styles.rules}>
+						<div class={styles.info}>
+							<strong>Notice:</strong> You will be unable to edit
+							the primary rule once the first booking has been placed.
+						</div>
+
 						<RuleBlock rule={baseRule} isBaseRule />
 
 						<Sortable onSort={this.onSortRules}>

@@ -120,6 +120,17 @@ class Bookable extends Model
 				$attributes['exceptions']
 			);
 		}
+
+		// Ensure exceptions inherit from base rule as needed
+		$this->exRules = array_map(
+			function (ExRule $exRule) {
+				$exRule->frequency = $this->baseRule->frequency;
+				$exRule->duration = $this->baseRule->duration;
+
+				return $exRule;
+			},
+			$this->exRules
+		);
 	}
 
 	// Methods: Public

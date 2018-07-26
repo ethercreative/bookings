@@ -251,6 +251,8 @@ class RuleBlock extends Component {
 				</Row>
 			</div>
 		);
+
+		// TODO: Add missing BYXXX fields (should be in order of magnitude, large to small)
 	}
 
 	_renderFooter () {

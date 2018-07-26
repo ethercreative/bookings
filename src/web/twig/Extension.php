@@ -55,12 +55,15 @@ class Extension extends \Twig_Extension implements \Twig_Extension_GlobalsInterf
 	 *
 	 * @param Bookable $bookable
 	 *
-	 * @return \Twig_Markup
+	 * @return string|\Twig_Markup
 	 * @throws \yii\base\Exception
 	 * @throws \yii\base\InvalidConfigException
 	 */
-	public function placeBookingInput (Bookable $bookable): \Twig_Markup
+	public function placeBookingInput (Bookable $bookable)
 	{
+		if (!$bookable->enabled)
+			return "";
+
 		$value = $bookable->ownerId;
 		$value .= '_' . $bookable->id;
 		$value = \Craft::$app->security->hashData($value);
@@ -73,12 +76,15 @@ class Extension extends \Twig_Extension implements \Twig_Extension_GlobalsInterf
 	 *
 	 * @param Booking $booking
 	 *
-	 * @return \Twig_Markup
+	 * @return string|\Twig_Markup
 	 * @throws \yii\base\Exception
 	 * @throws \yii\base\InvalidConfigException
 	 */
-	public function confirmBookingInput (Booking $booking): \Twig_Markup
+	public function confirmBookingInput (Booking $booking)
 	{
+		if (!$booking->bookable->enabled)
+			return "";
+
 		$value = \Craft::$app->security->hashData($booking->id);
 
 		return Template::raw('<input type="hidden" name="booking" value="' . $value . '" />');
