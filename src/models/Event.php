@@ -56,7 +56,7 @@ class Event extends Model
 	 * @var int - The max number of tickets that can be sold per slot
 	 * (or selected slot range if flexible)
 	 */
-	public $capacity;
+	public $capacity = 1;
 
 	/**
 	 * @var int - The number of times a single slot can be sold
@@ -160,6 +160,8 @@ class Event extends Model
 	{
 		return [
 			'enabled' => $this->enabled,
+			'capacity' => $this->capacity,
+			'multiplier' => $this->multiplier,
 			'settings' => [
 				'baseRule' => $this->_baseRule,
 				'exceptions' => $this->_exceptions,

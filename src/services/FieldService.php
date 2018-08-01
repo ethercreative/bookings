@@ -66,9 +66,11 @@ class FieldService extends Component
 				$value['settings'] = Json::decode($value['settings'], true);
 
 			$props = [
-				'elementId' => $elementId,
-				'fieldId'   => $fieldId,
-				'enabled'   => $value['enabled'],
+				'elementId'  => $elementId,
+				'fieldId'    => $fieldId,
+				'enabled'    => $value['enabled'],
+				'capacity'   => $value['capacity'],
+				'multiplier' => $value['multiplier'],
 			];
 
 			if ($record)

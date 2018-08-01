@@ -39,7 +39,7 @@ class Field extends Component {
 	// Render
 	// =========================================================================
 
-	render ({ dispatch, handle, enabled, type, settings }, { rulesModalOpen }) {
+	render ({ dispatch, handle, enabled, type, settings, capacity, multiplier }, { rulesModalOpen }) {
 		let cls = [styles.field];
 		if (!enabled) cls.push(styles.disabled);
 		cls = cls.join(" ");
@@ -85,6 +85,36 @@ class Field extends Component {
 				</CraftLabel>
 
 				<CraftLabel
+					label="Capacity"
+					instructions="The maximum number of tickets that can be booked per-slot (or range of slots if the event is flexible) per booking."
+				>
+					<input
+						class="text"
+						type="number"
+						name={`${handle}[capacity]`}
+						min={0}
+						value={capacity}
+						required
+						onChange={e => dispatch("set:capacity", +e.target.value.trim() || 1)}
+					/>
+				</CraftLabel>
+
+				<CraftLabel
+					label="Multiplier"
+					instructions="The number of times each slot (or range of slots if the event is flexible) can be booked in separate bookings."
+				>
+					<input
+						class="text"
+						type="number"
+						name={`${handle}[multiplier]`}
+						min={0}
+						value={multiplier}
+						required
+						onChange={e => dispatch("set:multiplier", +e.target.value.trim() || 1)}
+					/>
+				</CraftLabel>
+
+				<CraftLabel
 					label="Bookable Rules"
 					instructions="Add rules to either add bookable space, or remove it from the primary booking window"
 					className={cls}
@@ -115,7 +145,7 @@ class Field extends Component {
 				<input
 					type="hidden"
 					name={handle}
-					value={JSON.stringify({ enabled, settings })}
+					value={JSON.stringify({ enabled, capacity, multiplier, settings })}
 				/>
 			</div>
 		);
@@ -123,9 +153,11 @@ class Field extends Component {
 
 }
 
-export default connect(({ handle, enabled, settings, settings: { type } }) => ({
-	handle,
-	enabled,
-	settings,
-	type,
+export default connect(store => ({
+	handle: store.handle,
+	enabled: store.enabled,
+	capacity: store.capacity,
+	multiplier: store.multiplier,
+	settings: store.settings,
+	type: store.settings.type,
 }))(Field);
