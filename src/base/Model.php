@@ -24,7 +24,7 @@ class Model extends BaseModel
 	{
 		foreach ($attributes as $key => $value)
 			if (property_exists($this, $key))
-				$this->$key = $value;
+				$this[$key] = $value;
 
 		parent::__construct($config);
 	}

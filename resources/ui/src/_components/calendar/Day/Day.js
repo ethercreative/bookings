@@ -62,8 +62,6 @@ class Day extends Component {
 			, formattedSlots = this._formatSlots(props.slots)
 			, formattedExceptions = this._formatSlots(props.exceptions);
 
-		// console.log(formattedSlots);
-
 		this.setState({
 			days,
 			formattedSlots,

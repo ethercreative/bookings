@@ -88,6 +88,17 @@ class Event extends Model
 	// Methods
 	// =========================================================================
 
+	public function __construct (array $attributes = [], array $config = [])
+	{
+		parent::__construct($attributes, $config);
+
+		if (array_key_exists('baseRule', $attributes))
+			$this->baseRule = $attributes['baseRule'];
+
+		if (array_key_exists('exceptions', $attributes))
+			$this->exceptions = $attributes['exceptions'];
+	}
+
 	// Methods: Getters & Setters
 	// -------------------------------------------------------------------------
 
