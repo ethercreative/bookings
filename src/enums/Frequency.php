@@ -23,11 +23,11 @@ abstract class Frequency extends Enum
 	// Constants
 	// =========================================================================
 
-	const Yearly = 'YEARLY';
-	const Monthly = 'MONTHLY';
-	const Weekly = 'WEEKLY';
-	const Daily = 'DAILY';
-	const Hourly = 'HOURLY';
+	const Yearly   = 'YEARLY';
+	const Monthly  = 'MONTHLY';
+	const Weekly   = 'WEEKLY';
+	const Daily    = 'DAILY';
+	const Hourly   = 'HOURLY';
 	const Minutely = 'MINUTELY';
 
 	// Methods

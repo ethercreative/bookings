@@ -12,21 +12,14 @@ namespace ether\bookings;
 
 use craft\base\Plugin;
 use craft\events\PluginEvent;
-use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
-use craft\helpers\UrlHelper;
-use craft\services\Fields;
 use craft\services\Plugins;
 use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
-use ether\bookings\fields\BookableEventField;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
 use ether\bookings\integrations\commerce\OnOrderEvent;
-use ether\bookings\models\Settings;
-use ether\bookings\services\BookingService;
-use ether\bookings\services\FieldService;
 use ether\bookings\web\twig\CraftVariableBehavior;
 use ether\bookings\web\twig\Extension;
 use yii\base\Event;
@@ -35,10 +28,6 @@ use yii\base\Event;
  * @author    Ether Creative
  * @package   Bookings
  * @since     1.0.0-alpha.1
- *
- * @property Settings $settings
- * @property FieldService $field
- * @property BookingService $booking
  */
 class Bookings extends Plugin
 {
@@ -63,18 +52,11 @@ class Bookings extends Plugin
 		// ---------------------------------------------------------------------
 
 		$this->setComponents([
-			'field' => FieldService::class,
-			'booking' => BookingService::class,
+//			'field' => FieldService::class,
 		]);
 
 		// Events
 		// ---------------------------------------------------------------------
-
-		Event::on(
-			Fields::class,
-			Fields::EVENT_REGISTER_FIELD_TYPES,
-			[$this, 'onRegisterFieldTypes']
-		);
 
 		Event::on(
 			UrlManager::class,
@@ -142,18 +124,6 @@ class Bookings extends Plugin
 	// Craft
 	// =========================================================================
 
-	public function createSettingsModel ()
-	{
-		return new Settings();
-	}
-
-	public function getSettingsResponse()
-	{
-		return \Craft::$app->getResponse()->redirect(
-			UrlHelper::cpUrl('bookings/settings')
-		);
-	}
-
 	public function getCpNavItem ()
 	{
 		$ret = parent::getCpNavItem();
@@ -180,11 +150,6 @@ class Bookings extends Plugin
 
 	// Events
 	// =========================================================================
-
-	public function onRegisterFieldTypes (RegisterComponentTypesEvent $event)
-	{
-		$event->types[] = BookableEventField::class;
-	}
 
 	public function onRegisterCpUrlRules (RegisterUrlRulesEvent $event)
 	{

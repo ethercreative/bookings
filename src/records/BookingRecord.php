@@ -9,27 +9,23 @@
 namespace ether\bookings\records;
 
 use craft\db\ActiveRecord;
-use craft\records\Element;
-use yii\db\ActiveQueryInterface;
+use craft\records\User;
 
 
 /**
- * Class BookingRecord
+ * Class BookedBookingRecord
  *
  * @property int $id
  * @property int $status
  * @property string $number
- * @property int $fieldId
- * @property int $elementId
- * @property int $userId
- * @property int $lineItemId
- * @property int $orderId
- * @property int $customerId
+ * @property int|null $userId
+ * @property int|null $lineItemId
+ * @property int|null $orderId
+ * @property int|null $customerId
  * @property string $customerEmail
- * @property \DateTime $slotStart
- * @property \DateTime $slotEnd
  * @property \DateTime $dateBooked
- * @property \DateTime $reservationExpiry
+ * @property \DateTime|null $reservationExpiry
+ * @property \DateTime $dateCreated
  *
  * @author  Ether Creative
  * @package ether\bookings\records
@@ -41,29 +37,46 @@ class BookingRecord extends ActiveRecord
 	// Properties
 	// =========================================================================
 
-	public static $tableNameRaw = 'bookings_bookings';
-	public static $tableName = '{{%bookings_bookings}}';
+	public static $tableName = '{{%bookings_booking}}';
 
-	// Public Methods
+	// Methods
 	// =========================================================================
 
-	// Public Methods: Static
-	// -------------------------------------------------------------------------
-
-	public static function tableName (): string
+	/**
+	 * @return string
+	 */
+	public static function getTableName (): string
 	{
 		return self::$tableName;
 	}
 
-	// Public Methods: Instance
-	// -------------------------------------------------------------------------
-
-	/**
-	 * @return ActiveQueryInterface
-	 */
-	public function getElement(): ActiveQueryInterface
+	public function getUser ()
 	{
-		return $this->hasOne(Element::class, ['id' => 'id']);
+		return $this->hasOne(User::class, ['id' => 'userId']);
+	}
+
+	public function getLineItem ()
+	{
+		if (!class_exists(\craft\commerce\records\LineItem::class))
+			return null;
+
+		return $this->hasOne(\craft\commerce\records\LineItem::class, ['id' => 'lineItemId']);
+	}
+
+	public function getOrder ()
+	{
+		if (!class_exists(\craft\commerce\records\Order::class))
+			return null;
+
+		return $this->hasOne(\craft\commerce\records\Order::class, ['id' => 'orderId']);
+	}
+
+	public function getCustomer ()
+	{
+		if (!class_exists(\craft\commerce\records\Customer::class))
+			return null;
+
+		return $this->hasOne(\craft\commerce\records\Customer::class, ['id' => 'customerId']);
 	}
 
 }
