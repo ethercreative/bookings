@@ -6,24 +6,23 @@
  * @copyright Copyright (c) Ether Creative
  */
 
-namespace ether\bookings\enums;
+namespace ether\bookings\models;
 
-use ether\bookings\base\Enum;
 
 /**
- * Class BookableType
+ * Class ExceptionRule
  *
  * @author  Ether Creative
- * @package ether\bookings\enums
+ * @package ether\bookings\models
  * @since   1.0.0
  */
-abstract class BookableType extends Enum
+class ExceptionRule extends RecursionRule
 {
 
-	// Constants
+	// Properties
 	// =========================================================================
 
-	const FIXED    = 'fixed';
-	const FLEXIBLE = 'flexible';
+	/** @var bool */
+	public $bookable = false;
 
 }

@@ -74,4 +74,23 @@ abstract class Frequency extends Enum
 		return array_search($unit, $units) <= array_search(self::toUnit($frequency), $units);
 	}
 
+	/**
+	 * @return array The constants of this enum as an array
+	 */
+	public static function asArray (): array
+	{
+		$consts = [];
+
+		try
+		{
+			$consts = (new \ReflectionClass(__CLASS__))->getConstants();
+		} catch (\ReflectionException $exception)
+		{
+			\Craft::error($exception->getMessage(), 'Bookings Enum');
+		}
+
+		return $consts;
+	}
+
+
 }

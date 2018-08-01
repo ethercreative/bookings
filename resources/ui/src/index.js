@@ -5,7 +5,7 @@ import store from "./store";
 import Field from "./Field/Field";
 import RRule from "./_models/RRule";
 import ExRule from "./_models/ExRule";
-import BookableType from "./_enums/BookableType";
+import EventType from "./_enums/EventType";
 import { refreshCalendar } from "./API";
 import jQuizzle from "./_helpers/jQuizzle";
 
@@ -21,7 +21,7 @@ class App extends Component {
 		};
 		delete state.children;
 
-		state.settings.bookableType = state.settings.bookableType || BookableType.FIXED;
+		state.settings.type = state.settings.type || EventType.FIXED;
 		state.settings.baseRule = new RRule(state.settings.baseRule);
 		state.settings.exceptions = state.settings.exceptions.map(e => new ExRule(e));
 

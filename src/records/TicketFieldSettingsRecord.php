@@ -38,7 +38,7 @@ class TicketFieldSettingsRecord extends ActiveRecord
 	/**
 	 * @return string
 	 */
-	public static function getTableName (): string
+	public static function tableName (): string
 	{
 		return self::$tableName;
 	}

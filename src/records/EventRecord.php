@@ -9,6 +9,7 @@
 namespace ether\bookings\records;
 
 use craft\db\ActiveRecord;
+use craft\helpers\Json;
 use craft\records\Element;
 use craft\records\Field;
 
@@ -16,11 +17,15 @@ use craft\records\Field;
 /**
  * Class EventRecord
  *
- * @property int $id
- * @property int $elementId
- * @property int $fieldId
- * @property bool $enabled
- * @property array $settings
+ * @property int    $id
+ * @property int    $elementId
+ * @property int    $fieldId
+ * @property bool   $enabled
+ * @property string $type
+ * @property int    $capacity
+ * @property int    $multiplier
+ * @property array  $baseRule
+ * @property array  $exceptions
  *
  * @author  Ether Creative
  * @package ether\bookings\records
@@ -40,7 +45,7 @@ class EventRecord extends ActiveRecord
 	/**
 	 * @return string
 	 */
-	public static function getTableName (): string
+	public static function tableName (): string
 	{
 		return self::$tableName;
 	}
@@ -58,6 +63,14 @@ class EventRecord extends ActiveRecord
 	public function getTickets ()
 	{
 		return $this->hasMany(TicketRecord::class, ['eventId' => 'id']);
+	}
+
+	public function afterFind ()
+	{
+		$this->baseRule = Json::decode((string) $this->baseRule);
+		$this->exceptions = Json::decode((string) $this->exceptions);
+
+		parent::afterFind();
 	}
 
 }

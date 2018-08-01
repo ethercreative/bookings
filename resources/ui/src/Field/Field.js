@@ -3,7 +3,7 @@ import styles from "./Field.less";
 import connect from "../_hoc/connect";
 import CraftLabel from "../_components/CraftLabel";
 import CraftLightSwitch from "../_components/CraftLightSwitch";
-import BookableType from "../_enums/BookableType";
+import EventType from "../_enums/EventType";
 import TypeButton from "../_components/TypeButton/TypeButton";
 import CraftButton from "../_components/CraftButton";
 import FixedIcon from "../_icons/FixedIcon";
@@ -25,7 +25,7 @@ class Field extends Component {
 
 	onTypeButtonClick = (e, type) => {
 		e.preventDefault();
-		this.props.dispatch("set:settings.bookableType", type);
+		this.props.dispatch("set:settings.type", type);
 	};
 
 	onOpenRulesModalClick = () => {
@@ -39,7 +39,7 @@ class Field extends Component {
 	// Render
 	// =========================================================================
 
-	render ({ dispatch, handle, enabled, bookableType, settings }, { rulesModalOpen }) {
+	render ({ dispatch, handle, enabled, type, settings }, { rulesModalOpen }) {
 		let cls = [styles.field];
 		if (!enabled) cls.push(styles.disabled);
 		cls = cls.join(" ");
@@ -64,8 +64,8 @@ class Field extends Component {
 				>
 					<div className={styles.types}>
 						<TypeButton
-							type={BookableType.FIXED}
-							active={bookableType === BookableType.FIXED}
+							type={EventType.FIXED}
+							active={type === EventType.FIXED}
 							name="Fixed Slots"
 							instructions={"The user can book a single slot at a time.\r\nConvenient for concerts, cookery classes, etc."}
 							icon={FixedIcon}
@@ -73,8 +73,8 @@ class Field extends Component {
 						/>
 
 						<TypeButton
-							type={BookableType.FLEXIBLE}
-							active={bookableType === BookableType.FLEXIBLE}
+							type={EventType.FLEXIBLE}
+							active={type === EventType.FLEXIBLE}
 							name="Flexible Slots"
 							instructions={"The user can book a range of slots.\r\nHandy for hotels, hardware hire, etc."}
 							icon={FlexibleIcon}
@@ -123,9 +123,9 @@ class Field extends Component {
 
 }
 
-export default connect(({ handle, enabled, settings, settings: { bookableType } }) => ({
+export default connect(({ handle, enabled, settings, settings: { type } }) => ({
 	handle,
 	enabled,
 	settings,
-	bookableType,
+	type,
 }))(Field);

@@ -27,7 +27,7 @@ class Enum
 		$consts = [];
 
 		try {
-			$consts = (new \ReflectionClass(__CLASS__))->getConstants();
+			$consts = (new \ReflectionClass(get_called_class()))->getConstants();
 		} catch (\ReflectionException $exception) {
 			\Craft::error($exception->getMessage(), 'Bookings Enum');
 		}

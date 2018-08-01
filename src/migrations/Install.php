@@ -10,6 +10,7 @@ namespace ether\bookings\migrations;
 
 use craft\db\Migration;
 use craft\helpers\MigrationHelper;
+use ether\bookings\enums\EventType;
 use ether\bookings\records\BookedEventRecord;
 use ether\bookings\records\BookedSlotRecord;
 use ether\bookings\records\BookedTicketRecord;
@@ -117,12 +118,18 @@ class Install extends Migration
 
 	private function _createEventsTable ()
 	{
+		$types = array_values(EventType::asArray());
+
 		$this->createTable(EventRecord::$tableName, [
-			'id'        => $this->primaryKey(),
-			'elementId' => $this->integer()->notNull(),
-			'fieldId'   => $this->integer()->notNull(),
-			'enabled'   => $this->boolean()->defaultValue(true),
-			'settings'  => $this->json()->notNull(),
+			'id'         => $this->primaryKey(),
+			'elementId'  => $this->integer()->notNull(),
+			'fieldId'    => $this->integer()->notNull(),
+			'enabled'    => $this->boolean()->defaultValue(true),
+			'type'       => $this->enum('type', $types)->notNull(),
+			'capacity'   => $this->integer(),
+			'multiplier' => $this->integer(),
+			'baseRule'   => $this->json(),
+			'exceptions' => $this->json(),
 
 			'dateCreated' => $this->dateTime()->notNull(),
 			'dateUpdated' => $this->dateTime()->notNull(),
