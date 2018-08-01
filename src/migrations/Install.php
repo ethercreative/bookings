@@ -42,13 +42,21 @@ class Install extends Migration
 
 	public function safeDown ()
 	{
-		$this->_dropTicketFieldsSettingsTable();
-		$this->_dropEventsTable();
-		$this->_dropTicketsTable();
-		$this->_dropBookingsTable();
-		$this->_dropBookedEventsTable();
-		$this->_dropBookedTicketsTable();
-		$this->_dropBookedSlotsTable();
+		MigrationHelper::dropAllForeignKeysOnTable(TicketFieldSettingsRecord::$tableName);
+		MigrationHelper::dropAllForeignKeysOnTable(EventRecord::$tableName);
+		MigrationHelper::dropAllForeignKeysOnTable(TicketRecord::$tableName);
+		MigrationHelper::dropAllForeignKeysOnTable(BookingRecord::$tableName);
+		MigrationHelper::dropAllForeignKeysOnTable(BookedEventRecord::$tableName);
+		MigrationHelper::dropAllForeignKeysOnTable(BookedTicketRecord::$tableName);
+		MigrationHelper::dropAllForeignKeysOnTable(BookedSlotRecord::$tableName);
+
+		$this->dropTableIfExists(TicketFieldSettingsRecord::$tableName);
+		$this->dropTableIfExists(EventRecord::$tableName);
+		$this->dropTableIfExists(TicketRecord::$tableName);
+		$this->dropTableIfExists(BookingRecord::$tableName);
+		$this->dropTableIfExists(BookedEventRecord::$tableName);
+		$this->dropTableIfExists(BookedTicketRecord::$tableName);
+		$this->dropTableIfExists(BookedSlotRecord::$tableName);
 	}
 
 	// Tables
@@ -104,12 +112,6 @@ class Install extends Migration
 		);
 	}
 
-	private function _dropTicketFieldsSettingsTable ()
-	{
-		MigrationHelper::dropAllForeignKeysOnTable(TicketFieldSettingsRecord::$tableName);
-		$this->dropTableIfExists(TicketFieldSettingsRecord::$tableName);
-	}
-
 	// Events
 	// -------------------------------------------------------------------------
 
@@ -160,12 +162,6 @@ class Install extends Migration
 			'CASCADE',
 			null
 		);
-	}
-
-	private function _dropEventsTable ()
-	{
-		MigrationHelper::dropAllForeignKeysOnTable(EventRecord::$tableName);
-		$this->dropTableIfExists(EventRecord::$tableName);
 	}
 
 	// Tickets
@@ -237,12 +233,6 @@ class Install extends Migration
 		);
 	}
 
-	private function _dropTicketsTable ()
-	{
-		MigrationHelper::dropAllForeignKeysOnTable(TicketRecord::$tableName);
-		$this->dropTableIfExists(TicketRecord::$tableName);
-	}
-
 	// Bookings
 	// -------------------------------------------------------------------------
 
@@ -296,7 +286,7 @@ class Install extends Migration
 
 		$this->addForeignKey(
 			null,
-			EventRecord::$tableName,
+			BookingRecord::$tableName,
 			'userId',
 			'{{%users}}',
 			'id',
@@ -307,12 +297,6 @@ class Install extends Migration
 		// Commerce foreign keys are added / removed via
 		// `integrations/commerce/OnCommerce(Uni|I)nstall.php`
 
-	}
-
-	private function _dropBookingsTable ()
-	{
-		MigrationHelper::dropAllForeignKeysOnTable(BookingRecord::$tableName);
-		$this->dropTableIfExists(BookingRecord::$tableName);
 	}
 
 	// Booked Events
@@ -365,12 +349,6 @@ class Install extends Migration
 		);
 	}
 
-	private function _dropBookedEventsTable ()
-	{
-		MigrationHelper::dropAllForeignKeysOnTable(BookedEventRecord::$tableName);
-		$this->dropTableIfExists(BookedEventRecord::$tableName);
-	}
-
 	// Booked Events
 	// -------------------------------------------------------------------------
 
@@ -419,12 +397,6 @@ class Install extends Migration
 			'CASCADE',
 			null
 		);
-	}
-
-	private function _dropBookedTicketsTable ()
-	{
-		MigrationHelper::dropAllForeignKeysOnTable(BookedTicketRecord::$tableName);
-		$this->dropTableIfExists(BookedTicketRecord::$tableName);
 	}
 
 	// Booked Slots
@@ -496,12 +468,6 @@ class Install extends Migration
 			'CASCADE',
 			null
 		);
-	}
-
-	private function _dropBookedSlotsTable ()
-	{
-		MigrationHelper::dropAllForeignKeysOnTable(BookedSlotRecord::$tableName);
-		$this->dropTableIfExists(BookedSlotRecord::$tableName);
 	}
 
 }

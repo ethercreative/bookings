@@ -9,9 +9,9 @@
 namespace ether\bookings\web\twig;
 
 use craft\elements\db\ElementQueryInterface;
-use ether\bookings\common\Availability;
-use ether\bookings\elements\Booking;
-use ether\bookings\elements\db\BookingQuery;
+//use ether\bookings\common\Availability;
+//use ether\bookings\elements\Booking;
+//use ether\bookings\elements\db\BookingQuery;
 use ether\bookings\models\BookableEvent;
 use yii\base\Behavior;
 
@@ -33,15 +33,15 @@ class CraftVariableBehavior extends Behavior
 	 *
 	 * @return BookingQuery|ElementQueryInterface
 	 */
-	public function bookings ($criteria = null): BookingQuery
-	{
-		$query = Booking::find();
-
-		if ($criteria)
-			\Craft::configure($query, $criteria);
-
-		return $query;
-	}
+//	public function bookings ($criteria = null): BookingQuery
+//	{
+//		$query = Booking::find();
+//
+//		if ($criteria)
+//			\Craft::configure($query, $criteria);
+//
+//		return $query;
+//	}
 
 	/**
 	 * {{ craft.availability(myBookableField) }}
@@ -50,9 +50,9 @@ class CraftVariableBehavior extends Behavior
 	 *
 	 * @return Availability
 	 */
-	public function availability (BookableEvent $field): Availability
-	{
-		return new Availability($field);
-	}
+//	public function availability (BookableEvent $field): Availability
+//	{
+//		return new Availability($field);
+//	}
 
 }

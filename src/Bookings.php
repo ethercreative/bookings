@@ -20,6 +20,7 @@ use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
 use ether\bookings\integrations\commerce\OnOrderEvent;
+use ether\bookings\models\Settings;
 use ether\bookings\web\twig\CraftVariableBehavior;
 use ether\bookings\web\twig\Extension;
 use yii\base\Event;
@@ -123,6 +124,11 @@ class Bookings extends Plugin
 
 	// Craft
 	// =========================================================================
+
+	public function getSettings ()
+	{
+		return new Settings();
+	}
 
 	public function getCpNavItem ()
 	{

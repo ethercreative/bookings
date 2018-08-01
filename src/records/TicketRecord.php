@@ -32,7 +32,7 @@ class TicketRecord extends ActiveRecord
 	// Properties
 	// =========================================================================
 
-	public static $tableName = '{{%events_tickets}}';
+	public static $tableName = '{{%bookings_tickets}}';
 
 	// Methods
 	// =========================================================================
