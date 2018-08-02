@@ -134,15 +134,18 @@ class TicketField extends Field
 	 */
 	public function beforeSave (bool $isNew): bool
 	{
-		$fieldLayout = \Craft::$app->getFields()->assembleLayout($this->fieldLayout);
-		$fieldLayout->type = 'ether\\bookings\\elements\\Ticket';
+		if ($this->fieldLayout)
+		{
+			$fieldLayout = \Craft::$app->getFields()->assembleLayout($this->fieldLayout);
+			$fieldLayout->type = 'ether\\bookings\\elements\\Ticket';
 
-		if ($this->fieldLayoutId !== null)
-			$fieldLayout->id = $this->fieldLayoutId;
+			if ($this->fieldLayoutId !== null)
+				$fieldLayout->id = $this->fieldLayoutId;
 
-		\Craft::$app->getFields()->saveLayout($fieldLayout);
+			\Craft::$app->getFields()->saveLayout($fieldLayout);
 
-		$this->fieldLayoutId = $fieldLayout->id;
+			$this->fieldLayoutId = $fieldLayout->id;
+		}
 
 		return parent::beforeSave($isNew);
 	}

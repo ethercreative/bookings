@@ -125,7 +125,7 @@ class Install extends Migration
 	{
 		$this->createTable(TicketRecord::$tableName, [
 			'id'        => $this->primaryKey(),
-			'eventId'   => $this->integer()->notNull(),
+			'eventId'   => $this->integer(),
 			'elementId' => $this->integer()->notNull(),
 			'fieldId'   => $this->integer()->notNull(),
 			'capacity'  => $this->integer(),

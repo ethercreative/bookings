@@ -19,7 +19,7 @@
 	width: calc(50% - 12px);
 }
 
-.matrixblock .bookings-ticket-field {
+.matrixblock:not(.variant-matrixblock) .bookings-ticket-field {
 	margin: 0 -14px;
 	padding: 14px;
 }

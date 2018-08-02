@@ -13,6 +13,8 @@ use craft\base\Element;
 use craft\base\ElementInterface;
 use craft\elements\db\ElementQuery;
 use craft\elements\db\ElementQueryInterface;
+use craft\elements\db\MatrixBlockQuery;
+use craft\fields\Matrix;
 use craft\helpers\Json;
 use ether\bookings\fields\EventField;
 use ether\bookings\fields\TicketField;
@@ -20,6 +22,7 @@ use ether\bookings\models\Event;
 use ether\bookings\models\Ticket;
 use ether\bookings\records\EventRecord;
 use ether\bookings\records\TicketRecord;
+use yii\base\InvalidConfigException;
 
 
 /**
@@ -148,6 +151,16 @@ class FieldService extends Component
 			return false;
 		}
 
+		// Check on the current element
+		$ticketFields = $this->_checkForTicketFieldsOnElement($element);
+
+		// Check on variants (if this is a product)
+		$ticketFields = $this->_checkForTicketsInVariants($element, $ticketFields);
+
+		// Save all the ticket fields
+		foreach ($ticketFields as $f)
+			$this->setTicketFieldEventId($f['field'], $f['elementId'], $record->id);
+
 		return true;
 	}
 
@@ -247,35 +260,9 @@ class FieldService extends Component
 		$model = $element->getFieldValue($field->handle);
 		$record = null;
 
-		$owner = $element;
-
-		do {
-			if (property_exists($owner, 'ownerId'))
-				$owner = $owner->owner;
-			else break;
-		} while ($owner);
-
-		$event = null;
-
-		foreach ($owner->fieldLayout->getFields() as $field)
-			if ($field instanceof EventField)
-				$event = $field;
-
-		$event = EventRecord::findOne([
-			'elementId' => $owner->id,
-			'fieldId' => $event->id,
-		]);
-
-		if ($event === null)
-		{
-			$element->addError($field->handle, 'Unable to find Event field');
-			return false;
-		}
-
 		if (!$isNew)
 		{
 			$record = TicketRecord::findOne([
-				'eventId'   => $event->id,
 				'elementId' => $element->id,
 				'fieldId'   => $field->id,
 			]);
@@ -286,7 +273,7 @@ class FieldService extends Component
 			$record            = new TicketRecord();
 			$record->elementId = $element->id;
 			$record->fieldId   = $field->id;
-			$record->eventId   = $event->id;
+			$record->eventId   = $this->_findEventIdFromTicket($element);
 		}
 
 		$record->capacity = $model->capacity;
@@ -299,6 +286,28 @@ class FieldService extends Component
 		}
 
 		return true;
+	}
+
+	/**
+	 * @param TicketField $field
+	 * @param             $elementId
+	 * @param             $eventId
+	 */
+	public function setTicketFieldEventId (TicketField $field, $elementId, $eventId)
+	{
+		$record = TicketRecord::findOne([
+			'elementId' => $elementId,
+			'fieldId'   => $field->id,
+		]);
+
+		// If we can't find the record then the ticket field hasn't been saved
+		// yet, so it will get the event ID later (when it's saved).
+		if (!$record)
+			return;
+
+		$record->eventId = $eventId;
+
+		$record->save(false);
 	}
 
 	/**
@@ -331,6 +340,109 @@ class FieldService extends Component
 			$tableName . ' ' . $tableAlias,
 			$on
 		);
+	}
+
+	// Helpers
+	// =========================================================================
+
+	/**
+	 * Finds Ticket fields on the given element
+	 *
+	 * @param ElementInterface $element
+	 * @param array            $ticketFields
+	 *
+	 * @return array
+	 */
+	private function _checkForTicketFieldsOnElement (ElementInterface $element, $ticketFields = [])
+	{
+		/** @var Element $element */
+
+		$fields = $element->getFieldLayout()->getFields();
+
+		foreach ($fields as $elementField)
+		{
+			if ($elementField instanceof TicketField)
+			{
+				$ticketFields[] = [
+					'field' => $elementField,
+					'elementId' => $element->id,
+				];
+			}
+
+			// We don't have to worry about matrix blocks since they're saved
+			// after the parent element (meaning after the event field is saved)
+			// I think.
+//			else if ($elementField instanceof Matrix)
+//			{
+//				/** @var MatrixBlockQuery $matrix */
+//				$matrix = $element->{$elementField->handle};
+//				foreach ($matrix->all() as $block)
+//					$ticketFields = $this->_checkForTicketFieldsOnElement($block, $ticketFields);
+//			}
+		}
+
+		return $ticketFields;
+	}
+
+	/**
+	 * Finds Ticket fields on the variants of the given product
+	 *
+	 * @param ElementInterface $element
+	 * @param array            $ticketFields
+	 *
+	 * @return array
+	 */
+	private function _checkForTicketsInVariants (ElementInterface $element, $ticketFields = [])
+	{
+		if (!class_exists(\craft\commerce\elements\Product::class))
+			return $ticketFields;
+
+		if (!$element instanceof \craft\commerce\elements\Product)
+			return $ticketFields;
+
+		/** @var \craft\commerce\elements\Product $element */
+
+		foreach ($element->variants as $variant)
+			$ticketFields = $this->_checkForTicketFieldsOnElement($variant, $ticketFields);
+
+		return $ticketFields;
+	}
+
+	/**
+	 * @param ElementInterface $element
+	 *
+	 * @return int|null
+	 */
+	private function _findEventIdFromTicket (ElementInterface $element)
+	{
+		/** @var Element $element */
+
+		$owner = $element;
+
+		do {
+			if (property_exists($owner, 'ownerId'))
+				$owner = $owner->owner;
+			else break;
+		} while ($owner);
+
+		$eventField = null;
+
+		foreach ($owner->fieldLayout->getFields() as $field)
+			if ($field instanceof EventField)
+				$eventField = $field;
+
+		if (!$eventField)
+			return null;
+
+		$event = EventRecord::findOne([
+			'elementId' => $owner->id,
+			'fieldId'   => $eventField->id,
+		]);
+
+		if ($event)
+			return $event->id;
+
+		return null;
 	}
 
 }
