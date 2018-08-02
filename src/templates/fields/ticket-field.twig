@@ -1,0 +1,21 @@
+{% import "_includes/forms" as forms %}
+
+<div class="bookings-ticket-field">
+	{{ forms.textField({
+		label: "Capacity"|t('bookings'),
+		instructions: "The max number of this type of ticket that can be sold per slot (or selected slot range if flexible)"|t('bookings'),
+		type: "number",
+		name: handle ~ '[capacity]',
+		min: 0,
+		value: field.capacity,
+	}) }}
+
+	{{ forms.textField({
+		label: "Max Quantity"|t('bookings'),
+		instructions: "The maximum number of this type of ticket that can be booked per booking"|t('bookings'),
+		type: "number",
+		name: handle ~ '[maxQty]',
+		min: 0,
+		value: field.maxQty,
+	}) }}
+</div>

@@ -22,44 +22,11 @@
 return [
 	'Bookings' => 'Bookings',
 	'Bookable Event' => 'Bookable Event',
-	'Bookable Variant' => 'Bookable Variant',
-	'You don’t have permission to access to any of the Bookings sub-sections. Please contact an admin.' => 'You don’t have permission to access to any of the Bookings sub-sections. Please contact an admin.',
+	'Bookable Ticket' => 'Bookable Ticket',
 
-	'Bookings Settings' => 'Bookings Settings',
-	'General' => 'General',
-	'General Settings' => 'General Settings',
+	'Capacity' => 'Capacity',
+	'Max Quantity' => 'Max Quantity',
 
-	'Couldn\'t mark booking {number} as complete. Booking save failed during completion with errors: {errors}' => 'Couldn\'t mark booking {number} as complete. Booking save failed during completion with errors: {errors}',
-	'Couldn\'t expire booking {number}. Booking save failed during expiration with errors: {errors}' => 'Couldn\'t expire booking {number}. Booking save failed during expiration with errors: {errors}',
-
-	'{attribute} must not be set when Commerce is not installed.' => '{attribute} must not be set when Commerce is not installed.',
-	'{attribute} must not be set when the element being booked is not a Commerce Purchasable.' => '{attribute} must not be set when the element being booked is not a Commerce Purchasable.',
-	'{attribute} is required.' => '{attribute} is required.',
-	'{attribute} is not a valid occurrence.' => '{attribute} is not a valid occurrence.',
-	'{attribute} is required for flexible duration bookings.' => '{attribute} is required for flexible duration bookings.',
-	'{attribute} is not allowed for fixed duration bookings.' => '{attribute} is not allowed for fixed duration bookings.',
-	'Unable to verify {attribute} availability' => 'Unable to verify {attribute} availability',
-	'Slot Start is unavailable.' => 'Slot Start is unavailable.',
-	'Slot End must occur after Slot Start.' => 'Slot End must occur after Slot Start.',
-	'Slot End is unavailable.' => 'Slot End is unavailable.',
-	'The selected slot range is unavailable.' => 'The selected slot range is unavailable.',
-
-	'All Bookings' => 'All Bookings',
-
-	'Number' => 'Number',
-	'ID' => 'ID',
-	'Date Booked' => 'Date Booked',
-	'Date Created' => 'Date Created',
-	'Date Updated' => 'Date Updated',
-	'Customer Email' => 'Customer Email',
-	'When' => 'When',
-	'Until' => 'Until',
-	'Booking Status' => 'Booking Status',
-
-	'Reserved' => 'Reserved',
-	'Completed' => 'Completed',
-	'Expired' => 'Expired',
-
-	'Attempting to retrieve more than 1000 slots can have an impact on performance!' => 'Attempting to retrieve more than 1000 slots can have an impact on performance!',
-	'Are you sure you want to delete this booking?' => 'Are you sure you want to delete this booking?',
+	'The max number of this type of ticket that can be sold per slot (or selected slot range if flexible)' => 'The max number of this type of ticket that can be sold per slot (or selected slot range if flexible)',
+	'The maximum number of this type of ticket that can be booked per booking' => 'The maximum number of this type of ticket that can be booked per booking',
 ];

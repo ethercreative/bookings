@@ -154,6 +154,8 @@ class Event extends Model
 			['type', 'multiplier', 'baseRule'],
 			'required'
 		];
+
+		return $rules;
 	}
 
 	public function asArray ()

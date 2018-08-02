@@ -10,6 +10,7 @@ namespace ether\bookings\web\assets\ui;
 
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
+use craft\web\assets\timepicker\TimepickerAsset;
 
 /**
  * Class UIAsset
@@ -27,6 +28,7 @@ class UIAsset extends AssetBundle
 
 		$this->depends = [
 			CpAsset::class,
+			TimepickerAsset::class,
 		];
 
 		$this->js = ['bookings.js'];

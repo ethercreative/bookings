@@ -1,0 +1,25 @@
+.bookings-ticket-field {
+	display: flex;
+	align-items: stretch;
+	justify-content: space-between;
+	margin: 0 -24px;
+	padding: 14px 24px;
+
+	background: #F1F5F8;
+	border: 1px solid rgba(0, 0, 20, 0.1);
+	border-left: none;
+	border-right: none;
+}
+
+.bookings-ticket-field .field {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	margin: 0 !important;
+	width: calc(50% - 12px);
+}
+
+.matrixblock .bookings-ticket-field {
+	margin: 0 -14px;
+	padding: 14px;
+}

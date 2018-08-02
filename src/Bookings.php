@@ -21,6 +21,7 @@ use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use ether\bookings\fields\EventField;
+use ether\bookings\fields\TicketField;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
 use ether\bookings\integrations\commerce\OnOrderEvent;
 use ether\bookings\models\Settings;
@@ -218,6 +219,7 @@ class Bookings extends Plugin
 	public function onRegisterFieldTypes (RegisterComponentTypesEvent $event)
 	{
 		$event->types[] = EventField::class;
+		$event->types[] = TicketField::class;
 	}
 
 	// Events: Internal

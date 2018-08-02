@@ -15,8 +15,11 @@ use craft\elements\db\ElementQuery;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Json;
 use ether\bookings\fields\EventField;
+use ether\bookings\fields\TicketField;
 use ether\bookings\models\Event;
+use ether\bookings\models\Ticket;
 use ether\bookings\records\EventRecord;
+use ether\bookings\records\TicketRecord;
 
 
 /**
@@ -162,6 +165,154 @@ class FieldService extends Component
 			return;
 
 		$tableName = EventRecord::$tableName;
+		$tableAlias = 'events' . bin2hex(openssl_random_pseudo_bytes(5));
+
+		$on = [
+			'and',
+			'[[elements.id]] = [[' . $tableAlias . '.ownerId]]',
+		];
+
+		$query->query->join(
+			'JOIN',
+			$tableName . ' ' . $tableAlias,
+			$on
+		);
+
+		$query->subQuery->join(
+			'JOIN',
+			$tableName . ' ' . $tableAlias,
+			$on
+		);
+	}
+
+	// Ticket Field
+	// =========================================================================
+
+	/**
+	 * @param TicketField      $field
+	 * @param ElementInterface $element
+	 * @param                  $value
+	 *
+	 * @return Ticket
+	 */
+	public function getTicketField (TicketField $field, ElementInterface $element, $value): Ticket
+	{
+		/** @var Element $element */
+
+		if ($value instanceof Ticket)
+			return $value;
+
+		$request = \Craft::$app->request;
+		$fieldId = $field->id;
+		$elementId = $element->id;
+
+		$record = TicketRecord::findOne([
+			'elementId' => $elementId,
+			'fieldId' => $fieldId,
+		]);
+
+		$model = new Ticket();
+
+		if (!$request->isConsoleRequest && $request->isPost && $value)
+		{
+			$model->elementId = $elementId;
+			$model->fieldId   = $fieldId;
+			$model->capacity  = $value['capacity'];
+			$model->maxQty    = $value['maxQty'];
+		}
+
+		else if ($record) {
+			$model->id        = $record->id;
+			$model->elementId = $record->elementId;
+			$model->fieldId   = $record->fieldId;
+			$model->capacity  = $record->capacity;
+			$model->maxQty    = $record->maxQty;
+		}
+
+		return $model;
+	}
+
+	/**
+	 * @param TicketField      $field
+	 * @param ElementInterface $element
+	 * @param                  $isNew
+	 *
+	 * @return bool
+	 */
+	public function saveTicketField (TicketField $field, ElementInterface $element, $isNew)
+	{
+		/** @var Element $element */
+
+		/** @var Ticket $model */
+		$model = $element->getFieldValue($field->handle);
+		$record = null;
+
+		$owner = $element;
+
+		do {
+			if (property_exists($owner, 'ownerId'))
+				$owner = $owner->owner;
+			else break;
+		} while ($owner);
+
+		$event = null;
+
+		foreach ($owner->fieldLayout->getFields() as $field)
+			if ($field instanceof EventField)
+				$event = $field;
+
+		$event = EventRecord::findOne([
+			'elementId' => $owner->id,
+			'fieldId' => $event->id,
+		]);
+
+		if ($event === null)
+		{
+			$element->addError($field->handle, 'Unable to find Event field');
+			return false;
+		}
+
+		if (!$isNew)
+		{
+			$record = TicketRecord::findOne([
+				'eventId'   => $event->id,
+				'elementId' => $element->id,
+				'fieldId'   => $field->id,
+			]);
+		}
+
+		if (!$record)
+		{
+			$record            = new TicketRecord();
+			$record->elementId = $element->id;
+			$record->fieldId   = $field->id;
+			$record->eventId   = $event->id;
+		}
+
+		$record->capacity = $model->capacity;
+		$record->maxQty   = $model->maxQty;
+
+		if (!$record->save())
+		{
+			\Craft::error($record->getErrors(), 'bookings');
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param ElementQueryInterface $query
+	 * @param                       $value
+	 */
+	public function modifyTicketFieldQuery (ElementQueryInterface $query, $value)
+	{
+		/** @var ElementQuery $query */
+
+		if (!$value)
+			return;
+
+		$tableName  = TicketRecord::$tableName;
 		$tableAlias = 'events' . bin2hex(openssl_random_pseudo_bytes(5));
 
 		$on = [

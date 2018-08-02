@@ -28,11 +28,6 @@ use ether\bookings\web\assets\ui\UIAsset;
 class EventField extends Field
 {
 
-	// Properties
-	// =========================================================================
-
-	public $translationMethod = self::TRANSLATION_METHOD_NONE;
-
 	// Methods
 	// =========================================================================
 
@@ -58,7 +53,8 @@ class EventField extends Field
 	 * @return string
 	 * @throws \yii\base\InvalidConfigException
 	 */
-	public function getInputHtml ($value, ElementInterface $element = null): string {
+	public function getInputHtml ($value, ElementInterface $element = null): string
+	{
 		$craft = \Craft::$app;
 		$view = $craft->view;
 

@@ -32,7 +32,6 @@ class Install extends Migration
 
 	public function safeUp ()
 	{
-		$this->_createTicketFieldsSettingsTable();
 		$this->_createEventsTable();
 		$this->_createTicketsTable();
 		$this->_createBookingsTable();
@@ -43,7 +42,6 @@ class Install extends Migration
 
 	public function safeDown ()
 	{
-		MigrationHelper::dropAllForeignKeysOnTable(TicketFieldSettingsRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(EventRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(TicketRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(BookingRecord::$tableName);
@@ -51,7 +49,6 @@ class Install extends Migration
 		MigrationHelper::dropAllForeignKeysOnTable(BookedTicketRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(BookedSlotRecord::$tableName);
 
-		$this->dropTableIfExists(TicketFieldSettingsRecord::$tableName);
 		$this->dropTableIfExists(EventRecord::$tableName);
 		$this->dropTableIfExists(TicketRecord::$tableName);
 		$this->dropTableIfExists(BookingRecord::$tableName);
@@ -62,56 +59,6 @@ class Install extends Migration
 
 	// Tables
 	// =========================================================================
-
-	// Ticket Fields Settings
-	// -------------------------------------------------------------------------
-
-	private function _createTicketFieldsSettingsTable ()
-	{
-		$this->createTable(TicketFieldSettingsRecord::$tableName, [
-			'id'            => $this->primaryKey(),
-			'fieldId'       => $this->integer()->notNull(),
-			'fieldLayoutId' => $this->integer()->notNull(),
-
-			'dateCreated' => $this->dateTime()->notNull(),
-			'dateUpdated' => $this->dateTime()->notNull(),
-			'uid'         => $this->uid(),
-		]);
-
-		$this->createIndex(
-			null,
-			TicketFieldSettingsRecord::$tableName,
-			'fieldId',
-			true
-		);
-
-		$this->createIndex(
-			null,
-			TicketFieldSettingsRecord::$tableName,
-			'fieldLayoutId',
-			true
-		);
-
-		$this->addForeignKey(
-			null,
-			TicketFieldSettingsRecord::$tableName,
-			'fieldId',
-			'{{%fields}}',
-			'id',
-			'CASCADE',
-			null
-		);
-
-		$this->addForeignKey(
-			null,
-			TicketFieldSettingsRecord::$tableName,
-			'fieldLayoutId',
-			'{{%fieldlayouts}}',
-			'id',
-			'CASCADE',
-			null
-		);
-	}
 
 	// Events
 	// -------------------------------------------------------------------------
@@ -181,7 +128,8 @@ class Install extends Migration
 			'eventId'   => $this->integer()->notNull(),
 			'elementId' => $this->integer()->notNull(),
 			'fieldId'   => $this->integer()->notNull(),
-			'settings'  => $this->json()->notNull(),
+			'capacity'  => $this->integer(),
+			'maxQty'    => $this->integer(),
 
 			'dateCreated' => $this->dateTime()->notNull(),
 			'dateUpdated' => $this->dateTime()->notNull(),

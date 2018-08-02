@@ -20,7 +20,8 @@ use craft\records\Field;
  * @property int $eventId
  * @property int $elementId
  * @property int $fieldId
- * @property array $settings
+ * @property int $capacity
+ * @property int $maxQty
  *
  * @author  Ether Creative
  * @package ether\bookings\records
