@@ -67,6 +67,8 @@ class OnOrderEvent
 		) $startDate = $startDate['date'] . 'T' . $startDate['time'];
 		$startDate = DateTimeHelper::toDateTime($startDate);
 		// FIXME: Fucky timezones
+		// TODO: Bookings should ALWAYS use UTC, no matter what Crafts timezone
+		// is set to. We'll have to convert from / to UTC accordingly.
 		\Craft::dd($startDate);
 		// TODO: Date ranges
 		$endDate = null;
