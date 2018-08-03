@@ -11,6 +11,7 @@ namespace ether\bookings\models;
 use craft\helpers\Template;
 use ether\bookings\base\Model;
 use ether\bookings\Bookings;
+use ether\bookings\fields\TicketField;
 use ether\bookings\records\TicketRecord;
 
 
@@ -59,6 +60,8 @@ class Ticket extends Model
 
 	/** @var Event */
 	private $_event;
+	/** @var TicketField */
+	private $_field;
 
 	// Methods
 	// =========================================================================
@@ -115,6 +118,17 @@ class Ticket extends Model
 			return $this->_event;
 
 		return $this->_event = Bookings::getInstance()->events->getEventById($this->eventId);
+	}
+
+	/**
+	 * @return \craft\base\FieldInterface|TicketField|null
+	 */
+	public function getField ()
+	{
+		if ($this->_field)
+			return $this->_field;
+
+		return $this->_field = \Craft::$app->fields->getFieldById($this->fieldId);
 	}
 
 }

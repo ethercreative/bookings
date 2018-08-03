@@ -16,7 +16,7 @@ use craft\helpers\Db;
 use ether\bookings\Bookings;
 use ether\bookings\elements\BookedTicket;
 use ether\bookings\elements\Booking;
-use ether\bookings\models\BookedSlot;
+use \craft\commerce\records\LineItem as LineItemRecord;
 use ether\bookings\records\BookedSlotRecord;
 use yii\base\Event;
 
@@ -32,13 +32,121 @@ class OnOrderEvent
 {
 
 	/**
-	 * TODO: Tidy up error boilerplate
+	 * @param LineItemEvent $lineItemEvent
 	 *
+	 * @throws \Throwable
+	 * @throws \yii\base\Exception
+	 * @throws \yii\base\InvalidConfigException
+	 * @throws \yii\web\BadRequestHttpException
+	 */
+	public function onBeforeSaveLineItem (LineItemEvent $lineItemEvent)
+	{
+		$craft    = \Craft::$app;
+		$bookings = Bookings::getInstance();
+
+		// Ensure this is a booking line item
+		$ticketId = $craft->request->getBodyParam('ticketId');
+
+		/** @var LineItem $lineItem */
+		$lineItem = $lineItemEvent->lineItem;
+
+		/** @var Order $order */
+		$order = $lineItem->order;
+
+		/** @var bool $isNew */
+		$isNew = $lineItemEvent->isNew;
+
+		if (!$ticketId)
+			return;
+
+		$startDate = $craft->request->getRequiredBodyParam('ticketDate');
+		if (
+			is_array($startDate)
+			&& array_key_exists('date', $startDate)
+			&& array_key_exists('time', $startDate)
+		) $startDate = $startDate['date'] . 'T' . $startDate['time'];
+		$startDate = DateTimeHelper::toDateTime($startDate);
+		// FIXME: Fucky timezones
+		\Craft::dd($startDate);
+		// TODO: Date ranges
+		$endDate = null;
+//		$endDate = $craft->request->getBodyParam('ticketEndDate');
+
+		$ticketId = $craft->security->validateData($ticketId);
+
+		// Is the ticket ID valid?
+		if ($ticketId === false)
+		{
+			$err = \Craft::t('bookings', 'Ticket ID input is invalid.');
+
+			$order->addError('ticket', $err);
+			$lineItem->addError('ticket', $err);
+
+			return;
+		}
+
+		$ticket = $bookings->tickets->getTicketById($ticketId);
+
+		// Does the ticket exist?
+		if ($ticket === null)
+		{
+			$err = \Craft::t('bookings', 'Unable to find ticket for the given ID.');
+
+			$order->addError('ticket', $err);
+			$lineItem->addError('ticket', $err);
+
+			return;
+		}
+
+		$event = $ticket->getEvent();
+
+		// Is time valid?
+		// TODO: Date ranges
+		if ($event->isDateOccurrence($startDate) === false)
+		{
+			$err = \Craft::t('bookings', 'Selected Date / Time is invalid.');
+
+			$order->addError('ticket', $err);
+			$lineItem->addError($ticket->getField()->handle, $err);
+
+			return;
+		}
+
+		// Is time available?
+		// TODO: Date ranges
+		$qty = $lineItem->qty;
+
+		if ($isNew === false)
+		{
+			// If we're updating a line item, we'll only want to check
+			// availability against an increase in qty
+			$qty -= LineItemRecord::findOne([
+				'id' => $lineItem->id,
+			])->qty;
+		}
+
+		if ($qty > 0 && $bookings->availability->isTimeAvailable($ticket, $startDate, $qty) === false)
+		{
+			$err = \Craft::t(
+				'bookings',
+				$lineItem->qty > 1
+					? 'Selected Date / Time is unavailable.'
+					: 'Selected Date / Time is unavailable at that quantity.'
+			);
+
+			$order->addError('ticket', $err);
+			$lineItem->addError($ticket->getField()->handle, $err);
+
+			return;
+		}
+	}
+
+	/**
 	 * @param LineItemEvent $lineItemEvent
 	 *
 	 * @throws \Throwable
 	 */
-	public function onAddLineItem (LineItemEvent $lineItemEvent)
+	public function onAfterSaveLineItem (LineItemEvent $lineItemEvent)
 	{
 		$craft = \Craft::$app;
 		$bookings = Bookings::getInstance();
@@ -67,47 +175,9 @@ class OnOrderEvent
 //		$endDate = $craft->request->getBodyParam('ticketEndDate');
 
 		$ticketId = $craft->security->validateData($ticketId);
-
-		// Is the ticket ID valid?
-		if ($ticketId === false)
-		{
-			$err = \Craft::t('bookings', 'Ticket ID input is invalid.');
-			$craft->session->setError($err);
-			\Craft::error($err, 'bookings');
-			$order->removeLineItem($lineItem);
-			$craft->elements->saveElement($order);
-
-			return;
-		}
-
 		$ticket = $bookings->tickets->getTicketById($ticketId);
 
-		// Does the ticket exist?
-		if ($ticket === null)
-		{
-			$err = \Craft::t('bookings', 'Unable to find ticket for the given ID.');
-			$craft->session->setError($err);
-			\Craft::error($err, 'bookings');
-			$order->removeLineItem($lineItem);
-			$craft->elements->saveElement($order);
-
-			return;
-		}
-
 		$event = $ticket->getEvent();
-
-		// Is time valid?
-		// TODO: Date ranges
-		if ($event->isDateOccurrence($startDate) === false)
-		{
-			$err = \Craft::t('bookings', 'Selected Date / Time is invalid.');
-			$craft->session->setError($err);
-			\Craft::error($err, 'bookings');
-			$order->removeLineItem($lineItem);
-			$craft->elements->saveElement($order);
-
-			return;
-		}
 
 		// Do we have an existing booking?
 		$booking = $bookings->bookings->getBookingByOrderAndEventIds(
@@ -138,24 +208,6 @@ class OnOrderEvent
 
 			foreach ($bookedTickets as $bookedTicket)
 				$craft->elements->deleteElement($bookedTicket);
-		}
-
-		// Is time available?
-		// TODO: Date ranges
-		if ($bookings->availability->isTimeAvailable($ticket, $startDate, $lineItem->qty) === false)
-		{
-			$err = \Craft::t(
-				'bookings',
-				$lineItem->qty > 1
-					? 'Selected Date / Time is unavailable.'
-					: 'Selected Date / Time is unavailable at that quantity.'
-			);
-			$craft->session->setError($err);
-			\Craft::error($err, 'bookings');
-			$order->removeLineItem($lineItem);
-			$craft->elements->saveElement($order);
-
-			return;
 		}
 
 		// Create the booked tickets

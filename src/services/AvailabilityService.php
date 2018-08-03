@@ -47,8 +47,10 @@ class AvailabilityService extends Component
 
 		$slotsTakenInGivenTime += $qty;
 
-		if ($slotsTakenInGivenTime > $ticket->capacity || $slotsTakenInGivenTime > $event->capacity)
-			return false;
+		if (
+			$slotsTakenInGivenTime > $ticket->capacity
+		    || $slotsTakenInGivenTime > $event->capacity
+		) return false;
 
 		if ($ticket->maxQty !== null)
 		{

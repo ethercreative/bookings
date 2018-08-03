@@ -76,4 +76,17 @@ class BookedTicket extends Element
 		parent::afterSave($isNew);
 	}
 
+	/**
+	 * @throws \Throwable
+	 * @throws \yii\db\StaleObjectException
+	 */
+	public function afterDelete ()
+	{
+		BookedTicketRecord::findOne([
+			'id' => $this->id,
+		])->delete();
+
+		parent::afterDelete();
+	}
+
 }

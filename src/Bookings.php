@@ -117,17 +117,20 @@ class Bookings extends Plugin
 			[$this, 'onRegisterFieldTypes']
 		);
 
-		/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
 		if (class_exists(\craft\commerce\elements\Order::class))
 		{
-			/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+			Event::on(
+				\craft\commerce\services\LineItems::class,
+				\craft\commerce\services\LineItems::EVENT_BEFORE_SAVE_LINE_ITEM,
+				[new OnOrderEvent, 'onBeforeSaveLineItem']
+			);
+
 			Event::on(
 				\craft\commerce\services\LineItems::class,
 				\craft\commerce\services\LineItems::EVENT_AFTER_SAVE_LINE_ITEM,
-				[new OnOrderEvent, 'onAddLineItem']
+				[new OnOrderEvent, 'onAfterSaveLineItem']
 			);
 
-			/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
 			Event::on(
 				\craft\commerce\elements\Order::class,
 				\craft\commerce\elements\Order::EVENT_BEFORE_COMPLETE_ORDER,
