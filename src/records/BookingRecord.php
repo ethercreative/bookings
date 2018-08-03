@@ -18,6 +18,7 @@ use craft\records\User;
  * @property int $id
  * @property int $status
  * @property string $number
+ * @property int $eventId
  * @property int|null $userId
  * @property int|null $lineItemId
  * @property int|null $orderId
@@ -37,7 +38,8 @@ class BookingRecord extends ActiveRecord
 	// Properties
 	// =========================================================================
 
-	public static $tableName = '{{%bookings_booking}}';
+	public static $tableNameUnprefixed = 'bookings_bookings';
+	public static $tableName = '{{%bookings_bookings}}';
 
 	// Methods
 	// =========================================================================

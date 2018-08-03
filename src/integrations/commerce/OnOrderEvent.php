@@ -11,7 +11,13 @@ namespace ether\bookings\integrations\commerce;
 use craft\commerce\elements\Order;
 use craft\commerce\events\LineItemEvent;
 use craft\commerce\models\LineItem;
+use craft\helpers\DateTimeHelper;
+use craft\helpers\Db;
 use ether\bookings\Bookings;
+use ether\bookings\elements\BookedTicket;
+use ether\bookings\elements\Booking;
+use ether\bookings\models\BookedSlot;
+use ether\bookings\records\BookedSlotRecord;
 use yii\base\Event;
 
 
@@ -26,74 +32,170 @@ class OnOrderEvent
 {
 
 	/**
-	 * @param LineItemEvent $event
+	 * TODO: Tidy up error boilerplate
+	 *
+	 * @param LineItemEvent $lineItemEvent
 	 *
 	 * @throws \Throwable
 	 */
-	public function onAddLineItem (LineItemEvent $event)
+	public function onAddLineItem (LineItemEvent $lineItemEvent)
 	{
 		$craft = \Craft::$app;
-		$bookingService = Bookings::getInstance()->booking;
+		$bookings = Bookings::getInstance();
 
 		// Ensure this is a booking line item
-		$book = $craft->request->getBodyParam('book');
-
-		if (!$book)
-			return;
-
-		$book = $craft->security->validateData($book);
-
-		if ($book === false)
-		{
-			$craft->session->setError('Book input is invalid.');
-			\Craft::error(
-				'Book input is invalid.',
-				'bookings'
-			);
-			return;
-		}
-
-		$book = explode('_', $book);
-		$elementId = $book[0];
-		$fieldId = $book[1];
-
-		$slotStart = $craft->request->getRequiredBodyParam('slotStart');
-		$slotEnd = $craft->request->getBodyParam('slotEnd');
+		$ticketId = $craft->request->getBodyParam('ticketId');
 
 		/** @var LineItem $lineItem */
-		$lineItem = $event->lineItem;
+		$lineItem = $lineItemEvent->lineItem;
 
 		/** @var Order $order */
 		$order = $lineItem->order;
 
 		/** @var bool $isNew */
-		$isNew = $event->isNew;
+		$isNew = $lineItemEvent->isNew;
 
-		// Delete the previous booking (if we have one)
-		if (!$isNew)
+		if (!$ticketId)
+			return;
+
+		$startDate = $craft->request->getRequiredBodyParam('ticketDate');
+		if (is_array($startDate) && array_key_exists('date', $startDate) && array_key_exists('time', $startDate))
+			$startDate = $startDate['date'] . 'T' . $startDate['time'];
+		$startDate = DateTimeHelper::toDateTime($startDate);
+		// TODO: Date ranges
+		$endDate = null;
+//		$endDate = $craft->request->getBodyParam('ticketEndDate');
+
+		$ticketId = $craft->security->validateData($ticketId);
+
+		// Is the ticket ID valid?
+		if ($ticketId === false)
 		{
-			$booking = $bookingService->getBookingByOrderIdAndLineItemId(
-				$order->id,
-				$lineItem->id
-			);
+			$err = \Craft::t('bookings', 'Ticket ID input is invalid.');
+			$craft->session->setError($err);
+			\Craft::error($err, 'bookings');
+			$order->removeLineItem($lineItem);
+			$craft->elements->saveElement($order);
 
-			if ($booking)
-				$craft->elements->deleteElementById($booking->id);
+			return;
 		}
 
-		// Create a new booking
-		$bookingService->create([
-			'fieldId'       => $fieldId,
-			'elementId'     => $elementId,
-			'subElementId'  => $lineItem->purchasableId,
-			'userId'        => $order->user ? $order->user->id : null,
-			'orderId'       => $order->id,
-			'lineItemId'    => $lineItem->id,
-			'customerId'    => $order->customerId,
-			'customerEmail' => $order->email,
-			'slotStart'     => $slotStart,
-			'slotEnd'       => $slotEnd,
-		]);
+		$ticket = $bookings->tickets->getTicketById($ticketId);
+
+		// Does the ticket exist?
+		if ($ticket === null)
+		{
+			$err = \Craft::t('bookings', 'Unable to find ticket for the given ID.');
+			$craft->session->setError($err);
+			\Craft::error($err, 'bookings');
+			$order->removeLineItem($lineItem);
+			$craft->elements->saveElement($order);
+
+			return;
+		}
+
+		$event = $ticket->getEvent();
+
+		// Is time valid?
+		// TODO: Date ranges
+		if ($event->isDateOccurrence($startDate) === false)
+		{
+			$err = \Craft::t('bookings', 'Selected Date / Time is invalid.');
+			$craft->session->setError($err);
+			\Craft::error($err, 'bookings');
+			$order->removeLineItem($lineItem);
+			$craft->elements->saveElement($order);
+
+			return;
+		}
+
+		// Do we have an existing booking?
+		$booking = $bookings->bookings->getBookingByOrderAndEventIds(
+			$order->id, $event->id
+		);
+
+		// Create a new booking if one doesn't exist
+		if ($booking === null)
+		{
+			$booking = new Booking();
+
+			$booking->status     = Booking::STATUS_RESERVED;
+			$booking->eventId    = $event->id;
+			$booking->orderId    = $order->id;
+			$booking->customerId = $order->customerId;
+
+			$craft->elements->saveElement($booking);
+		}
+
+		// Clear any existing booked tickets (will Cascade to slots) if we're updating
+		if ($isNew === false)
+		{
+			$bookedTickets = BookedTicket::findAll([
+				'ticketId'   => $ticket->id,
+				'bookingId'  => $booking->id,
+				'lineItemId' => $lineItem->id,
+			]);
+
+			foreach ($bookedTickets as $bookedTicket)
+				$craft->elements->deleteElement($bookedTicket);
+		}
+
+		// Is time available?
+		// TODO: Date ranges
+		if ($bookings->availability->isTimeAvailable($ticket, $startDate, $lineItem->qty) === false)
+		{
+			$err = \Craft::t(
+				'bookings',
+				$lineItem->qty > 1
+					? 'Selected Date / Time is unavailable.'
+					: 'Selected Date / Time is unavailable at that quantity.'
+			);
+			$craft->session->setError($err);
+			\Craft::error($err, 'bookings');
+			$order->removeLineItem($lineItem);
+			$craft->elements->saveElement($order);
+
+			return;
+		}
+
+		// Create the booked tickets
+		$bookedTickets = [];
+
+		$i = $lineItem->qty;
+		while ($i--)
+		{
+			$bookedTicket = new BookedTicket();
+
+			$bookedTicket->ticketId = $ticket->id;
+			$bookedTicket->bookingId = $booking->id;
+			$bookedTicket->lineItemId = $lineItem->id;
+
+			$craft->elements->saveElement($bookedTicket);
+			$bookedTickets[] = $bookedTicket;
+		}
+
+		// Create the slots for this ticket
+		$slots = $bookings->slots->generateSlotsForGivenTimes($event, $startDate, $endDate);
+		$slotsCount = count($slots);
+
+		foreach ($bookedTickets as $bookedTicket)
+		{
+			$i = 0;
+
+			foreach ($slots as $slot)
+			{
+				$bookedSlot = new BookedSlotRecord();
+
+				$bookedSlot->start = $i === 0;
+				$bookedSlot->end = ++$i === $slotsCount;
+				$bookedSlot->ticketId = $ticket->id;
+				$bookedSlot->bookingId = $booking->id;
+				$bookedSlot->bookedTicketId = $bookedTicket->id;
+				$bookedSlot->date = Db::prepareDateForDb($slot);
+
+				$bookedSlot->save();
+			}
+		}
 	}
 
 	/**

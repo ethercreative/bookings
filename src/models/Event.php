@@ -11,6 +11,7 @@ namespace ether\bookings\models;
 use craft\helpers\DateTimeHelper;
 use ether\bookings\base\Model;
 use ether\bookings\enums\EventType;
+use ether\bookings\records\EventRecord;
 use RRule\RRule;
 use RRule\RSet;
 use yii\helpers\Json;
@@ -97,6 +98,23 @@ class Event extends Model
 
 		if (array_key_exists('exceptions', $attributes))
 			$this->exceptions = $attributes['exceptions'];
+	}
+
+	public static function fromRecord (EventRecord $record)
+	{
+		$model = new Event();
+
+		$model->id         = $record->id;
+		$model->elementId  = $record->elementId;
+		$model->fieldId    = $record->fieldId;
+		$model->enabled    = $record->enabled;
+		$model->type       = $record->type;
+		$model->capacity   = $record->capacity;
+		$model->multiplier = $record->multiplier;
+		$model->baseRule   = $record->baseRule;
+		$model->exceptions = $record->exceptions;
+
+		return $model;
 	}
 
 	// Methods: Getters & Setters

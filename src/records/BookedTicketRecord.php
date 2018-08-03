@@ -15,8 +15,9 @@ use craft\db\ActiveRecord;
  * Class BookedTicketRecord
  *
  * @property int $id
- * @property int $bookingId
  * @property int $ticketId
+ * @property int $bookingId
+ * @property int $lineItemId
  *
  * @author  Ether Creative
  * @package ether\bookings\records
@@ -28,6 +29,7 @@ class BookedTicketRecord extends ActiveRecord
 	// Properties
 	// =========================================================================
 
+	public static $tableNameUnprefixed = 'bookings_booked_tickets';
 	public static $tableName = '{{%bookings_booked_tickets}}';
 
 	// Methods

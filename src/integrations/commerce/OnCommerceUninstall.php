@@ -8,6 +8,7 @@
 
 namespace ether\bookings\integrations\commerce;
 
+use ether\bookings\records\BookedTicketRecord;
 use ether\bookings\records\BookingRecord;
 
 
@@ -28,13 +29,7 @@ class OnCommerceUninstall
 	 */
 	public function __construct ()
 	{
-		$this->_removeCommerceBookings();
 		$this->_removeForeignKeysFromBookingsTable();
-	}
-
-	private function _removeCommerceBookings ()
-	{
-		BookingRecord::deleteAll('lineItemId IS NOT NULL');
 	}
 
 	/**
@@ -45,11 +40,6 @@ class OnCommerceUninstall
 		$db = \Craft::$app->db;
 
 		$db->createCommand()->dropForeignKey(
-			$db->getForeignKeyName(BookingRecord::$tableName, 'lineItemId'),
-			BookingRecord::$tableName
-		)->execute();
-
-		$db->createCommand()->dropForeignKey(
 			$db->getForeignKeyName(BookingRecord::$tableName, 'orderId'),
 			BookingRecord::$tableName
 		)->execute();
@@ -57,6 +47,11 @@ class OnCommerceUninstall
 		$db->createCommand()->dropForeignKey(
 			$db->getForeignKeyName(BookingRecord::$tableName, 'customerId'),
 			BookingRecord::$tableName
+		)->execute();
+
+		$db->createCommand()->dropForeignKey(
+			$db->getForeignKeyName(BookedTicketRecord::$tableName, 'lineItemId'),
+			BookedTicketRecord::$tableName
 		)->execute();
 	}
 

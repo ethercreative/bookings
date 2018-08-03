@@ -17,9 +17,9 @@ use craft\db\ActiveRecord;
  * @property int $id
  * @property bool $start
  * @property bool $end
- * @property int $bookingId
- * @property int $eventId
  * @property int $ticketId
+ * @property int $bookingId
+ * @property int $bookedTicketId
  * @property \DateTime $date
  *
  * @author  Ether Creative

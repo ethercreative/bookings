@@ -35,7 +35,6 @@ class Install extends Migration
 		$this->_createEventsTable();
 		$this->_createTicketsTable();
 		$this->_createBookingsTable();
-		$this->_createBookedEventsTable();
 		$this->_createBookedTicketsTable();
 		$this->_createBookedSlotsTable();
 	}
@@ -45,14 +44,12 @@ class Install extends Migration
 		MigrationHelper::dropAllForeignKeysOnTable(EventRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(TicketRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(BookingRecord::$tableName);
-		MigrationHelper::dropAllForeignKeysOnTable(BookedEventRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(BookedTicketRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(BookedSlotRecord::$tableName);
 
 		$this->dropTableIfExists(EventRecord::$tableName);
 		$this->dropTableIfExists(TicketRecord::$tableName);
 		$this->dropTableIfExists(BookingRecord::$tableName);
-		$this->dropTableIfExists(BookedEventRecord::$tableName);
 		$this->dropTableIfExists(BookedTicketRecord::$tableName);
 		$this->dropTableIfExists(BookedSlotRecord::$tableName);
 	}
@@ -197,12 +194,12 @@ class Install extends Migration
 			'id'                => $this->primaryKey(),
 			'status'            => $this->integer(1)->notNull(),
 			'number'            => $this->string(32)->notNull(),
+			'eventId'           => $this->integer()->null(),
 			'userId'            => $this->integer()->null(),
-			'lineItemId'        => $this->integer()->null(),
 			'orderId'           => $this->integer()->null(),
 			'customerId'        => $this->integer()->null(),
 			'customerEmail'     => $this->string()->null(),
-			'dateBooked'        => $this->dateTime()->notNull(),
+			'dateBooked'        => $this->dateTime()->null(),
 			'reservationExpiry' => $this->dateTime()->null(),
 
 			'dateCreated' => $this->dateTime()->notNull(),
@@ -213,15 +210,14 @@ class Install extends Migration
 		$this->createIndex(
 			null,
 			BookingRecord::$tableName,
-			'userId',
+			'eventId',
 			false
 		);
 
-		// TODO: Should this be unique?
 		$this->createIndex(
 			null,
 			BookingRecord::$tableName,
-			'lineItemId',
+			'userId',
 			false
 		);
 
@@ -242,6 +238,26 @@ class Install extends Migration
 		$this->addForeignKey(
 			null,
 			BookingRecord::$tableName,
+			'eventId',
+			EventRecord::$tableName,
+			'id',
+			'CASCADE',
+			null
+		);
+
+		$this->addForeignKey(
+			null,
+			BookingRecord::$tableName,
+			'id',
+			'{{%elements}}',
+			'id',
+			'CASCADE',
+			null
+		);
+
+		$this->addForeignKey(
+			null,
+			BookingRecord::$tableName,
 			'userId',
 			'{{%users}}',
 			'id',
@@ -257,62 +273,13 @@ class Install extends Migration
 	// Booked Events
 	// -------------------------------------------------------------------------
 
-	private function _createBookedEventsTable ()
-	{
-		$this->createTable(BookedEventRecord::$tableName, [
-			'id'        => $this->primaryKey(),
-			'bookingId' => $this->integer()->notNull(),
-			'eventId'   => $this->integer()->notNull(),
-
-			'dateCreated' => $this->dateTime()->notNull(),
-			'dateUpdated' => $this->dateTime()->notNull(),
-			'uid'         => $this->uid(),
-		]);
-
-		$this->createIndex(
-			null,
-			BookedEventRecord::$tableName,
-			'bookingId',
-			false
-		);
-
-		$this->createIndex(
-			null,
-			BookedEventRecord::$tableName,
-			'eventId',
-			false
-		);
-
-		$this->addForeignKey(
-			null,
-			BookedEventRecord::$tableName,
-			'bookingId',
-			BookingRecord::$tableName,
-			'id',
-			'CASCADE',
-			null
-		);
-
-		$this->addForeignKey(
-			null,
-			BookedEventRecord::$tableName,
-			'eventId',
-			EventRecord::$tableName,
-			'id',
-			'CASCADE',
-			null
-		);
-	}
-
-	// Booked Events
-	// -------------------------------------------------------------------------
-
 	private function _createBookedTicketsTable ()
 	{
 		$this->createTable(BookedTicketRecord::$tableName, [
-			'id'        => $this->primaryKey(),
-			'bookingId' => $this->integer()->notNull(),
-			'tickedId'  => $this->integer()->notNull(),
+			'id'         => $this->primaryKey(),
+			'ticketId'   => $this->integer()->notNull(),
+			'bookingId'  => $this->integer()->notNull(),
+			'lineItemId' => $this->integer()->null(),
 
 			'dateCreated' => $this->dateTime()->notNull(),
 			'dateUpdated' => $this->dateTime()->notNull(),
@@ -329,7 +296,7 @@ class Install extends Migration
 		$this->createIndex(
 			null,
 			BookedTicketRecord::$tableName,
-			'tickedId',
+			'ticketId',
 			false
 		);
 
@@ -346,12 +313,15 @@ class Install extends Migration
 		$this->addForeignKey(
 			null,
 			BookedTicketRecord::$tableName,
-			'tickedId',
+			'ticketId',
 			TicketRecord::$tableName,
 			'id',
 			'CASCADE',
 			null
 		);
+
+		// Commerce foreign keys are added / removed via
+		// `integrations/commerce/OnCommerce(Uni|I)nstall.php`
 	}
 
 	// Booked Slots
@@ -360,18 +330,25 @@ class Install extends Migration
 	private function _createBookedSlotsTable ()
 	{
 		$this->createTable(BookedSlotRecord::$tableName, [
-			'id'        => $this->primaryKey(),
-			'start'     => $this->boolean()->notNull(),
-			'end'       => $this->boolean()->notNull(),
-			'bookingId' => $this->integer()->notNull(),
-			'eventId'   => $this->integer()->notNull(),
-			'ticketId'  => $this->integer()->notNull(),
-			'date'      => $this->dateTime()->notNull(),
+			'id'             => $this->primaryKey(),
+			'start'          => $this->boolean()->notNull(),
+			'end'            => $this->boolean()->notNull(),
+			'ticketId'       => $this->integer()->notNull(),
+			'bookingId'      => $this->integer()->notNull(),
+			'bookedTicketId' => $this->integer()->notNull(),
+			'date'           => $this->dateTime()->notNull(),
 
 			'dateCreated' => $this->dateTime()->notNull(),
 			'dateUpdated' => $this->dateTime()->notNull(),
 			'uid'         => $this->uid(),
 		]);
+
+		$this->createIndex(
+			null,
+			BookedSlotRecord::$tableName,
+			'ticketId',
+			false
+		);
 
 		$this->createIndex(
 			null,
@@ -383,15 +360,18 @@ class Install extends Migration
 		$this->createIndex(
 			null,
 			BookedSlotRecord::$tableName,
-			'eventId',
+			'bookedTicketId',
 			false
 		);
 
-		$this->createIndex(
+		$this->addForeignKey(
 			null,
 			BookedSlotRecord::$tableName,
 			'ticketId',
-			false
+			TicketRecord::$tableName,
+			'id',
+			'CASCADE',
+			null
 		);
 
 		$this->addForeignKey(
@@ -407,18 +387,8 @@ class Install extends Migration
 		$this->addForeignKey(
 			null,
 			BookedSlotRecord::$tableName,
-			'eventId',
-			EventRecord::$tableName,
-			'id',
-			'CASCADE',
-			null
-		);
-
-		$this->addForeignKey(
-			null,
-			BookedSlotRecord::$tableName,
-			'ticketId',
-			TicketRecord::$tableName,
+			'bookedTicketId',
+			BookedTicketRecord::$tableName,
 			'id',
 			'CASCADE',
 			null

@@ -25,13 +25,23 @@ use ether\bookings\fields\TicketField;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
 use ether\bookings\integrations\commerce\OnOrderEvent;
 use ether\bookings\models\Settings;
+use ether\bookings\services\AvailabilityService;
+use ether\bookings\services\BookingsService;
+use ether\bookings\services\EventsService;
 use ether\bookings\services\FieldService;
+use ether\bookings\services\SlotsService;
+use ether\bookings\services\TicketsService;
 use ether\bookings\web\twig\CraftVariableBehavior;
 use ether\bookings\web\twig\Extension;
 use yii\base\Event;
 
 /**
  * @property FieldService $field
+ * @property EventsService $events
+ * @property TicketsService $tickets
+ * @property AvailabilityService $availability
+ * @property BookingsService $bookings
+ * @property SlotsService $slots
  *
  * @author    Ether Creative
  * @package   Bookings
@@ -61,6 +71,11 @@ class Bookings extends Plugin
 
 		$this->setComponents([
 			'field' => FieldService::class,
+			'events'=> EventsService::class,
+			'tickets' => TicketsService::class,
+			'availability' => AvailabilityService::class,
+			'bookings' => BookingsService::class,
+			'slots' => SlotsService::class,
 		]);
 
 		// Events

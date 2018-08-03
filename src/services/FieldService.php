@@ -86,17 +86,7 @@ class FieldService extends Component
 		}
 
 		else if ($record) {
-			$model = new Event();
-
-			$model->id         = $record->id;
-			$model->elementId  = $record->elementId;
-			$model->fieldId    = $record->fieldId;
-			$model->enabled    = $record->enabled;
-			$model->type       = $record->type;
-			$model->capacity   = $record->capacity;
-			$model->multiplier = $record->multiplier;
-			$model->baseRule   = $record->baseRule;
-			$model->exceptions = $record->exceptions;
+			$model = Event::fromRecord($record);
 		}
 
 		else {

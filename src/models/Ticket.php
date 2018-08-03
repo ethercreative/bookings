@@ -8,7 +8,10 @@
 
 namespace ether\bookings\models;
 
+use craft\helpers\Template;
 use ether\bookings\base\Model;
+use ether\bookings\Bookings;
+use ether\bookings\records\TicketRecord;
 
 
 /**
@@ -23,6 +26,9 @@ class Ticket extends Model
 
 	// Properties
 	// =========================================================================
+
+	// Properties: Public
+	// -------------------------------------------------------------------------
 
 	/** @var int */
 	public $id;
@@ -48,8 +54,28 @@ class Ticket extends Model
 	 */
 	public $maxQty;
 
+	// Properties: Private
+	// -------------------------------------------------------------------------
+
+	/** @var Event */
+	private $_event;
+
 	// Methods
 	// =========================================================================
+
+	public static function fromRecord (TicketRecord $record)
+	{
+		$model = new Ticket();
+
+		$model->id        = $record->id;
+		$model->eventId   = $record->eventId;
+		$model->elementId = $record->elementId;
+		$model->fieldId   = $record->fieldId;
+		$model->capacity  = $record->capacity;
+		$model->maxQty    = $record->maxQty;
+
+		return $model;
+	}
 
 	public function rules ()
 	{
@@ -61,6 +87,34 @@ class Ticket extends Model
 		];
 
 		return $rules;
+	}
+
+	/**
+	 * Generates the ticket input
+	 *
+	 * @return string|\Twig_Markup
+	 * @throws \yii\base\Exception
+	 * @throws \yii\base\InvalidConfigException
+	 */
+	public function input ()
+	{
+		$value = \Craft::$app->security->hashData($this->id);
+
+		return Template::raw('<input type="hidden" name="ticketId" value="' . $value . '" />');
+	}
+
+	// Getter
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @return Event|null
+	 */
+	public function getEvent ()
+	{
+		if ($this->_event)
+			return $this->_event;
+
+		return $this->_event = Bookings::getInstance()->events->getEventById($this->eventId);
 	}
 
 }

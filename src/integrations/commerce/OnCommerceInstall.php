@@ -8,6 +8,7 @@
 
 namespace ether\bookings;
 
+use ether\bookings\records\BookedTicketRecord;
 use ether\bookings\records\BookingRecord;
 
 
@@ -41,16 +42,6 @@ class OnCommerceInstall
 		$db = \Craft::$app->db;
 
 		$db->createCommand()->addForeignKey(
-			$db->getForeignKeyName(BookingRecord::$tableName, 'lineItemId'),
-			BookingRecord::$tableName,
-			'lineItemId',
-			'{{%commerce_lineitems}}',
-			'id',
-			'CASCADE',
-			null
-		)->execute();
-
-		$db->createCommand()->addForeignKey(
 			$db->getForeignKeyName(BookingRecord::$tableName, 'orderId'),
 			BookingRecord::$tableName,
 			'orderId',
@@ -69,6 +60,16 @@ class OnCommerceInstall
 			'SET NULL',
 			null
 		)->execute();
+
+		$db->createCommand()->addForeignKey(
+			$db->getForeignKeyName(BookedTicketRecord::$tableName, 'lineItemId'),
+			BookedTicketRecord::$tableName,
+			'lineItemId',
+			'{{%commerce_lineitems}}',
+			'id',
+			'CASCADE',
+			null
+		);
 	}
 
 }
