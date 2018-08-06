@@ -144,17 +144,17 @@ class RecursionRule extends Model
 		if ($this->start !== null)
 		{
 			if (is_array($this->start))
-				$this->start = DateTimeHelper::toDateTime($this->start['date']);
+				$this->start = DateTimeHelper::toDateTime($this->start['date'], true);
 			else
-				$this->start = DateTimeHelper::toDateTime($this->start);
+				$this->start = DateTimeHelper::toDateTime($this->start, true);
 		}
 
 		if ($this->until !== null)
 		{
 			if (is_array($this->until))
-				$this->until = DateTimeHelper::toDateTime($this->until['date']);
+				$this->until = DateTimeHelper::toDateTime($this->until['date'], true);
 			else
-				$this->until = DateTimeHelper::toDateTime($this->until);
+				$this->until = DateTimeHelper::toDateTime($this->until, true);
 		}
 
 		parent::init();

@@ -143,8 +143,9 @@ class Bookings extends Plugin
 
 		if (\Craft::$app->request->isSiteRequest || \Craft::$app->request->isCpRequest)
 		{
+			$view = \Craft::$app->view;
 			$extension = new Extension();
-			\Craft::$app->view->registerTwigExtension($extension);
+			$view->registerTwigExtension($extension);
 		}
 
 		// Misc

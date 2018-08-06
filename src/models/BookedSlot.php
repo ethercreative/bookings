@@ -8,7 +8,9 @@
 
 namespace ether\bookings\models;
 
+use craft\helpers\DateTimeHelper;
 use ether\bookings\base\Model;
+use ether\bookings\records\BookedSlotRecord;
 
 
 /**
@@ -44,5 +46,23 @@ class BookedSlot extends Model
 
 	/** @var \DateTime */
 	public $date;
+
+	// Methods
+	// =========================================================================
+
+	public static function fromRecord (BookedSlotRecord $record)
+	{
+		$slot = new self();
+
+		$slot->id = $record->id;
+		$slot->start = $record->start;
+		$slot->end = $record->end;
+		$slot->ticketId = $record->ticketId;
+		$slot->bookingId = $record->bookingId;
+		$slot->bookedTicketId = $record->bookedTicketId;
+		$slot->date = DateTimeHelper::toDateTime($record->date);
+
+		return $slot;
+	}
 
 }

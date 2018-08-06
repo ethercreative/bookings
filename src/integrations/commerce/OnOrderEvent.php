@@ -17,6 +17,7 @@ use ether\bookings\Bookings;
 use ether\bookings\elements\BookedTicket;
 use ether\bookings\elements\Booking;
 use \craft\commerce\records\LineItem as LineItemRecord;
+use ether\bookings\helpers\DateHelper;
 use ether\bookings\records\BookedSlotRecord;
 use yii\base\Event;
 
@@ -59,17 +60,9 @@ class OnOrderEvent
 		if (!$ticketId)
 			return;
 
-		$startDate = $craft->request->getRequiredBodyParam('ticketDate');
-		if (
-			is_array($startDate)
-			&& array_key_exists('date', $startDate)
-			&& array_key_exists('time', $startDate)
-		) $startDate = $startDate['date'] . 'T' . $startDate['time'];
-		$startDate = DateTimeHelper::toDateTime($startDate);
-		// FIXME: Fucky timezones
-		// TODO: Bookings should ALWAYS use UTC, no matter what Crafts timezone
-		// is set to. We'll have to convert from / to UTC accordingly.
-		\Craft::dd($startDate);
+		$startDate = DateHelper::parseDateFromPost(
+			$craft->request->getRequiredBodyParam('ticketDate')
+		);
 		// TODO: Date ranges
 		$endDate = null;
 //		$endDate = $craft->request->getBodyParam('ticketEndDate');
@@ -168,10 +161,9 @@ class OnOrderEvent
 		if (!$ticketId)
 			return;
 
-		$startDate = $craft->request->getRequiredBodyParam('ticketDate');
-		if (is_array($startDate) && array_key_exists('date', $startDate) && array_key_exists('time', $startDate))
-			$startDate = $startDate['date'] . 'T' . $startDate['time'];
-		$startDate = DateTimeHelper::toDateTime($startDate);
+		$startDate = DateHelper::parseDateFromPost(
+			$craft->request->getRequiredBodyParam('ticketDate')
+		);
 		// TODO: Date ranges
 		$endDate = null;
 //		$endDate = $craft->request->getBodyParam('ticketEndDate');

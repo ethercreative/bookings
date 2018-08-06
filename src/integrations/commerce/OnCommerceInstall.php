@@ -69,7 +69,7 @@ class OnCommerceInstall
 			'id',
 			'CASCADE',
 			null
-		);
+		)->execute();
 	}
 
 }

@@ -11,6 +11,8 @@ namespace ether\bookings\elements;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use ether\bookings\elements\db\BookedTicketQuery;
+use ether\bookings\models\BookedSlot;
+use ether\bookings\records\BookedSlotRecord;
 use ether\bookings\records\BookedTicketRecord;
 
 
@@ -87,6 +89,18 @@ class BookedTicket extends Element
 		])->delete();
 
 		parent::afterDelete();
+	}
+
+	// Getters
+	// -------------------------------------------------------------------------
+
+	public function getSlots ()
+	{
+		return array_map(function ($r) {
+			return BookedSlot::fromRecord($r);
+		}, BookedSlotRecord::findAll([
+			'bookedTicketId' => $this->id,
+		]));
 	}
 
 }

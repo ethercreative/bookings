@@ -8,10 +8,9 @@
 
 namespace ether\bookings\web\twig;
 
-use craft\helpers\Template;
-//use ether\bookings\elements\Booking;
+use craft\commerce\models\LineItem;
+use ether\bookings\elements\BookedTicket;
 use ether\bookings\enums\EventType;
-//use ether\bookings\models\BookableEvent;
 
 
 /**
@@ -39,16 +38,31 @@ class Extension extends \Twig_Extension implements \Twig_Extension_GlobalsInterf
 		];
 	}
 
-//	public function getFunctions ()
-//	{
-//		return [
+	public function getFunctions ()
+	{
+		return [
+			new \Twig_Function('getTickets', [$this, 'getTickets']),
 //			new \Twig_Function('placeBookingInput', [$this, 'placeBookingInput']),
 //			new \Twig_Function('confirmBookingInput', [$this, 'confirmBookingInput']),
-//		];
-//	}
+		];
+	}
 
 	// Functions
 	// =========================================================================
+
+	/**
+	 * Get's booked tickets for the given line item
+	 *
+	 * @param LineItem $lineItem
+	 *
+	 * @return array
+	 */
+	public function getTickets (LineItem $lineItem)
+	{
+		return BookedTicket::findAll([
+			'lineItemId' => $lineItem->id,
+		]);
+	}
 
 	/**
 	 * {{ placeBookingInput(entry.bookableField) }}
