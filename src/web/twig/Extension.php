@@ -10,6 +10,7 @@ namespace ether\bookings\web\twig;
 
 use craft\commerce\models\LineItem;
 use ether\bookings\elements\BookedTicket;
+use ether\bookings\elements\Booking;
 use ether\bookings\enums\EventType;
 
 
@@ -29,9 +30,9 @@ class Extension extends \Twig_Extension implements \Twig_Extension_GlobalsInterf
 	public function getGlobals ()
 	{
 		return [
-//			'BOOKING_RESERVED'  => Booking::STATUS_RESERVED,
-//			'BOOKING_COMPLETED' => Booking::STATUS_COMPLETED,
-//			'BOOKING_EXPIRED'   => Booking::STATUS_EXPIRED,
+			'BOOKING_RESERVED'  => Booking::STATUS_RESERVED,
+			'BOOKING_COMPLETED' => Booking::STATUS_COMPLETED,
+			'BOOKING_EXPIRED'   => Booking::STATUS_EXPIRED,
 
 			'BOOKABLE_FIXED'    => EventType::FIXED,
 			'BOOKABLE_FLEXIBLE' => EventType::FLEXIBLE,

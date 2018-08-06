@@ -48,4 +48,9 @@ class BookingsService extends Component
 		])->all();
 	}
 
+	public function getBookingById ($bookingId)
+	{
+		return Booking::findOne($bookingId);
+	}
+
 }
