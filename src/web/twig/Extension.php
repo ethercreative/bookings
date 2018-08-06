@@ -60,6 +60,9 @@ class Extension extends \Twig_Extension implements \Twig_Extension_GlobalsInterf
 	 */
 	public function getTickets (LineItem $lineItem)
 	{
+		if (!$lineItem->id)
+			return [];
+
 		return BookedTicket::findAll([
 			'lineItemId' => $lineItem->id,
 		]);
