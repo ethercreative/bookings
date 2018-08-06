@@ -34,6 +34,7 @@ use ether\bookings\services\TicketsService;
 use ether\bookings\web\twig\CraftVariableBehavior;
 use ether\bookings\web\twig\Extension;
 use yii\base\Event;
+use yii\base\Model;
 
 /**
  * @property FieldService $field
@@ -122,8 +123,8 @@ class Bookings extends Plugin
 		if (class_exists(\craft\commerce\elements\Order::class))
 		{
 			Event::on(
-				\craft\commerce\services\LineItems::class,
-				\craft\commerce\services\LineItems::EVENT_BEFORE_SAVE_LINE_ITEM,
+				\craft\commerce\models\LineItem::class,
+				Model::EVENT_AFTER_VALIDATE,
 				[new OnOrderEvent, 'onBeforeSaveLineItem']
 			);
 

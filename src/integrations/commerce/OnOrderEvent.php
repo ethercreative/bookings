@@ -32,30 +32,29 @@ class OnOrderEvent
 {
 
 	/**
-	 * @param LineItemEvent $lineItemEvent
+	 * @param Event $event
 	 *
-	 * @throws \Throwable
 	 * @throws \yii\base\Exception
 	 * @throws \yii\base\InvalidConfigException
 	 */
-	public function onBeforeSaveLineItem (LineItemEvent $lineItemEvent)
+	public function onBeforeSaveLineItem (Event $event)
 	{
 		$craft    = \Craft::$app;
 		$bookings = Bookings::getInstance();
 
-		$options = $craft->request->getBodyParam('options');
-
-		// Ensure this is a booking line item
-		$ticketId = $options['ticketId'];
-
 		/** @var LineItem $lineItem */
-		$lineItem = $lineItemEvent->lineItem;
+		$lineItem = $event->sender;
 
 		/** @var Order $order */
 		$order = $lineItem->order;
 
 		/** @var bool $isNew */
-		$isNew = $lineItemEvent->isNew;
+		$isNew = !$lineItem->id;
+
+		$options = $lineItem->getOptions();
+
+		// Ensure this is a booking line item
+		$ticketId = $options['ticketId'];
 
 		if (!$ticketId)
 			return;
@@ -63,7 +62,6 @@ class OnOrderEvent
 		$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
 		// TODO: Date ranges
 		$endDate = null;
-//		$endDate = $craft->request->getBodyParam('ticketEndDate');
 
 		$ticketId = $craft->security->validateData($ticketId);
 
@@ -193,28 +191,6 @@ class OnOrderEvent
 		// Clear any existing booked tickets (will Cascade to slots) if we're updating
 		if ($isNew === false)
 		{
-			$criteria = [
-				['=', 'ticketId', $ticket->id],
-				['=', 'bookingId', $booking->id],
-				['=', 'lineItemId', $lineItem->id],
-				['!=', 'startDate', Db::prepareDateForDb($startDate)],
-			];
-
-			if ($endDate !== null)
-				$criteria[] = ['!=', 'endDate', Db::prepareDateForDb($endDate)];
-
-			$existingWithOtherDate = BookedTicket::find();
-
-			foreach ($criteria as $c)
-				$existingWithOtherDate->andWhere($c);
-
-			// Commerce will try updating any existing line items before
-			// realizing it needs a new one. This will prevent duplicate slots
-			// from being generated for the wrong ticket.
-			if ($existingWithOtherDate->one() !== null)
-				return;
-
-			// Erase old tickets & slots (cascade)
 			$bookedTickets = BookedTicket::findAll([
 				'ticketId'   => $ticket->id,
 				'bookingId'  => $booking->id,
