@@ -37,15 +37,16 @@ class OnOrderEvent
 	 * @throws \Throwable
 	 * @throws \yii\base\Exception
 	 * @throws \yii\base\InvalidConfigException
-	 * @throws \yii\web\BadRequestHttpException
 	 */
 	public function onBeforeSaveLineItem (LineItemEvent $lineItemEvent)
 	{
 		$craft    = \Craft::$app;
 		$bookings = Bookings::getInstance();
 
+		$options = $craft->request->getBodyParam('options');
+
 		// Ensure this is a booking line item
-		$ticketId = $craft->request->getBodyParam('ticketId');
+		$ticketId = $options['ticketId'];
 
 		/** @var LineItem $lineItem */
 		$lineItem = $lineItemEvent->lineItem;
@@ -59,9 +60,7 @@ class OnOrderEvent
 		if (!$ticketId)
 			return;
 
-		$startDate = DateHelper::parseDateFromPost(
-			$craft->request->getRequiredBodyParam('ticketDate')
-		);
+		$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
 		// TODO: Date ranges
 		$endDate = null;
 //		$endDate = $craft->request->getBodyParam('ticketEndDate');
@@ -145,8 +144,10 @@ class OnOrderEvent
 		$craft = \Craft::$app;
 		$bookings = Bookings::getInstance();
 
+		$options = $craft->request->getBodyParam('options');
+
 		// Ensure this is a booking line item
-		$ticketId = $craft->request->getBodyParam('ticketId');
+		$ticketId = $options['ticketId'];
 
 		/** @var LineItem $lineItem */
 		$lineItem = $lineItemEvent->lineItem;
@@ -160,9 +161,7 @@ class OnOrderEvent
 		if (!$ticketId)
 			return;
 
-		$startDate = DateHelper::parseDateFromPost(
-			$craft->request->getRequiredBodyParam('ticketDate')
-		);
+		$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
 		// TODO: Date ranges
 		$endDate = null;
 //		$endDate = $craft->request->getBodyParam('ticketEndDate');
@@ -174,7 +173,8 @@ class OnOrderEvent
 
 		// Do we have an existing booking?
 		$booking = $bookings->bookings->getBookingByOrderAndEventIds(
-			$order->id, $event->id
+			$order->id,
+			$event->id
 		);
 
 		// Create a new booking if one doesn't exist
@@ -193,10 +193,27 @@ class OnOrderEvent
 		// Clear any existing booked tickets (will Cascade to slots) if we're updating
 		if ($isNew === false)
 		{
+			$existingWithOtherDate = BookedTicket::findOne([
+				'ticketId'   => $ticket->id,
+				'bookingId'  => $booking->id,
+				'lineItemId' => $lineItem->id,
+				'startDate'  => '!' . Db::prepareDateForDb($startDate),
+				'endDate'    => '!' . Db::prepareDateForDb($endDate),
+			]);
+
+			// Commerce will try updating any existing line items before
+			// realizing it needs a new one. This will prevent duplicate slots
+			// from being generated for the wrong ticket.
+			if ($existingWithOtherDate)
+				return;
+
+			// Erase old tickets & slots (cascade)
 			$bookedTickets = BookedTicket::findAll([
 				'ticketId'   => $ticket->id,
 				'bookingId'  => $booking->id,
 				'lineItemId' => $lineItem->id,
+				'startDate'  => $startDate,
+				'endDate'    => $endDate,
 			]);
 
 			foreach ($bookedTickets as $bookedTicket)
@@ -214,6 +231,8 @@ class OnOrderEvent
 			$bookedTicket->ticketId = $ticket->id;
 			$bookedTicket->bookingId = $booking->id;
 			$bookedTicket->lineItemId = $lineItem->id;
+			$bookedTicket->startDate = $startDate;
+			$bookedTicket->endDate = $endDate;
 
 			$craft->elements->saveElement($bookedTicket);
 			$bookedTickets[] = $bookedTicket;

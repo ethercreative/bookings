@@ -18,6 +18,8 @@ use craft\db\ActiveRecord;
  * @property int $ticketId
  * @property int $bookingId
  * @property int $lineItemId
+ * @property \DateTime $startDate
+ * @property \DateTime|null $endDate
  *
  * @author  Ether Creative
  * @package ether\bookings\records

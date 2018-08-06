@@ -103,7 +103,7 @@ class Ticket extends Model
 	{
 		$value = \Craft::$app->security->hashData($this->id);
 
-		return Template::raw('<input type="hidden" name="ticketId" value="' . $value . '" />');
+		return Template::raw('<input type="hidden" name="options[ticketId]" value="' . $value . '" />');
 	}
 
 	// Getter
@@ -118,6 +118,11 @@ class Ticket extends Model
 			return $this->_event;
 
 		return $this->_event = Bookings::getInstance()->events->getEventById($this->eventId);
+	}
+
+	public function getElement ()
+	{
+		return \Craft::$app->elements->getElementById($this->elementId);
 	}
 
 	/**

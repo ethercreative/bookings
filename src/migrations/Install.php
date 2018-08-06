@@ -280,6 +280,8 @@ class Install extends Migration
 			'ticketId'   => $this->integer()->notNull(),
 			'bookingId'  => $this->integer()->notNull(),
 			'lineItemId' => $this->integer()->null(),
+			'startDate'  => $this->dateTime()->notNull(),
+			'endDate'    => $this->dateTime()->null(),
 
 			'dateCreated' => $this->dateTime()->notNull(),
 			'dateUpdated' => $this->dateTime()->notNull(),

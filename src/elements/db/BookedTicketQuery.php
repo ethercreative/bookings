@@ -9,6 +9,7 @@
 namespace ether\bookings\elements\db;
 
 use craft\elements\db\ElementQuery;
+use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
 use ether\bookings\elements\Booking;
 use ether\bookings\models\Ticket;
@@ -36,6 +37,12 @@ class BookedTicketQuery extends ElementQuery
 
 	/** @var int */
 	public $lineItemId;
+
+	/** @var \DateTime */
+	public $startDate;
+
+	/** @var \DateTime|null */
+	public $endDate;
 
 	// Methods
 	// =========================================================================
@@ -76,6 +83,28 @@ class BookedTicketQuery extends ElementQuery
 		return $this;
 	}
 
+	public function startDate ($value)
+	{
+		if ($value instanceof \DateTime)
+			$this->startDate = $value;
+		else
+			$this->startDate = DateTimeHelper::toDateTime($value);
+
+		return $this;
+	}
+
+	public function endDate ($value)
+	{
+		if ($value instanceof \DateTime)
+			$this->endDate = $value;
+		else if ($value)
+			$this->endDate = DateTimeHelper::toDateTime($value);
+		else
+			$this->endDate = $value;
+
+		return $this;
+	}
+
 	// Methods: Protected
 	// -------------------------------------------------------------------------
 
@@ -89,6 +118,8 @@ class BookedTicketQuery extends ElementQuery
 			$table . '.ticketId',
 			$table . '.bookingId',
 			$table . '.lineItemId',
+			$table . '.startDate',
+			$table . '.endDate',
 		]);
 
 		if ($this->ticketId)
@@ -112,6 +143,22 @@ class BookedTicketQuery extends ElementQuery
 				Db::parseParam(
 					$table . '.lineItemId',
 					$this->lineItemId
+				)
+			);
+
+		if ($this->startDate)
+			$this->subQuery->andWhere(
+				Db::parseParam(
+					$table . '.startDate',
+					Db::prepareDateForDb($this->startDate)
+				)
+			);
+
+		if ($this->endDate)
+			$this->subQuery->andWhere(
+				Db::parseParam(
+					$table . '.endDate',
+					Db::prepareDateForDb($this->endDate)
 				)
 			);
 

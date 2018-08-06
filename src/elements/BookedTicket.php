@@ -13,8 +13,10 @@ use craft\elements\db\ElementQueryInterface;
 use ether\bookings\elements\db\BookedTicketQuery;
 use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\models\BookedSlot;
+use ether\bookings\models\Ticket;
 use ether\bookings\records\BookedSlotRecord;
 use ether\bookings\records\BookedTicketRecord;
+use ether\bookings\records\TicketRecord;
 
 
 /**
@@ -38,6 +40,12 @@ class BookedTicket extends Element
 
 	/** @var int|null */
 	public $lineItemId;
+
+	/** @var \DateTime */
+	public $startDate;
+
+	/** @var \DateTime|null */
+	public $endDate = null;
 
 	// Properties: Private
 	// -------------------------------------------------------------------------
@@ -78,6 +86,8 @@ class BookedTicket extends Element
 		$record->ticketId = $this->ticketId;
 		$record->bookingId = $this->bookingId;
 		$record->lineItemId = $this->lineItemId;
+		$record->startDate = $this->startDate;
+		$record->endDate = $this->endDate;
 
 		$record->save();
 
@@ -103,6 +113,11 @@ class BookedTicket extends Element
 	public function getBooking ()
 	{
 		return Booking::findOne($this->bookingId);
+	}
+
+	public function getTicket ()
+	{
+		return Ticket::fromRecord(TicketRecord::findOne($this->ticketId));
 	}
 
 	public function getLineItem ()

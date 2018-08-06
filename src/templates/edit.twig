@@ -61,4 +61,26 @@
 	<br>
 
 	<code>[TODO: If the booking date has changed ask the user if they want to re-send the confirmation emails (if any) on save.]</code>
+
+	<br>
+	<br>
+	<br>
+
+	{{ forms.field({
+		label: "Booking Number"
+	}, booking.number) }}
+
+	{% set tickets %}
+		<ul>
+			{% for ticket in booking.bookedTickets %}
+				<li><strong>{{ ticket.ticket.element.title }}</strong></li>
+				{% for slot in ticket.slots %}
+					<li>{{ slot.date|date('c') }}</li>
+				{% endfor %}
+			{% endfor %}
+		</ul>
+	{% endset %}
+	{{ forms.field({
+		label: "Tickets"
+	}, tickets) }}
 {% endblock %}

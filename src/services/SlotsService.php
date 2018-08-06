@@ -32,9 +32,7 @@ class SlotsService extends Component
 	public function generateSlotsForGivenTimes (Event $event, \DateTime $start, \DateTime $end = null)
 	{
 		if ($end === null)
-		{
-			return $event->getSlotsFrom($start, 1);
-		}
+			return [$start];
 
 		return $event->getSlotsInRangeAsIterable($start, $end);
 	}
