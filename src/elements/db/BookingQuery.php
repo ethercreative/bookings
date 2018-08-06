@@ -8,6 +8,7 @@
 
 namespace ether\bookings\elements\db;
 
+use craft\base\ElementInterface;
 use craft\elements\db\ElementQuery;
 use craft\elements\User;
 use craft\helpers\Db;
@@ -36,6 +37,9 @@ class BookingQuery extends ElementQuery
 
 	/** @var int */
 	public $eventId;
+
+	/** @var int */
+	public $elementId;
 
 	/** @var int */
 	public $userId;
@@ -75,6 +79,16 @@ class BookingQuery extends ElementQuery
 			$this->eventId = $value->id;
 		else
 			$this->eventId = $value;
+
+		return $this;
+	}
+
+	public function element ($value)
+	{
+		if ($value instanceof ElementInterface)
+			$this->elementId = $value->id;
+		else
+			$this->elementId = $value;
 
 		return $this;
 	}

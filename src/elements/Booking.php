@@ -9,12 +9,16 @@
 namespace ether\bookings\elements;
 
 use craft\base\Element;
+use craft\db\Query;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Db;
+use craft\helpers\UrlHelper;
 use ether\bookings\Bookings;
 use ether\bookings\elements\db\BookingQuery;
+use ether\bookings\fields\EventField;
 use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\records\BookingRecord;
+use ether\bookings\records\EventRecord;
 
 
 /**
@@ -342,6 +346,128 @@ class Booking extends Element
 		return $this->_bookedTickets = BookedTicket::find()->andWhere([
 			'bookingId' => $this->id,
 		])->all();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCpEditUrl (): string
+	{
+		return UrlHelper::cpUrl('bookings/' . $this->id);
+	}
+
+	// Elements Index
+	// =========================================================================
+
+	protected static function defineTableAttributes (): array
+	{
+		return [
+			'number' => ['label' => \Craft::t('bookings', 'Number')],
+			'id' => ['label' => \Craft::t('bookings', 'ID')],
+			'customerEmail' => ['label' => \Craft::t('bookings', 'Customer Email')],
+			'dateBooked' => ['label' => \Craft::t('bookings', 'Date Booked')],
+			'dateCreated' => ['label' => \Craft::t('app', 'Date Created')],
+			'dateUpdated' => ['label' => \Craft::t('app', 'Date Updated')],
+		];
+	}
+
+	protected static function defineDefaultTableAttributes (string $source): array
+	{
+		$attrs = parent::defineDefaultTableAttributes($source);
+
+		$attrs[] = 'number';
+		$attrs[] = 'customerEmail';
+		$attrs[] = 'dateBooked';
+		$attrs[] = 'dateUpdated';
+
+		return $attrs;
+	}
+
+	public static function sortOptions (): array
+	{
+		return [
+			'number' => \Craft::t('bookings', 'Number'),
+			'id' => \Craft::t('bookings', 'ID'),
+			'dateBooked' => \Craft::t('bookings', 'Date Booked'),
+			[
+				'label' => \Craft::t('app', 'Date Updated'),
+				'orderBy' => BookingRecord::$tableNameUnprefixed . '.dateUpdated',
+				'attribute' => 'dateUpdated',
+			]
+		];
+	}
+
+	protected static function defineSources (string $context = null): array
+	{
+		// TODO: Make default sorting the first slot date?
+		// TODO: This could be improved w/ better grouping of elements (i.e. by Product / Entry Type)
+
+		$sources = [
+			'*' => [
+				'key' => '*',
+				'label' => \Craft::t('bookings', 'All Bookings'),
+				'criteria' => ['status' => self::STATUS_COMPLETED],
+				'defaultSort' => ['dateBooked', 'desc']
+			],
+		];
+
+		$enabledBookables = (new Query())
+			->select(['events.elementId'])
+			->from([EventRecord::$tableName . ' events'])
+			->where(['events.enabled' => true]);
+
+		$enabledBookableElementIds = $enabledBookables->column();
+		$elements = (new Query())
+			->select(['content.title', 'elements.id', 'elements.type'])
+			->from(['{{%elements}} elements'])
+			->where(
+				[
+					'elements.id'       => $enabledBookableElementIds,
+					'elements.enabled'  => true,
+					'elements.archived' => false,
+				]
+			)
+			->innerJoin(
+				'{{%content}} content',
+				'{{%content}}.{{%elementId}} = {{%elements}}.{{%id}} AND {{%content}}.{{%siteId}} = '
+				. \Craft::$app->sites->primarySite->id
+			)
+			->orderBy('content.title asc')
+			->all();
+
+		$byType = [];
+
+		foreach ($elements as $element)
+		{
+			$type = explode('\\', $element['type']);
+			$type = end($type);
+			if (!array_key_exists($type, $byType))
+				$byType[$type] = [];
+			$byType[$type][] = $element;
+		}
+
+		ksort($byType);
+
+		foreach ($byType as $type => $elements)
+		{
+			$sources[] = ['heading' => $type];
+
+			foreach ($elements as $element)
+			{
+				$key           = 'element:' . $element['id'];
+				$sources[$key] = [
+					'key'         => $key,
+					'label'       => $element['title'],
+					'criteria'    => [
+						'elementId' => $element['id'],
+						'status'    => self::STATUS_COMPLETED,
+					],
+					'defaultSort' => ['slotStart', 'desc']
+				];
+			}
+		}
+
+		return $sources;
 	}
 
 	// Helpers

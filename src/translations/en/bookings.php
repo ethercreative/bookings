@@ -48,4 +48,11 @@ return [
 	'Selected Date / Time is invalid.' => 'Selected Date / Time is invalid.',
 	'Selected Date / Time is unavailable.' => 'Selected Date / Time is unavailable.',
 	'Selected Date / Time is unavailable at that quantity.' => 'Selected Date / Time is unavailable at that quantity.',
+
+	'Number' => 'Number',
+	'ID' => 'ID',
+	'Customer Email' => 'Customer Email',
+	'Date Booked' => 'Date Booked',
+
+	'All Bookings' => 'All Bookings',
 ];
