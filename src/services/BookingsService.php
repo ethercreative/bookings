@@ -36,4 +36,16 @@ class BookingsService extends Component
 		])->one();
 	}
 
+	/**
+	 * @param $orderId
+	 *
+	 * @return \craft\base\ElementInterface[]
+	 */
+	public function getBookingsByOrderId ($orderId)
+	{
+		return Booking::find()->andWhere([
+			'orderId' => $orderId,
+		])->all();
+	}
+
 }

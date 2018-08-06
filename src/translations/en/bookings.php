@@ -40,6 +40,7 @@ return [
 	'{attribute} must not be set when the element being booked is not a Commerce Purchasable.' => '{attribute} must not be set when the element being booked is not a Commerce Purchasable.',
 
 	'Couldn\'t mark booking {number} as complete. Booking save failed during completion with errors: {errors}' => 'Couldn\'t mark booking {number} as complete. Booking save failed during completion with errors: {errors}',
+	'Couldn\'t expire booking {number}. Booking save failed during expiration with errors: {errors}' => 'Couldn\'t expire booking {number}. Booking save failed during expiration with errors: {errors}',
 
 	'A booking has expired.' => 'A booking has expired.',
 	'Ticket ID input is invalid.' => 'Ticket ID input is invalid.',

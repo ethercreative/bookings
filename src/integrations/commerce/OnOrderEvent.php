@@ -11,7 +11,6 @@ namespace ether\bookings\integrations\commerce;
 use craft\commerce\elements\Order;
 use craft\commerce\events\LineItemEvent;
 use craft\commerce\models\LineItem;
-use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
 use ether\bookings\Bookings;
 use ether\bookings\elements\BookedTicket;
@@ -254,8 +253,9 @@ class OnOrderEvent
 		/** @var Order $order */
 		$order = $event->sender;
 
-		$bookings = Bookings::getInstance()->booking->getBookingsByOrderId($order->id);
+		$bookings = Bookings::getInstance()->bookings->getBookingsByOrderId($order->id);
 
+		/** @var Booking $booking */
 		foreach ($bookings as $booking)
 			$booking->markAsComplete();
 	}

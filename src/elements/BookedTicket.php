@@ -11,6 +11,7 @@ namespace ether\bookings\elements;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use ether\bookings\elements\db\BookedTicketQuery;
+use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\models\BookedSlot;
 use ether\bookings\records\BookedSlotRecord;
 use ether\bookings\records\BookedTicketRecord;
@@ -37,6 +38,11 @@ class BookedTicket extends Element
 
 	/** @var int|null */
 	public $lineItemId;
+
+	// Properties: Private
+	// -------------------------------------------------------------------------
+
+	private $_lineItem;
 
 	// Methods
 	// =========================================================================
@@ -93,6 +99,25 @@ class BookedTicket extends Element
 
 	// Getters
 	// -------------------------------------------------------------------------
+
+	public function getBooking ()
+	{
+		return Booking::findOne($this->bookingId);
+	}
+
+	public function getLineItem ()
+	{
+		if ($this->lineItemId === null)
+			return null;
+
+		if ($this->_lineItem)
+			return $this->_lineItem;
+
+		if (class_exists(\craft\commerce\models\LineItem::class))
+			return $this->_lineItem = CommerceGetters::getLineItemById($this->lineItemId);
+
+		return null;
+	}
 
 	public function getSlots ()
 	{

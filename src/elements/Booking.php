@@ -11,6 +11,7 @@ namespace ether\bookings\elements;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Db;
+use ether\bookings\Bookings;
 use ether\bookings\elements\db\BookingQuery;
 use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\records\BookingRecord;
@@ -67,9 +68,20 @@ class Booking extends Element
 	// -------------------------------------------------------------------------
 
 	private $_customer;
+	private $_order;
+	private $_bookedTickets;
 
 	// Methods
 	// =========================================================================
+
+	public function init ()
+	{
+		parent::init();
+
+		try {
+			$this->expireBooking();
+		} catch (\Throwable $e) {}
+	}
 
 	public static function displayName (): string
 	{
@@ -135,6 +147,95 @@ class Booking extends Element
 		$attrs[] = 'email';
 
 		return $attrs;
+	}
+
+	// Actions
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Marks the booking as complete
+	 *
+	 * @return bool
+	 * @throws \Throwable
+	 * @throws \craft\errors\ElementNotFoundException
+	 * @throws \yii\base\Exception
+	 */
+	public function markAsComplete (): bool
+	{
+		if ($this->status === self::STATUS_COMPLETED)
+			return true;
+
+		$this->status = self::STATUS_COMPLETED;
+		$this->reservationExpiry = null;
+		$this->dateBooked = Db::prepareDateForDb(new \DateTime());
+
+		if (\Craft::$app->elements->saveElement($this, false))
+		{
+			return true;
+		}
+
+		\Craft::error(
+			\Craft::t(
+				'bookings',
+				'Couldn\'t mark booking {number} as complete. Booking save failed during completion with errors: {errors}',
+				[
+					'number' => $this->number,
+					'errors' => json_encode($this->errors),
+				],
+				__METHOD__
+			)
+		);
+
+		return false;
+	}
+
+	/**
+	 * Expires the booking
+	 *
+	 * @return bool
+	 * @throws \Throwable
+	 * @throws \craft\errors\ElementNotFoundException
+	 * @throws \yii\base\Exception
+	 */
+	public function expireBooking (): bool
+	{
+		if ($this->status !== self::STATUS_RESERVED)
+			return true;
+
+		$settings = Bookings::getInstance()->settings;
+
+		if ($this->reservationExpiry->getTimestamp() >= time() - $settings->expiryDuration)
+			return true;
+
+		if ($this->orderId)
+		{
+			$order = $this->getOrder();
+
+			/** @var BookedTicket $ticket */
+			foreach ($this->getBookedTickets() as $ticket)
+				$order->removeLineItem($ticket->getLineItem());
+		}
+
+		$this->status = self::STATUS_EXPIRED;
+
+		if (!\Craft::$app->elements->saveElement($this))
+		{
+			\Craft::error(
+				\Craft::t(
+					'bookings',
+					'Couldn\'t expire booking {number}. Booking save failed during expiration with errors: {errors}',
+					[
+						'number' => $this->number,
+						'errors' => json_encode($this->errors)
+					],
+					__METHOD__
+				)
+			);
+
+			return false;
+		}
+
+		return true;
 	}
 
 	// Events
@@ -217,6 +318,30 @@ class Booking extends Element
 			return $this->_customer = CommerceGetters::getCustomerById($this->customerId);
 
 		return null;
+	}
+
+	public function getOrder ()
+	{
+		if ($this->orderId === null)
+			return null;
+
+		if ($this->_order)
+			return $this->_order;
+
+		if (class_exists(\craft\commerce\elements\Order::class))
+			return $this->_order = CommerceGetters::getOrderById($this->orderId);
+
+		return null;
+	}
+
+	public function getBookedTickets ()
+	{
+		if ($this->_bookedTickets)
+			return $this->_bookedTickets;
+
+		return $this->_bookedTickets = BookedTicket::find()->andWhere([
+			'bookingId' => $this->id,
+		])->all();
 	}
 
 	// Helpers

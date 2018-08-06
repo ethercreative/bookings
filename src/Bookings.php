@@ -43,6 +43,8 @@ use yii\base\Event;
  * @property BookingsService $bookings
  * @property SlotsService $slots
  *
+ * @property Settings $settings
+ *
  * @author    Ether Creative
  * @package   Bookings
  * @since     1.0.0-alpha.1
