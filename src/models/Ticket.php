@@ -92,20 +92,6 @@ class Ticket extends Model
 		return $rules;
 	}
 
-	/**
-	 * Generates the ticket input
-	 *
-	 * @return string|\Twig_Markup
-	 * @throws \yii\base\Exception
-	 * @throws \yii\base\InvalidConfigException
-	 */
-	public function input ()
-	{
-		$value = \Craft::$app->security->hashData($this->id);
-
-		return Template::raw('<input type="hidden" name="options[ticketId]" value="' . $value . '" />');
-	}
-
 	// Getter
 	// -------------------------------------------------------------------------
 

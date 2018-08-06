@@ -33,13 +33,9 @@ class OnOrderEvent
 
 	/**
 	 * @param Event $event
-	 *
-	 * @throws \yii\base\Exception
-	 * @throws \yii\base\InvalidConfigException
 	 */
 	public function onBeforeSaveLineItem (Event $event)
 	{
-		$craft    = \Craft::$app;
 		$bookings = Bookings::getInstance();
 
 		/** @var LineItem $lineItem */
@@ -62,19 +58,6 @@ class OnOrderEvent
 		$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
 		// TODO: Date ranges
 		$endDate = null;
-
-		$ticketId = $craft->security->validateData($ticketId);
-
-		// Is the ticket ID valid?
-		if ($ticketId === false)
-		{
-			$err = \Craft::t('bookings', 'Ticket ID input is invalid.');
-
-			$order->addError('ticket', $err);
-			$lineItem->addError('ticket', $err);
-
-			return;
-		}
 
 		$ticket = $bookings->tickets->getTicketById($ticketId);
 
@@ -164,7 +147,6 @@ class OnOrderEvent
 		$endDate = null;
 //		$endDate = $craft->request->getBodyParam('ticketEndDate');
 
-		$ticketId = $craft->security->validateData($ticketId);
 		$ticket = $bookings->tickets->getTicketById($ticketId);
 
 		$event = $ticket->getEvent();
