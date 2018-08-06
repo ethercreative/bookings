@@ -417,20 +417,18 @@ class Booking extends Element
 			->where(['events.enabled' => true]);
 
 		$enabledBookableElementIds = $enabledBookables->column();
+
 		$elements = (new Query())
 			->select(['content.title', 'elements.id', 'elements.type'])
 			->from(['{{%elements}} elements'])
-			->where(
-				[
-					'elements.id'       => $enabledBookableElementIds,
-					'elements.enabled'  => true,
-					'elements.archived' => false,
-				]
-			)
+			->where([
+				'elements.id'       => $enabledBookableElementIds,
+				'elements.enabled'  => true,
+				'elements.archived' => false,
+			])
 			->innerJoin(
 				'{{%content}} content',
-				'{{%content}}.{{%elementId}} = {{%elements}}.{{%id}} AND {{%content}}.{{%siteId}} = '
-				. \Craft::$app->sites->primarySite->id
+				'{{%content}}.{{%elementId}} = {{%elements}}.{{%id}} AND {{%content}}.{{%siteId}} = ' . \Craft::$app->sites->primarySite->id
 			)
 			->orderBy('content.title asc')
 			->all();
@@ -441,8 +439,10 @@ class Booking extends Element
 		{
 			$type = explode('\\', $element['type']);
 			$type = end($type);
+
 			if (!array_key_exists($type, $byType))
 				$byType[$type] = [];
+
 			$byType[$type][] = $element;
 		}
 
@@ -455,6 +455,7 @@ class Booking extends Element
 			foreach ($elements as $element)
 			{
 				$key           = 'element:' . $element['id'];
+
 				$sources[$key] = [
 					'key'         => $key,
 					'label'       => $element['title'],
