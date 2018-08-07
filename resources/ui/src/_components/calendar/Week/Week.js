@@ -51,8 +51,8 @@ class Week extends Component {
 
 	updateStateFromProps (props = this.props) {
 		const weeks = Week._computeWeeks(props)
-			, formattedSlots = this._formatSlots(props.slots)
-			, formattedExceptions = this._formatSlots(props.exceptions);
+			, formattedSlots = this._formatSlots(props.slots, props.baseRule)
+			, formattedExceptions = this._formatSlots(props.exceptions, props.baseRule);
 
 		this.setState({
 			weeks,
@@ -71,7 +71,7 @@ class Week extends Component {
 					<div key={index} class={styles.group}>
 						{Week._renderHeader(week)}
 						{Week._renderLabels()}
-						{this._renderCells(week, index)}
+						{this._renderCells(week)}
 					</div>
 				))}
 			</div>
@@ -107,18 +107,21 @@ class Week extends Component {
 		);
 	}
 
-	_renderCells (week, i) {
+	_renderCells (week) {
 		const { formattedSlots, formattedExceptions } = this.state;
 
-		const [y, m, d] = Week._correctDayByWeek(week, i);
+		let cells = [],
+			i = 7;
 
-		let cells = [];
+		while (--i) {
+			const [y, m, d] = Week._correctDayByWeek(week, i);
 
-		if (slotExists(formattedSlots, y, m, d))
-			cells = cells.concat(this._renderSlot(y, m, d));
+			if (slotExists(formattedSlots, y, m, d))
+				cells = cells.concat(this._renderSlot(y, m, d));
 
-		if (slotExists(formattedExceptions, y, m, d))
-			cells = cells.concat(this._renderException(y, m, d));
+			if (slotExists(formattedExceptions, y, m, d))
+				cells = cells.concat(this._renderException(y, m, d));
+		}
 
 		return (
 			<div class={styles.cells}>
@@ -200,13 +203,10 @@ class Week extends Component {
 
 		const weeks = [firstWeek];
 
-		// TODO: i should:
-		// - Until: Encompass the until date
-		// - # Times: The end date of the final slot
-		// - Forever: Set to 100
-		// - Should be capped at 100.
-		let i = Math.round((endDate - startDate) / (7 * 24 * 60 * 60 * 1000)) + 1,
+		let i = Math.round((endDate - startDate) / (7 * 24 * 60 * 60 * 1000)),
 			prevWeek = firstWeek;
+
+		if (i === 0) i = 1;
 
 		while (--i) {
 			const [year, month, day] = correctDate(
@@ -228,10 +228,11 @@ class Week extends Component {
 	 * Formats the given slots
 	 *
 	 * @param slots
+	 * @param baseRule
 	 * @return {{}}
 	 * @private
 	 */
-	_formatSlots (slots) {
+	_formatSlots (slots, baseRule) {
 
 		// Un-freeze the slots object (only an issue in dev)
 		if (process.env.NODE_ENV === "development")
@@ -255,7 +256,7 @@ class Week extends Component {
 					if (process.env.NODE_ENV === "development")
 						slots[y][m].all[key].date = new Date(slots[y][m].all[key].date);
 
-					slots = this._formatSlot(y, m, key, slots);
+					slots = this._formatSlot(y, m, key, slots, baseRule);
 				}
 			}
 		}
@@ -270,12 +271,11 @@ class Week extends Component {
 	 * @param m
 	 * @param key
 	 * @param slots
+	 * @param baseRule
 	 * @return {*}
 	 * @private
 	 */
-	_formatSlot (y, m, key, slots) {
-		const { baseRule } = this.props;
-
+	_formatSlot (y, m, key, slots, baseRule) {
 		const slot = slots[y][m].all[key];
 
 		// Convert the frequency into minutes
@@ -292,7 +292,8 @@ class Week extends Component {
 				position: this._getPosition(
 					slot.day,
 					slot.hour,
-					slot.minute
+					slot.minute,
+					baseRule.duration
 				),
 			};
 
@@ -378,17 +379,17 @@ class Week extends Component {
 		};
 	}
 
-	static _getHeader (day, week, i) {
-		const [, m, d] = Week._correctDayByWeek(week, i);
-		return day + ` ${d}/${m}`;
-	}
-
 	static _correctDayByWeek (week, i) {
 		return correctDate(
 			week.year,
 			week.month,
 			week.day + i
 		);
+	}
+
+	static _getHeader (day, week, i) {
+		const [, m, d] = Week._correctDayByWeek(week, i);
+		return day + ` ${d}/${m}`;
 	}
 
 	_getDuration (slot) {

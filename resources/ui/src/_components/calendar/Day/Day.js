@@ -59,8 +59,8 @@ class Day extends Component {
 
 	updateStateFromProps (props = this.props) {
 		const days = Day._computeDays(props)
-			, formattedSlots = this._formatSlots(props.slots)
-			, formattedExceptions = this._formatSlots(props.exceptions);
+			, formattedSlots = this._formatSlots(props.slots, props.baseRule)
+			, formattedExceptions = this._formatSlots(props.exceptions, props.baseRule);
 
 		this.setState({
 			days,
@@ -225,7 +225,7 @@ class Day extends Component {
 		return days;
 	}
 
-	_formatSlots (slots) {
+	_formatSlots (slots, baseRule) {
 		// Un-freeze the slots object (only an issue in dev)
 		if (process.env.NODE_ENV === "development")
 			slots = JSON.parse(JSON.stringify(slots));
@@ -248,7 +248,7 @@ class Day extends Component {
 					if (process.env.NODE_ENV === "development")
 						slots[y][m].all[key].date = new Date(slots[y][m].all[key].date);
 
-					slots = this._formatSlot(y, m, key, slots);
+					slots = this._formatSlot(y, m, key, slots, baseRule);
 				}
 			}
 		}
@@ -256,17 +256,17 @@ class Day extends Component {
 		return slots;
 	}
 
-	_formatSlot (y, m, key, slots) {
+	_formatSlot (y, m, key, slots, baseRule) {
 		const slot = slots[y][m].all[key];
 
-		const fullWidth = this.props.baseRule.duration;
+		const fullWidth = baseRule.duration;
 		const widthInclStartOffset = fullWidth + slot.minute;
 
 		// If it won't overflow, set position & continue
 		if (widthInclStartOffset <= 60) {
 			slots[y][m].all[key] = {
 				...slot,
-				position: this._getPosition(slot.hour, slot.minute),
+				position: this._getPosition(slot.hour, slot.minute, baseRule.duration),
 			};
 			return slots;
 		}
@@ -277,7 +277,7 @@ class Day extends Component {
 			position: this._getPosition(
 				slot.hour,
 				slot.minute,
-				fullWidth + (60 - widthInclStartOffset)
+				fullWidth + (60 - widthInclStartOffset),
 			),
 			splitRight: true,
 		};
