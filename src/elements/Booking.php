@@ -211,14 +211,22 @@ class Booking extends Element
 		if ($this->reservationExpiry->getTimestamp() >= time() - $settings->expiryDuration)
 			return true;
 
+		$tickets = $this->getBookedTickets();
+
 		if ($this->orderId)
 		{
 			$order = $this->getOrder();
 
 			/** @var BookedTicket $ticket */
-			foreach ($this->getBookedTickets() as $ticket)
+			foreach ($tickets as $ticket)
+			{
 				$order->removeLineItem($ticket->getLineItem());
+				Bookings::getInstance()->slots->clearSlotsFromTicket($ticket);
+			}
 		}
+		else
+			foreach ($tickets as $ticket) /** @var BookedTicket $ticket */
+				Bookings::getInstance()->slots->clearSlotsFromTicket($ticket);
 
 		$this->status = self::STATUS_EXPIRED;
 

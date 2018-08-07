@@ -9,7 +9,9 @@
 namespace ether\bookings\services;
 
 use craft\base\Component;
+use ether\bookings\elements\BookedTicket;
 use ether\bookings\models\Event;
+use ether\bookings\records\BookedSlotRecord;
 
 
 /**
@@ -35,6 +37,18 @@ class SlotsService extends Component
 			return [$start];
 
 		return $event->getSlotsInRangeAsIterable($start, $end);
+	}
+
+	/**
+	 * Deletes all slots on the given ticket
+	 *
+	 * @param BookedTicket $ticket
+	 */
+	public function clearSlotsFromTicket (BookedTicket $ticket)
+	{
+		BookedSlotRecord::deleteAll([
+			'bookedTicketId' => $ticket->id,
+		]);
 	}
 
 }

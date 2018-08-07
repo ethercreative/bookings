@@ -9,6 +9,7 @@
 namespace ether\bookings\services;
 
 use craft\base\Component;
+use ether\bookings\Bookings;
 use ether\bookings\elements\Booking;
 
 
@@ -48,9 +49,42 @@ class BookingsService extends Component
 		])->all();
 	}
 
+	/**
+	 * @param $bookingId
+	 *
+	 * @return \craft\base\Element|Booking|Booking[]|null
+	 */
 	public function getBookingById ($bookingId)
 	{
 		return Booking::findOne($bookingId);
+	}
+
+	/**
+	 * @param bool $force
+	 *
+	 * @throws \Throwable
+	 */
+	public function clearExpiredBookings (bool $force = false)
+	{
+		$settings = Bookings::getInstance()->settings;
+
+		$where = [
+			'and',
+			'{{%expired}} = true',
+		];
+
+		if (!$force)
+		{
+			$since = time() - ($settings->expiryDuration + $settings->clearExpiredDuration);
+			$since = '\'' . date(\DateTime::W3C, $since) . '\'';
+
+			$where[] = '{{%reservationExpiry}} < ' . $since;
+		}
+
+		$expiredBookings = Booking::find()->where($where)->all();
+
+		foreach ($expiredBookings as $booking)
+			\Craft::$app->elements->deleteElement($booking);
 	}
 
 }
