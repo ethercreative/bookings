@@ -63,7 +63,7 @@ class CraftDateTime extends Component {
 					defaultDate: this._getDefaultDate()
 				}, window.Craft.datepickerOptions));
 
-				$datePicker.on("change", this.onDateChange);
+				$datePicker.on("change", this.onDateChange.bind(this, $datePicker));
 			}
 
 			if (this.timeInput) {
@@ -92,8 +92,8 @@ class CraftDateTime extends Component {
 	// Events
 	// =========================================================================
 
-	onDateChange = ({ target: { value } }) => {
-		const d = new Date(value);
+	onDateChange = $datePicker => {
+		const d = $datePicker.datepicker("getDate");
 
 		const nextValue = new Date(this.state.value);
 		nextValue.setFullYear(d.getFullYear());

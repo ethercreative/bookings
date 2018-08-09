@@ -38,21 +38,30 @@ class Availability
 	private $_count = 1000;
 
 	/** @var string */
-	private $_group = 'day';
+	private $_group = 'minute';
 
 	// Constructor
 	// =========================================================================
 
+	/**
+	 * Availability constructor.
+	 *
+	 * @param Event $event
+	 *
+	 * @throws \Exception
+	 */
 	public function __construct (Event $event)
 	{
 		$this->_event = $event;
 
 		$baseRule = $event->baseRule;
 
-		$this->_start = $baseRule->start->format(\DateTime::W3C);
+		$this->_start = $baseRule->start;
+
+		$this->_group = rtrim(Frequency::toUnit($baseRule->frequency), 's');
 
 		if ($baseRule->until && $baseRule->repeats === RecursionRule::REPEATS_UNTIL)
-			$this->_end = $baseRule->until->format(\DateTime::W3C);
+			$this->_end = $baseRule->until;
 
 		if ($baseRule->count && $baseRule->count < 1000 && $baseRule->repeats === RecursionRule::REPEATS_UNTIL)
 			$this->_count = $baseRule->count;
@@ -73,9 +82,6 @@ class Availability
 
 	public function start ($value)
 	{
-		if ($value instanceof \DateTime)
-			$value = $value->format(\DateTime::W3C);
-
 		$this->_start = $value;
 
 		return $this;
@@ -83,9 +89,6 @@ class Availability
 
 	public function end ($value)
 	{
-		if ($value instanceof \DateTime)
-			$value = $value->format(\DateTime::W3C);
-
 		$this->_end = $value;
 
 		return $this;
@@ -142,12 +145,11 @@ class Availability
 		$groupedSlots = $this->_groupedSlots();
 		$bookedSlots = $this->_bookedSlots();
 
-		$slots = [];
-
 		foreach ($groupedSlots as $date => $count)
-			$slots[$date] = $count - $bookedSlots[$date];
+			if (array_key_exists($date, $bookedSlots))
+				$groupedSlots[$date] -= $bookedSlots[$date];
 
-		return $slots;
+		return $groupedSlots;
 	}
 
 	// Helpers
@@ -159,6 +161,7 @@ class Availability
 		$format       = $this->_getDateFormat();
 		$groupedSlots = [];
 
+		$utc     = new \DateTimeZone('UTC');
 		$limit   = $this->_end !== null ? PHP_INT_MAX : $this->_count;
 		$slotMax = $this->_event->multiplier;
 
@@ -168,7 +171,7 @@ class Availability
 			if ($i > $limit)
 				break;
 
-			$key = $slot->format($format);
+			$key = $slot->setTimezone($utc)->format($format);
 
 			if (array_key_exists($key, $groupedSlots))
 				$groupedSlots[$key] += $slotMax;
@@ -187,22 +190,26 @@ class Availability
 	{
 		$group = $this->_groupBy('date') . ' as slot';
 
+		$utc = new \DateTimeZone('UTC');
+		$start = $this->_start->setTimezone($utc)->format(\DateTime::W3C);
+		$end = $this->_end ? $this->_end->setTimezone($utc)->format(\DateTime::W3C) : null;
+
 		$where = [ 'eventId' => $this->_event->id ];
 		if ($this->_ticket)
 			$where['ticketId'] = $this->_ticket->id;
 
 		$query = (new Query())
-			->select([$group, 'count(id)'])
+			->select([$group, 'count(id)'/*, 'bookingId'*/])
 			->from(BookedSlotRecord::$tableName)
 			->where($where)
-			->andWhere(['>=', 'date', $this->_start]);
+			->andWhere(['>=', 'date', $start]);
 
-		if ($this->_end)
-			$query = $query->andWhere(['<=', 'date', $this->_end]);
+		if ($end)
+			$query = $query->andWhere(['<=', 'date', $end]);
 		else if ($this->_count)
 			$query = $query->andWhere(['<=', 'date', $this->_endDateFromCount()]);
 
-		$query = $query->groupBy('slot');
+		$query = $query->groupBy(['slot'/*, 'bookingId'*/]);
 
 		return $query->pairs();
 	}
@@ -227,6 +234,8 @@ class Availability
 			case 'postgres':
 				switch ($this->_group)
 				{
+					case 'minute':
+						$format = "YYYY-MM-DD HH24:MI:00"; break;
 					case 'hour':
 						$format = "YYYY-MM-DD HH24:00:00"; break;
 					case 'day':
@@ -243,6 +252,8 @@ class Availability
 			case 'mysql':
 				switch ($this->_group)
 				{
+					case 'minute':
+						$format = "%Y-%m-%d %H:%i:00"; break;
 					case 'hour':
 						$format = "%Y-%m-%d %H:00:00"; break;
 					case 'day':
@@ -260,6 +271,8 @@ class Availability
 			default:
 				switch ($this->_group)
 				{
+					case 'minute':
+						$format = 'Y-m-d H:i:00'; break;
 					case 'hour':
 						$format = 'Y-m-d H:00:00'; break;
 					case 'day':
@@ -309,7 +322,10 @@ class Availability
 		$mod .= (($baseRule->duration + $baseRule->interval) * $this->_count);
 		$mod .= ' ' . Frequency::toUnit($baseRule->frequency);
 
-		return (new \DateTime($this->_start))->modify($mod)->format(\DateTime::W3C);
+		return (clone $this->_start)
+			->setTimezone(new \DateTimeZone('UTC'))
+			->modify($mod)
+			->format(\DateTime::W3C);
 	}
 
 }

@@ -28,21 +28,21 @@ class AvailabilityService extends Component
 	/**
 	 * Returns true if the given time is available for the given ticket
 	 *
-	 * @param Booking   $booking
-	 * @param Ticket    $ticket
-	 * @param \DateTime $time
-	 * @param int       $qty
+	 * @param Booking|null $booking
+	 * @param Ticket       $ticket
+	 * @param \DateTime    $time
+	 * @param int          $qty
 	 *
 	 * @return bool
 	 */
 	public function isTimeAvailable (
-		Booking $booking, Ticket $ticket, \DateTime $time, int $qty = 1
+		$booking, Ticket $ticket, \DateTime $time, int $qty = 1
 	): bool {
 		$event = $ticket->getEvent();
 
 		$bookedSlots = BookedSlotRecord::find()->andWhere([
 			'eventId' => $event->id,
-			'date'    => $time->format(\DateTime::W3C),
+			'date'    => $time->setTimezone(new \DateTimeZone('UTC'))->format(\DateTime::W3C),
 		])->all();
 
 		$bookedByTicket = ArrayHelper::groupBy(
@@ -59,15 +59,15 @@ class AvailabilityService extends Component
 		// Check the event multiplier
 		$uniqueBookings = count($bookedByBooking);
 		if ($booking !== null) $uniqueBookings--; // Exclude current booking
-		if ($event->multiplier > 0 && $event->multiplier <= $uniqueBookings)
+		if ($event->multiplier && $event->multiplier <= $uniqueBookings)
 			return false;
 
 		// Check the ticket capacity
-		if ($booking !== null && $qty > $bookedByBooking[$booking->id])
+		if ($booking !== null && array_key_exists($booking->id, $bookedByBooking) && $qty > $bookedByBooking[$booking->id])
 			return false;
 
 		// Check the event capacity
-		if ($event->capacity <= count($bookedSlots))
+		if ($event->capacity && $event->capacity <= count($bookedSlots))
 			return false;
 
 		return true;
