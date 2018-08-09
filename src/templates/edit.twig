@@ -7,7 +7,7 @@
 	{ label: "Bookings"|t('bookings'), url: url('bookings') }
 ] %}
 
-{% block actionButton %}
+{#{% block actionButton %}
 	<input type="hidden" name="action" value="bookings/book/save">
 	<input type="hidden" name="bookingId" value="{{ booking.id }}">
 	{{ redirectInput('bookings') }}
@@ -45,48 +45,99 @@
 
 		</div>
 	</div>
-{% endblock %}
+{% endblock %}#}
 
 {% block details %}
-	<div class="meta">
-		oh hi mark
+	<div class="meta read-only">
+		<div class="data">
+			<h5 class="heading">Date</h5>
+			<div class="value">
+				{{ booking.dateBooked|datetime('short') }}
+			</div>
+		</div>
+
+		<div class="data">
+			<h5 class="heading">Number</h5>
+			<div class="value" title="{{ booking.number }}">
+				#{{ booking.shortNumber }}
+			</div>
+		</div>
+
+		<div class="data">
+			<h5 class="heading">Customer Email</h5>
+			<div class="value">
+				<a href="mailto:{{ booking.customerEmail }}">
+					{{ booking.customerEmail }}
+				</a>
+			</div>
+		</div>
+
+		{% if booking.order %}
+			<div class="data">
+				<h5 class="heading">Order</h5>
+				<div class="value">
+					<a href="{{ booking.order.cpEditUrl }}">
+						#{{ booking.order.shortNumber }}
+					</a>
+				</div>
+			</div>
+		{% endif %}
 	</div>
 {% endblock %}
 
 {% block content %}
-	TODO
+	<table class="data fullwidth collapsible">
+		<thead>
+		<tr>
+			<th>Tickets</th>
+			<th>Booking Date & Time</th>
+			<th>Checked In [Coming Soon]</th>
+			<th> </th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for ticket in booking.bookedTickets %}
+		<tr>
+			<td>
+				{% set variant = ticket.ticket.element %}
+				{% set product = ticket.ticket.element.product %}
+				{{ product.title }} - {{ variant.title }}
+			</td>
+			<td>
+				{% if ticket.slots|length > 1 %}
+					{% set start = ticket.slots[0].date %}
+					{% set end = (ticket.slots|last).date %}
 
-	<br>
-	<br>
-	<br>
+					{# Same Day #}
+					{% if start|date('short') == end|date('short') %}
+						{{ start|date('g:ia') }} to {{ end|date('g:ia - jS F, Y') }}
 
-	<code>[TODO: If the booking date has changed ask the user if they want to re-send the confirmation emails (if any) on save.]</code>
+					{# Same Month #}
+					{% elseif start|date('m-Y') == end|date('m-Y') %}
+						{{ start|date('g:ia - jS') }} to {{ end|date('g:ia - jS F, Y') }}
 
-	<br>
-	<br>
-	<br>
+					{# Same Year #}
+					{% elseif start|date('Y') == end|date('Y') %}
+						{{ start|date('g:ia - jS F') }} to {{ end|date('g:ia - jS F, Y') }}
+					{% else %}
+						{{ start|date('g:ia - jS F, Y') }} to {{ end|date('g:ia - jS F, Y') }}
+					{% endif %}
+				{% else %}
+					{{ ticket.slots[0].date|date('g:ia - jS F, Y') }}
+				{% endif %}
+			</td>
+			<td>
+				No
+			</td>
+			<td class="thin">
+				<a href="#">Edit</a>
+			</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
 
-	<code>[TODO: If the booking date has changed and it belongs to a line item, update the options on that line item?]</code>
+	{# TODO: If the booking date has changed ask the user if they want to re-send the confirmation emails (if any) on save. #}
+	{# TODO: If the booking date has changed and it belongs to a line item, update the options on that line item #}
 
-	<br>
-	<br>
-	<br>
-
-	{{ forms.field({
-		label: "Booking Number"
-	}, booking.number) }}
-
-	{% set tickets %}
-		<ul>
-			{% for ticket in booking.bookedTickets %}
-				<li><strong>{{ ticket.ticket.element.title }}</strong></li>
-				{% for slot in ticket.slots %}
-					<li>{{ slot.date|date('c') }}</li>
-				{% endfor %}
-			{% endfor %}
-		</ul>
-	{% endset %}
-	{{ forms.field({
-		label: "Tickets"
-	}, tickets) }}
 {% endblock %}

@@ -55,4 +55,6 @@ return [
 	'Date Booked' => 'Date Booked',
 
 	'All Bookings' => 'All Bookings',
+
+	'Unable to find event matching the given ID' => 'Unable to find event matching the given ID',
 ];

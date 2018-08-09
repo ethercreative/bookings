@@ -10,6 +10,7 @@ namespace ether\bookings\common;
 
 
 use craft\db\Query;
+use craft\helpers\DateTimeHelper;
 use ether\bookings\enums\Frequency;
 use ether\bookings\models\Event;
 use ether\bookings\models\RecursionRule;
@@ -82,6 +83,9 @@ class Availability
 
 	public function start ($value)
 	{
+		if (!($value instanceof \DateTime))
+			$value = DateTimeHelper::toDateTime($value);
+
 		$this->_start = $value;
 
 		return $this;
@@ -89,6 +93,9 @@ class Availability
 
 	public function end ($value)
 	{
+		if (!($value instanceof \DateTime))
+			$value = DateTimeHelper::toDateTime($value);
+
 		$this->_end = $value;
 
 		return $this;
