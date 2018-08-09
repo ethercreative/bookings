@@ -86,24 +86,21 @@ class OnOrderEvent
 			return;
 		}
 
+		// Do we have an existing booking?
+		$booking = $bookings->bookings->getBookingByOrderAndEventIds(
+			$order->id,
+			$event->id
+		);
+
 		// Is time available?
 		// TODO: Date ranges
 		$qty = $lineItem->qty;
 
-		if ($isNew === false)
-		{
-			// If we're updating a line item, we'll only want to check
-			// availability against an increase in qty
-			$qty -= LineItemRecord::findOne([
-				'id' => $lineItem->id,
-			])->qty;
-		}
-
-		if ($qty > 0 && $bookings->availability->isTimeAvailable($ticket, $startDate, $qty) === false)
+		if ($qty > 0 && $bookings->availability->isTimeAvailable($booking, $ticket, $startDate, $qty) === false)
 		{
 			$err = \Craft::t(
 				'bookings',
-				$lineItem->qty > 1
+				$qty > 1
 					? 'Selected Date / Time is unavailable.'
 					: 'Selected Date / Time is unavailable at that quantity.'
 			);
@@ -152,6 +149,7 @@ class OnOrderEvent
 		$event = $ticket->getEvent();
 
 		// Do we have an existing booking?
+		// TODO: cache from onBeforeSaveLineItem?
 		$booking = $bookings->bookings->getBookingByOrderAndEventIds(
 			$order->id,
 			$event->id
@@ -217,6 +215,7 @@ class OnOrderEvent
 
 				$bookedSlot->start = $i === 0;
 				$bookedSlot->end = ++$i === $slotsCount;
+				$bookedSlot->eventId = $event->id;
 				$bookedSlot->ticketId = $ticket->id;
 				$bookedSlot->bookingId = $booking->id;
 				$bookedSlot->bookedTicketId = $bookedTicket->id;

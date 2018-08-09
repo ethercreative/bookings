@@ -49,12 +49,6 @@ class Ticket extends Model
 	 */
 	public $capacity = 1;
 
-	/**
-	 * @var int - The maximum number of this type of ticket that can be booked
-	 * per booking
-	 */
-	public $maxQty;
-
 	// Properties: Private
 	// -------------------------------------------------------------------------
 
@@ -75,7 +69,6 @@ class Ticket extends Model
 		$model->elementId = $record->elementId;
 		$model->fieldId   = $record->fieldId;
 		$model->capacity  = $record->capacity;
-		$model->maxQty    = $record->maxQty;
 
 		return $model;
 	}
@@ -85,7 +78,7 @@ class Ticket extends Model
 		$rules = parent::rules();
 
 		$rules[] = [
-			['capacity', 'maxQty'],
+			['capacity'],
 			'number'
 		];
 

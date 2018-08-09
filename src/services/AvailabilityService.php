@@ -9,6 +9,8 @@
 namespace ether\bookings\services;
 
 use craft\base\Component;
+use ether\bookings\elements\Booking;
+use ether\bookings\helpers\ArrayHelper;
 use ether\bookings\models\Ticket;
 use ether\bookings\records\BookedSlotRecord;
 
@@ -26,43 +28,47 @@ class AvailabilityService extends Component
 	/**
 	 * Returns true if the given time is available for the given ticket
 	 *
+	 * @param Booking   $booking
 	 * @param Ticket    $ticket
 	 * @param \DateTime $time
 	 * @param int       $qty
 	 *
 	 * @return bool
 	 */
-	public function isTimeAvailable (Ticket $ticket, \DateTime $time, int $qty = 1)
-	{
-		// TODO: Take event multiplier into consideration
-
+	public function isTimeAvailable (
+		Booking $booking, Ticket $ticket, \DateTime $time, int $qty = 1
+	): bool {
 		$event = $ticket->getEvent();
 
-		// Check that this slot has availability
+		$bookedSlots = BookedSlotRecord::find()->andWhere([
+			'eventId' => $event->id,
+			'date'    => $time->format(\DateTime::W3C),
+		])->all();
 
-		$slotsTakenInGivenTime = BookedSlotRecord::find()->andWhere([
-			'ticketId' => $ticket->id,
-			'date'     => $time->format(\DateTime::W3C),
-		])->count();
+		$bookedByTicket = ArrayHelper::groupBy(
+			$bookedSlots,
+			'ticketId',
+			'bookingId'
+		);
 
-		$slotsTakenInGivenTime += $qty;
+		$bookedByBooking =
+			array_key_exists($ticket->id, $bookedByTicket)
+				? $bookedByTicket[$ticket->id]
+				: [];
 
-		if (
-			$slotsTakenInGivenTime > $ticket->capacity
-		    || $slotsTakenInGivenTime > $event->capacity
-		) return false;
+		// Check the event multiplier
+		$uniqueBookings = count($bookedByBooking);
+		if ($booking !== null) $uniqueBookings--; // Exclude current booking
+		if ($event->multiplier > 0 && $event->multiplier <= $uniqueBookings)
+			return false;
 
-		if ($ticket->maxQty !== null)
-		{
-			// Check that the event as a whole has availability
+		// Check the ticket capacity
+		if ($booking !== null && $qty > $bookedByBooking[$booking->id])
+			return false;
 
-			$slotsTakenOverall = BookedSlotRecord::find()->andWhere([
-				'ticketId' => $ticket->id,
-			])->count();
-
-			if ($slotsTakenOverall + $qty > $ticket->maxQty)
-				return false;
-		}
+		// Check the event capacity
+		if ($event->capacity <= count($bookedSlots))
+			return false;
 
 		return true;
 	}

@@ -221,7 +221,6 @@ class FieldService extends Component
 			$model->elementId = $elementId;
 			$model->fieldId   = $fieldId;
 			$model->capacity  = $value['capacity'];
-			$model->maxQty    = $value['maxQty'];
 		}
 
 		else if ($record) {
@@ -229,7 +228,6 @@ class FieldService extends Component
 			$model->elementId = $record->elementId;
 			$model->fieldId   = $record->fieldId;
 			$model->capacity  = $record->capacity;
-			$model->maxQty    = $record->maxQty;
 		}
 
 		return $model;
@@ -267,7 +265,6 @@ class FieldService extends Component
 		}
 
 		$record->capacity = $model->capacity;
-		$record->maxQty   = $model->maxQty;
 
 		if (!$record->save())
 		{

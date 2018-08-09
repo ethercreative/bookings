@@ -126,7 +126,6 @@ class Install extends Migration
 			'elementId' => $this->integer()->notNull(),
 			'fieldId'   => $this->integer()->notNull(),
 			'capacity'  => $this->integer(),
-			'maxQty'    => $this->integer(),
 
 			'dateCreated' => $this->dateTime()->notNull(),
 			'dateUpdated' => $this->dateTime()->notNull(),
@@ -335,6 +334,7 @@ class Install extends Migration
 			'id'             => $this->primaryKey(),
 			'start'          => $this->boolean()->notNull(),
 			'end'            => $this->boolean()->notNull(),
+			'eventId'        => $this->integer()->notNull(),
 			'ticketId'       => $this->integer()->notNull(),
 			'bookingId'      => $this->integer()->notNull(),
 			'bookedTicketId' => $this->integer()->notNull(),
@@ -344,6 +344,13 @@ class Install extends Migration
 			'dateUpdated' => $this->dateTime()->notNull(),
 			'uid'         => $this->uid(),
 		]);
+
+		$this->createIndex(
+			null,
+			BookedSlotRecord::$tableName,
+			'eventId',
+			false
+		);
 
 		$this->createIndex(
 			null,
@@ -364,6 +371,16 @@ class Install extends Migration
 			BookedSlotRecord::$tableName,
 			'bookedTicketId',
 			false
+		);
+
+		$this->addForeignKey(
+			null,
+			BookedSlotRecord::$tableName,
+			'eventId',
+			EventRecord::$tableName,
+			'id',
+			'CASCADE',
+			null
 		);
 
 		$this->addForeignKey(
