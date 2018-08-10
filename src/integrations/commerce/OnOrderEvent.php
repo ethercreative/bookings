@@ -44,13 +44,16 @@ class OnOrderEvent
 		/** @var Order $order */
 		$order = $lineItem->order;
 
-		/** @var bool $isNew */
-		$isNew = !$lineItem->id;
+//		/** @var bool $isNew */
+//		$isNew = !$lineItem->id;
 
 		$options = $lineItem->getOptions();
 
 		// Ensure this is a booking line item
-		$ticketId = $options['ticketId'];
+		$ticketId =
+			array_key_exists('ticketId', $options)
+				? $options['ticketId']
+				: false;
 
 		if (!$ticketId)
 			return;
@@ -134,7 +137,10 @@ class OnOrderEvent
 		$options = $lineItem->getOptions();
 
 		// Ensure this is a booking line item
-		$ticketId = $options['ticketId'];
+		$ticketId =
+			array_key_exists('ticketId', $options)
+				? $options['ticketId']
+				: false;
 
 		if (!$ticketId)
 			return;
