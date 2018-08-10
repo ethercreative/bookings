@@ -313,7 +313,7 @@ class Availability
 		}
 
 		if ($format)
-			return "$function({{%$column}}, '$format')";
+			return "$function([[$column]], '$format')";
 
 		return $column;
 	}
