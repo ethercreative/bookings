@@ -297,4 +297,30 @@ class RecursionRule extends Model
 		return new RRule($this->asRRuleArray());
 	}
 
+	/**
+	 * Returns the duration as minutes.
+	 * Value approximate if frequency is Monthly / Yearly.
+	 *
+	 * @return float|int
+	 */
+	public function getDurationInMinutes ()
+	{
+		switch ($this->frequency)
+		{
+			default:
+			case Frequency::Minutely:
+				return $this->duration;
+			case Frequency::Hourly:
+				return $this->duration * 60;
+			case Frequency::Daily:
+				return $this->duration * 60 * 24;
+			case Frequency::Weekly:
+				return $this->duration * 60 * 24 * 7;
+			case Frequency::Monthly:
+				return $this->duration * 60 * 24 * 30;
+			case Frequency::Yearly:
+				return $this->duration * 60 * 24 * 365;
+		}
+	}
+
 }

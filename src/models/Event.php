@@ -235,6 +235,8 @@ class Event extends Model
 
 		$baseStart = $this->_baseRule->start;
 		$baseUntil = $this->_baseRule->until;
+		$repeatsUntil =
+			$this->_baseRule->repeats === RecursionRule::REPEATS_UNTIL;
 
 		$set = clone $this->_getSet();
 
@@ -251,12 +253,20 @@ class Event extends Model
 
 		// If the end time is before the base until time, exclude all slots
 		// between those two times
-		if ($end->getTimestamp() < $baseUntil->getTimestamp())
+		if ($repeatsUntil && $end->getTimestamp() < $baseUntil->getTimestamp())
 		{
 			$set->addExRule([
 				'FREQ'    => RRule::SECONDLY,
 				'DTSTART' => $end,
 				'UNTIL'   => $baseUntil,
+			]);
+		}
+		else
+		{
+			$set->addExRule([
+				'FREQ'    => RRule::SECONDLY,
+				'DTSTART' => $end,
+				'UNTIL'   => (new \DateTime())->modify('+ 1000 years'),
 			]);
 		}
 

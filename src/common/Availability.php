@@ -36,7 +36,7 @@ class Availability
 	private $_end;
 
 	/** @var int */
-	private $_count = 1000;
+	private $_count;
 
 	/** @var string */
 	private $_group = 'minute';
@@ -169,7 +169,7 @@ class Availability
 		$groupedSlots = [];
 
 		$utc     = new \DateTimeZone('UTC');
-		$limit   = $this->_end !== null ? PHP_INT_MAX : $this->_count;
+		$limit   = $this->_count !== null ? PHP_INT_MAX : $this->_count;
 		$slotMax = $this->_event->multiplier;
 
 		/** @var \DateTime $slot */
