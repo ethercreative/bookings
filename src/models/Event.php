@@ -336,7 +336,8 @@ class Event extends Model
 	 */
 	public function isDateOccurrence ($date)
 	{
-		$date = DateTimeHelper::toDateTime($date);
+		$date = clone DateTimeHelper::toDateTime($date);
+		$date->setTimezone($this->baseRule->start->getTimezone());
 		return $this->_getSet()->occursAt($date);
 	}
 

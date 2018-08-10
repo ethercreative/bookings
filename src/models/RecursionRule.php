@@ -143,18 +143,34 @@ class RecursionRule extends Model
 		// Normalize dates
 		if ($this->start !== null)
 		{
-			if (is_array($this->start))
-				$this->start = DateTimeHelper::toDateTime($this->start['date'], true);
-			else
-				$this->start = DateTimeHelper::toDateTime($this->start, true);
+			if (
+				is_array($this->start)
+				&& array_key_exists('date', $this->start)
+				&& array_key_exists('timezone', $this->start)
+			) {
+				$this->start = new \DateTime(
+					$this->start['date'],
+					new \DateTimeZone($this->start['timezone'])
+				);
+			}
+
+			else $this->start = DateTimeHelper::toDateTime($this->start);
 		}
 
 		if ($this->until !== null)
 		{
-			if (is_array($this->until))
-				$this->until = DateTimeHelper::toDateTime($this->until['date'], true);
-			else
-				$this->until = DateTimeHelper::toDateTime($this->until, true);
+			if (
+				is_array($this->until)
+				&& array_key_exists('date', $this->until)
+				&& array_key_exists('timezone', $this->until)
+			) {
+				$this->until = new \DateTime(
+					$this->until['date'],
+					new \DateTimeZone($this->until['timezone'])
+				);
+			}
+
+			else $this->until = DateTimeHelper::toDateTime($this->until);
 		}
 
 		parent::init();
