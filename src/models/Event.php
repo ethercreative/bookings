@@ -266,7 +266,7 @@ class Event extends Model
 			$set->addExRule([
 				'FREQ'    => RRule::SECONDLY,
 				'DTSTART' => $end,
-				'UNTIL'   => (new \DateTime())->modify('+ 1000 years'),
+				'UNTIL'   => (new \DateTime())->modify('+ 10 years'),
 			]);
 		}
 
