@@ -238,39 +238,22 @@ class Event extends Model
 		$repeatsUntil =
 			$this->_baseRule->repeats === RecursionRule::REPEATS_UNTIL;
 
-		$set = clone $this->_getSet();
+		$baseOverride = clone $this->_baseRule;
 
-		// If the start time is after the base start time, exclude all slots
-		// between those two times
+		// If the start time is after the base start time, move the base start
+		// time to our new start time
 		if ($start->getTimestamp() > $baseStart->getTimestamp())
+			$baseOverride->start = $start;
+
+		// If the end time is before the base until time or we're not repeating
+		// until, set the until time to the end and repeats to Until
+		if (!$repeatsUntil || $end->getTimestamp() < $baseUntil->getTimestamp())
 		{
-			$set->addExRule([
-				'FREQ'    => RRule::SECONDLY,
-				'DTSTART' => $baseStart,
-				'UNTIL'   => $start,
-			]);
+			$baseOverride->until = $end;
+			$baseOverride->repeats = RecursionRule::REPEATS_UNTIL;
 		}
 
-		// If the end time is before the base until time, exclude all slots
-		// between those two times
-		if ($repeatsUntil && $end->getTimestamp() < $baseUntil->getTimestamp())
-		{
-			$set->addExRule([
-				'FREQ'    => RRule::SECONDLY,
-				'DTSTART' => $end,
-				'UNTIL'   => $baseUntil,
-			]);
-		}
-		else
-		{
-			$set->addExRule([
-				'FREQ'    => RRule::SECONDLY,
-				'DTSTART' => $end,
-				'UNTIL'   => (new \DateTime())->modify('+ 10 years'),
-			]);
-		}
-
-		return $set;
+		return clone $this->_getSet($baseOverride);
 	}
 
 	/**
@@ -347,9 +330,11 @@ class Event extends Model
 	/**
 	 * Builds the recurrence set
 	 *
+	 * @param RecursionRule|null $baseOverride
+	 *
 	 * @return RSet
 	 */
-	private function _getSet (): RSet
+	private function _getSet (RecursionRule $baseOverride = null): RSet
 	{
 		if ($this->_useInverted)
 			return $this->_getInvertedSet();
@@ -361,7 +346,10 @@ class Event extends Model
 		$previousSet = null;
 		$lastRuleWasException = false;
 
-		$set->addRRule($this->_baseRule->asRRuleArray());
+		if ($baseOverride !== null)
+			$set->addRRule($baseOverride->asRRuleArray());
+		else
+			$set->addRRule($this->_baseRule->asRRuleArray());
 
 		foreach ($this->_exceptions as $ex)
 		{

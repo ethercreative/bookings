@@ -169,7 +169,7 @@ class Availability
 		$groupedSlots = [];
 
 		$utc     = new \DateTimeZone('UTC');
-		$limit   = $this->_count !== null ? PHP_INT_MAX : $this->_count;
+		$limit   = $this->_count !== null ? /*PHP_INT_MAX*/10 : $this->_count;
 		$slotMax = $this->_event->multiplier;
 
 		/** @var \DateTime $slot */

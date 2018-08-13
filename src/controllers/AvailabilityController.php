@@ -16,6 +16,8 @@ use ether\bookings\common\Availability;
 class AvailabilityController extends Controller
 {
 
+	protected $allowAnonymous = true;
+
 	/**
 	 * @return array|\yii\web\Response
 	 * @throws \yii\base\Exception|\yii\web\BadRequestHttpException|\Exception
