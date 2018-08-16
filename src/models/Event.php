@@ -340,6 +340,25 @@ class Event extends Model
 		return $this->_getSet()->occursAt($date);
 	}
 
+	/**
+	 * Returns the next available slot from today
+	 *
+	 * @return \DateTime|null
+	 */
+	public function getNextAvailableSlot ()
+	{
+		$nextAvailable = $this->_getSet()->getOccurrencesBetween(
+			new \DateTime(),
+			null,
+			1
+		);
+
+		if (count($nextAvailable) === 0)
+			return null;
+
+		return $nextAvailable[0];
+	}
+
 	// Methods: Private
 	// -------------------------------------------------------------------------
 
