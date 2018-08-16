@@ -228,6 +228,12 @@ class Event extends Model
 		return $this->_getSet()->getOccurrences(self::SLOT_HARD_LIMIT);
 	}
 
+	/**
+	 * @param \DateTime|string $start
+	 * @param \DateTime|string $end
+	 *
+	 * @return RSet|\Iterator|\ArrayAccess|\Countable
+	 */
 	public function getSlotsInRangeAsIterable ($start, $end)
 	{
 		$start = DateTimeHelper::toDateTime($start);
@@ -240,11 +246,6 @@ class Event extends Model
 
 		$baseOverride = clone $this->_baseRule;
 
-		// If the start time is after the base start time, move the base start
-		// time to our new start time
-		if ($start->getTimestamp() > $baseStart->getTimestamp())
-			$baseOverride->start = $start;
-
 		// If the end time is before the base until time or we're not repeating
 		// until, set the until time to the end and repeats to Until
 		if (!$repeatsUntil || $end->getTimestamp() < $baseUntil->getTimestamp())
@@ -253,7 +254,21 @@ class Event extends Model
 			$baseOverride->repeats = RecursionRule::REPEATS_UNTIL;
 		}
 
-		return clone $this->_getSet($baseOverride);
+		$set = clone $this->_getSet($baseOverride);
+
+		// If the start time is after the base start time, exclude all slots
+		// between the original start date and our specified one
+		if ($start->getTimestamp() > $baseStart->getTimestamp())
+		{
+			$ex            = new ExceptionRule();
+			$ex->start     = $baseStart;
+			$ex->until     = $start;
+			$ex->repeats   = RecursionRule::REPEATS_UNTIL;
+			$ex->frequency = $baseOverride->frequency;
+			$set->addExRule($ex->asRRuleArray());
+		}
+
+		return $set;
 	}
 
 	/**
@@ -271,14 +286,15 @@ class Event extends Model
 		$set       = clone $this->_getSet();
 
 		// If the start time is after the base start time, exclude all slots
-		// between those two times
+		// between the original start date and our specified one
 		if ($start->getTimestamp() > $baseStart->getTimestamp())
 		{
-			$set->addExRule([
-				'FREQ'    => RRule::SECONDLY,
-				'DTSTART' => $baseStart,
-				'UNTIL'   => $start,
-			]);
+			$ex            = new ExceptionRule();
+			$ex->start     = $baseStart;
+			$ex->until     = $start;
+			$ex->repeats   = RecursionRule::REPEATS_UNTIL;
+			$ex->frequency = $this->_baseRule->frequency;
+			$set->addExRule($ex->asRRuleArray());
 		}
 
 		return $set;

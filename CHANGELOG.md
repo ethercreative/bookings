@@ -1,3 +1,7 @@
+## [Unreleased] 1.0.0-alpha.5
+### Fixed
+- Passing start date when checking availability no longer makes that date the primary rules start date.
+
 ## 1.0.0-alpha.4
 ### Fixed
 - Fixed availability error when database has prefix
