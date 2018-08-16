@@ -15,7 +15,6 @@ use craft\helpers\Db;
 use ether\bookings\models\Event;
 use ether\bookings\records\BookingRecord;
 
-
 /**
  * Class BookingQuery
  *
@@ -103,7 +102,8 @@ class BookingQuery extends ElementQuery
 		return $this;
 	}
 
-	public function order ($value)
+	// This can't be `order` because the function arguments are different :(
+	public function commerceOrder ($value)
 	{
 		if (
 			class_exists(\craft\commerce\elements\Order::class)
