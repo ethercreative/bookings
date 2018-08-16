@@ -113,7 +113,7 @@ class Week extends Component {
 		let cells = [],
 			i = 7;
 
-		while (--i) {
+		while (i--) {
 			const [y, m, d] = Week._correctDayByWeek(week, i);
 
 			if (slotExists(formattedSlots, y, m, d))
@@ -203,10 +203,8 @@ class Week extends Component {
 
 		const weeks = [firstWeek];
 
-		let i = Math.round((endDate - startDate) / (7 * 24 * 60 * 60 * 1000)),
+		let i = Math.round((endDate - startDate) / (7 * 24 * 60 * 60 * 1000)) + 1,
 			prevWeek = firstWeek;
-
-		if (i === 0) i = 1;
 
 		while (--i) {
 			const [year, month, day] = correctDate(
