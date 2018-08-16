@@ -218,4 +218,27 @@
 			);
 		}
 	}
+
+	&.fully-booked:before,
+	&.has-bookings:after {
+		content: '';
+		position: absolute;
+		top: 3px;
+		right: 3px;
+
+		border: 8px solid transparent;
+	}
+
+	&.has-bookings:after {
+		border-top-color: #0D99F2;
+		border-right-color: #0D99F2;
+	}
+
+	&.fully-booked:before {
+		right: 6px;
+
+		border-bottom-color: #0D99F2;
+		border-left-color: #0D99F2;
+	}
+
 }
