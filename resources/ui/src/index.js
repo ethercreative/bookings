@@ -18,6 +18,8 @@ class App extends Component {
 			...props,
 			slots: {},
 			exceptions: {},
+			availability: {},
+			hasAnyBookings: false,
 		};
 		delete state.children;
 
@@ -48,6 +50,7 @@ class App extends Component {
 		delete nextState.enabled;
 		delete nextState.slots;
 		delete nextState.exceptions;
+		delete nextState.availability;
 		nextState = JSON.stringify(nextState);
 
 		// If the new state & previous state match, do nothing

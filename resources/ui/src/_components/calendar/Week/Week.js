@@ -10,6 +10,7 @@ import Frequency from "../../../_enums/Frequency";
 import slotExists from "../../../_helpers/slotExists";
 import padZero from "../../../_helpers/padZero";
 import getLastSlot from "../../../_helpers/getLastSlot";
+import formatDate from "../../../_helpers/formatDate";
 
 const DAYS = [
 	"Monday",
@@ -143,11 +144,24 @@ class Week extends Component {
 			if (slot.splitBottom)
 				cls.push(styles["split-bottom"]);
 
+			const hasBookings = this._hasBookings(slot);
+			let title = "No Bookings";
+			if (hasBookings) {
+				cls.push(styles["has-bookings"]);
+				title = "Has Bookings";
+
+				if (hasBookings === 1) {
+					cls.push(styles["fully-booked"]);
+					title = "Fully Booked";
+				}
+			}
+
 			return (
 				<span
 					key={id}
 					style={slot.position}
 					class={cls.join(" ")}
+					title={title}
 				>
 					<span>
 						Bookable
@@ -426,10 +440,25 @@ class Week extends Component {
 		return from + " - " + to;
 	}
 
+	_hasBookings (slot) {
+		const dateUTC = new Date(slot.date.getTime() + slot.date.getTimezoneOffset() * 60000);
+		const key = formatDate(dateUTC, 'Y-m-d G:i:s');
+
+		if (!this.props.availability.hasOwnProperty(key))
+			return false;
+
+		if (this.props.availability[key] === 0)
+			return 1;
+
+		return this.props.availability[key] < this.props.multiplier;
+	}
+
 }
 
-export default connect(({ settings: { baseRule }, slots, exceptions }) => ({
+export default connect(({ settings: { baseRule }, slots, exceptions, availability, multiplier }) => ({
 	baseRule,
 	slots,
 	exceptions,
+	availability,
+	multiplier,
 }))(Week);

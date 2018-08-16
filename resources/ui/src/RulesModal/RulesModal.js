@@ -102,9 +102,7 @@ class RulesModal extends Component {
 	}
 
 	_renderSidebar () {
-		const { baseRule, exceptions } = this.props;
-
-		const TEMP_hasBookings = false;
+		const { baseRule, exceptions, hasAnyBookings } = this.props;
 
 		return (
 			<aside class={styles.sidebar}>
@@ -116,7 +114,7 @@ class RulesModal extends Component {
 
 				<div class={styles.rulesWrap}>
 					<div class={styles.rules}>
-						{TEMP_hasBookings ? (
+						{hasAnyBookings ? (
 							<div class={[styles.notice, styles.warning].join(" ")}>
 								<strong>Notice:</strong> You are no longer able
 								to edit the primary rule as this element has
@@ -133,7 +131,7 @@ class RulesModal extends Component {
 						<RuleBlock
 							isBaseRule
 							rule={baseRule}
-							disabled={TEMP_hasBookings}
+							disabled={hasAnyBookings}
 						/>
 
 						<hr/>
@@ -206,7 +204,8 @@ class RulesModal extends Component {
 
 }
 
-export default connect(({ settings: { baseRule, exceptions } }) => ({
+export default connect(({ settings: { baseRule, exceptions }, hasAnyBookings }) => ({
 	baseRule,
 	exceptions,
+	hasAnyBookings,
 }))(RulesModal);

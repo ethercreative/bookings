@@ -58,6 +58,7 @@ class EventField extends Field
 		$craft = \Craft::$app;
 		$view = $craft->view;
 
+		$id = $value->id;
 		$handle = $view->namespaceInputName($this->handle);
 		/** @var Event|mixed $value */
 		$value = $value->asArray();
@@ -86,7 +87,7 @@ class EventField extends Field
 		}
 
 		$props = Json::encode(array_merge(
-			compact('handle', 'timezone', 'dateFormat'),
+			compact('id', 'handle', 'timezone', 'dateFormat'),
 			$value
 		));
 

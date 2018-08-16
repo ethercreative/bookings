@@ -64,7 +64,7 @@ class Availability
 		if ($baseRule->until && $baseRule->repeats === RecursionRule::REPEATS_UNTIL)
 			$this->_end = $baseRule->until;
 
-		if ($baseRule->count && $baseRule->count < 1000 && $baseRule->repeats === RecursionRule::REPEATS_UNTIL)
+		if ($baseRule->count && $baseRule->count < 1000 && $baseRule->repeats === RecursionRule::REPEATS_COUNT)
 			$this->_count = $baseRule->count;
 	}
 
@@ -169,7 +169,7 @@ class Availability
 		$groupedSlots = [];
 
 		$utc     = new \DateTimeZone('UTC');
-		$limit   = $this->_count !== null ? /*PHP_INT_MAX*/10 : $this->_count;
+		$limit   = $this->_count === null ? PHP_INT_MAX : $this->_count;
 		$slotMax = $this->_event->multiplier;
 
 		/** @var \DateTime $slot */
@@ -201,12 +201,12 @@ class Availability
 		$start = $this->_start->setTimezone($utc)->format(\DateTime::W3C);
 		$end = $this->_end ? $this->_end->setTimezone($utc)->format(\DateTime::W3C) : null;
 
-		$where = [ 'eventId' => $this->_event->id ];
+		$where = ['eventId' => $this->_event->id];
 		if ($this->_ticket)
 			$where['ticketId'] = $this->_ticket->id;
 
 		$query = (new Query())
-			->select([$group, 'count(id)'/*, 'bookingId'*/])
+			->select([$group, 'count(id)'])
 			->from(BookedSlotRecord::$tableName)
 			->where($where)
 			->andWhere(['>=', 'date', $start]);
@@ -216,7 +216,7 @@ class Availability
 		else if ($this->_count)
 			$query = $query->andWhere(['<=', 'date', $this->_endDateFromCount()]);
 
-		$query = $query->groupBy(['slot'/*, 'bookingId'*/]);
+		$query = $query->groupBy(['slot']);
 
 		return $query->pairs();
 	}

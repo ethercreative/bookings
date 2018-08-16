@@ -8,9 +8,13 @@
 
 namespace ether\bookings\controllers;
 
+use craft\db\Query;
 use craft\helpers\Json;
 use craft\web\Controller;
+use ether\bookings\Bookings;
+use ether\bookings\common\Availability;
 use ether\bookings\models\Event;
+use ether\bookings\records\BookedSlotRecord;
 
 
 /**
@@ -31,6 +35,8 @@ class ApiController extends Controller
 	 *
 	 * @return \yii\web\Response
 	 * @throws \yii\web\BadRequestHttpException
+	 * @throws \yii\base\Exception
+	 * @throws \Exception
 	 */
 	public function actionGetCalendar ()
 	{
@@ -40,15 +46,31 @@ class ApiController extends Controller
 		$request = \Craft::$app->request;
 
 		$body = Json::decode($request->getRequiredBodyParam('body'), true);
+		$id = $request->getBodyParam('id');
 		list('baseRule' => $baseRule, 'exceptions' => $exceptions) = $body;
 
-		$event = new Event();
+		if ($id)
+			$event = Bookings::getInstance()->events->getEventById($id);
+
+		if (empty($event))
+			$event = new Event();
+
 		$event->baseRule = $baseRule;
 		$event->exceptions = $exceptions;
+
+		$availability = new Availability(clone $event);
+
+		// TODO: Move to service?
+		$hasAnyBookings = (new Query())
+			->from(BookedSlotRecord::$tableName)
+			->where(['eventId' => $event->id])
+			->count('id') > 0;
 
 		return $this->asJson([
 			'slots' => $event->getAllSlots(),
 			'exceptions' => $event->invert()->getAllSlots(),
+			'availability' => $availability->all(),
+			'hasAnyBookings' => $hasAnyBookings,
 		]);
 	}
 
