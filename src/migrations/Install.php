@@ -198,6 +198,7 @@ class Install extends Migration
 			'orderId'           => $this->integer()->null(),
 			'customerId'        => $this->integer()->null(),
 			'customerEmail'     => $this->string()->null(),
+			'slot'              => $this->dateTime()->notNull(),
 			'dateBooked'        => $this->dateTime()->null(),
 			'reservationExpiry' => $this->dateTime()->null(),
 

@@ -206,7 +206,7 @@ class Availability
 			$where['ticketId'] = $this->_ticket->id;
 
 		$query = (new Query())
-			->select([$group, 'count(id)'])
+			->select([$group, 'count(DISTINCT bookingId)'])
 			->from(BookedSlotRecord::$tableName)
 			->where($where)
 			->andWhere(['>=', 'date', $start]);
@@ -224,12 +224,12 @@ class Availability
 	private function _slots ()
 	{
 		if ($this->_end)
-			return $this->_event->getSlotsInRangeAsIterable(
+			return $this->_event->getSlotsInRange(
 				$this->_start,
 				$this->_end
 			);
 
-		return $this->_event->getSlotsFromAsIterable($this->_start);
+		return $this->_event->getSlotsFrom($this->_start);
 	}
 
 	private function _getDateFormat ($lang = 'php')

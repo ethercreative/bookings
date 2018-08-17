@@ -24,6 +24,7 @@ use craft\records\User;
  * @property int|null $orderId
  * @property int|null $customerId
  * @property string $customerEmail
+ * @property \DateTime $slot
  * @property \DateTime $dateBooked
  * @property \DateTime|null $reservationExpiry
  * @property \DateTime $dateCreated

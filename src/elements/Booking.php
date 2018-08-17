@@ -62,6 +62,9 @@ class Booking extends Element
 	/** @var string|null */
 	public $customerEmail;
 
+	/** @var \DateTime */
+	public $slot;
+
 	/** @var \DateTime|null */
 	public $dateBooked;
 
@@ -137,6 +140,7 @@ class Booking extends Element
 	{
 		$attrs = parent::datetimeAttributes();
 
+		$attrs[] = 'slot';
 		$attrs[] = 'dateBooked';
 		$attrs[] = 'reservationExpiry';
 
@@ -294,6 +298,7 @@ class Booking extends Element
 		$record->orderId = $this->orderId;
 		$record->customerId = $this->customerId;
 		$record->customerEmail = $this->customerEmail;
+		$record->slot = $this->slot;
 		$record->dateBooked = $this->dateBooked;
 		$record->reservationExpiry = $this->reservationExpiry;
 

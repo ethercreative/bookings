@@ -11,6 +11,7 @@ namespace ether\bookings\elements\db;
 use craft\base\ElementInterface;
 use craft\elements\db\ElementQuery;
 use craft\elements\User;
+use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
 use ether\bookings\models\Event;
 use ether\bookings\records\BookingRecord;
@@ -51,6 +52,9 @@ class BookingQuery extends ElementQuery
 
 	/** @var string */
 	public $customerEmail;
+
+	/** @var \DateTime */
+	public $slot;
 
 	// TODO: Date Booked / Reservation Expiry?
 
@@ -129,6 +133,16 @@ class BookingQuery extends ElementQuery
 		return $this;
 	}
 
+	public function slot ($value)
+	{
+		if (!($value instanceof \DateTime))
+			$this->slot = DateTimeHelper::toDateTime($value);
+		else
+			$this->slot = $value;
+
+		return $this;
+	}
+
 	// Methods: Protected
 	// -------------------------------------------------------------------------
 
@@ -148,6 +162,7 @@ class BookingQuery extends ElementQuery
 			$table . '.customerEmail',
 			$table . '.dateBooked',
 			$table . '.reservationExpiry',
+			$table . '.slot',
 		]);
 
 		if ($this->status)
@@ -195,6 +210,14 @@ class BookingQuery extends ElementQuery
 				Db::parseParam(
 					$table . '.customerEmail',
 					$this->customerEmail
+				)
+			);
+
+		if ($this->slot)
+			$this->subQuery->andWhere(
+				Db::parseParam(
+					$table . '.slot',
+					Db::prepareDateForDb($this->slug)
 				)
 			);
 

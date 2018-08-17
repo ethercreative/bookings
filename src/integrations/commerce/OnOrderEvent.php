@@ -90,9 +90,11 @@ class OnOrderEvent
 		}
 
 		// Do we have an existing booking?
-		$booking = $bookings->bookings->getBookingByOrderAndEventIds(
+		// TODO: Date ranges
+		$booking = $bookings->bookings->getBookingByOrderEventAndSlot(
 			$order->id,
-			$event->id
+			$event->id,
+			$startDate
 		);
 
 		// Is time available?
@@ -156,9 +158,11 @@ class OnOrderEvent
 
 		// Do we have an existing booking?
 		// TODO: cache from onBeforeSaveLineItem?
-		$booking = $bookings->bookings->getBookingByOrderAndEventIds(
+		// TODO: Date ranges
+		$booking = $bookings->bookings->getBookingByOrderEventAndSlot(
 			$order->id,
-			$event->id
+			$event->id,
+			$startDate
 		);
 
 		// Create a new booking if one doesn't exist
@@ -170,6 +174,7 @@ class OnOrderEvent
 			$booking->eventId    = $event->id;
 			$booking->orderId    = $order->id;
 			$booking->customerId = $order->customerId;
+			$booking->slot       = $startDate;
 
 			$craft->elements->saveElement($booking);
 		}

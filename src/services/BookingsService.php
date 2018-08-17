@@ -9,6 +9,7 @@
 namespace ether\bookings\services;
 
 use craft\base\Component;
+use craft\helpers\Db;
 use ether\bookings\Bookings;
 use ether\bookings\elements\Booking;
 
@@ -24,16 +25,18 @@ class BookingsService extends Component
 {
 
 	/**
-	 * @param $orderId
-	 * @param $eventId
+	 * @param int       $orderId
+	 * @param int       $eventId
+	 * @param \DateTime $slot
 	 *
 	 * @return array|\craft\base\ElementInterface|null|Booking
 	 */
-	public function getBookingByOrderAndEventIds ($orderId, $eventId)
+	public function getBookingByOrderEventAndSlot ($orderId, $eventId, $slot)
 	{
 		return Booking::find()->andWhere([
 			'orderId' => $orderId,
 			'eventId' => $eventId,
+			'slot'    => Db::prepareDateForDb($slot),
 		])->one();
 	}
 
