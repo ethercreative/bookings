@@ -1,3 +1,7 @@
+## 1.0.0-alpha.6.1
+### Fixed
+- Fixed migration filling DB column with incorrectly formatted date
+
 ## 1.0.0-alpha.6
 ### Fixed
 - Fixed postgresql throwing error when querying availability

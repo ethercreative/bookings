@@ -4,6 +4,7 @@ namespace ether\bookings\migrations;
 
 use Craft;
 use craft\db\Migration;
+use craft\helpers\Db;
 use ether\bookings\records\BookingRecord;
 use yii\db\Schema;
 
@@ -20,7 +21,10 @@ class m180817_134348_AddSlotColumnToBookings extends Migration
         $this->addColumn(
         	BookingRecord::$tableName,
 	        'slot',
-	        $this->dateTime()->notNull()
+	        $this->dateTime()->notNull()->defaultValue(
+	        	// This is *technically* wrong but fuck it
+	        	Db::prepareDateForDb(new \DateTime())
+	        )
         );
     }
 
