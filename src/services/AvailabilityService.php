@@ -43,7 +43,7 @@ class AvailabilityService extends Component
 		$bookedSlots = BookedSlotRecord::find()->andWhere([
 			'eventId' => $event->id,
 			'date'    => $time->setTimezone(new \DateTimeZone('UTC'))->format(\DateTime::W3C),
-		])->all();
+		])->select('ticketId, bookingId')->all();
 
 		$bookedByTicket = ArrayHelper::groupBy(
 			$bookedSlots,
@@ -63,11 +63,17 @@ class AvailabilityService extends Component
 			return false;
 
 		// Check the ticket capacity
-		if ($booking !== null && array_key_exists($booking->id, $bookedByBooking) && $qty > $bookedByBooking[$booking->id])
-			return false;
+		if (
+			$booking !== null
+			&& array_key_exists($booking->id, $bookedByBooking)
+		) {
+			$nextQty = $qty + count($bookedByBooking[$booking->id]);
+			if ($ticket->capacity < $nextQty || $event->capacity < $nextQty)
+				return false;
+		}
 
 		// Check the event capacity
-		if ($event->capacity && $event->capacity <= count($bookedSlots))
+		if ($event->capacity && $event->capacity <= count($bookedSlots) + $qty)
 			return false;
 
 		return true;

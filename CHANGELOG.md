@@ -2,6 +2,7 @@
 ### Fixed
 - Passing start date when checking availability no longer makes that date the primary rules start date.
 - Bookings are unique per-slot
+- Updating stock in the cart validates correctly
 
 ### Improved
 - Querying availability in range now much faster
