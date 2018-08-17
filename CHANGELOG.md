@@ -1,4 +1,4 @@
-## [Unreleased] 1.0.0-alpha.5
+## 1.0.0-alpha.5
 ### Fixed
 - Passing start date when checking availability no longer makes that date the primary rules start date.
 - Bookings are unique per-slot
@@ -7,7 +7,7 @@
 ### Improved
 - Querying availability in range now much faster
 
-## Added
+### Added
 - Added `Event::getNextAvailableSlot()`
 
 ## 1.0.0-alpha.4
