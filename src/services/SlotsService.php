@@ -36,7 +36,7 @@ class SlotsService extends Component
 		if ($end === null)
 			return [$start];
 
-		return $event->getSlotsInRangeAsIterable($start, $end);
+		return $event->getSlotsInRange($start, $end);
 	}
 
 	/**

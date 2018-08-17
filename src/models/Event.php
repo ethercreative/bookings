@@ -229,78 +229,6 @@ class Event extends Model
 	}
 
 	/**
-	 * @param \DateTime|string $start
-	 * @param \DateTime|string $end
-	 *
-	 * @return RSet|\Iterator|\ArrayAccess|\Countable
-	 */
-	public function getSlotsInRangeAsIterable ($start, $end)
-	{
-		$start = DateTimeHelper::toDateTime($start);
-		$end = DateTimeHelper::toDateTime($end);
-
-		$baseStart = $this->_baseRule->start;
-		$baseUntil = $this->_baseRule->until;
-		$repeatsUntil =
-			$this->_baseRule->repeats === RecursionRule::REPEATS_UNTIL;
-
-		$baseOverride = clone $this->_baseRule;
-
-		// If the end time is before the base until time or we're not repeating
-		// until, set the until time to the end and repeats to Until
-		if (!$repeatsUntil || $end->getTimestamp() < $baseUntil->getTimestamp())
-		{
-			$baseOverride->until = $end;
-			$baseOverride->repeats = RecursionRule::REPEATS_UNTIL;
-		}
-
-		$set = clone $this->_getSet($baseOverride);
-
-		// If the start time is after the base start time, exclude all slots
-		// between the original start date and our specified one
-		if ($start->getTimestamp() > $baseStart->getTimestamp())
-		{
-			$ex            = new ExceptionRule();
-			$ex->start     = $baseStart;
-			$ex->until     = $start;
-			$ex->repeats   = RecursionRule::REPEATS_UNTIL;
-			$ex->frequency = $baseOverride->frequency;
-			$set->addExRule($ex->asRRuleArray());
-		}
-
-		return $set;
-	}
-
-	/**
-	 * Gets all the slots from te given start as an iterable
-	 *
-	 * @param \DateTime|string $start
-	 *
-	 * @return RSet|\Iterator|\ArrayAccess|\Countable
-	 */
-	public function getSlotsFromAsIterable ($start)
-	{
-		$start = DateTimeHelper::toDateTime($start);
-
-		$baseStart = $this->_baseRule->start;
-		$set       = clone $this->_getSet();
-
-		// If the start time is after the base start time, exclude all slots
-		// between the original start date and our specified one
-		if ($start->getTimestamp() > $baseStart->getTimestamp())
-		{
-			$ex            = new ExceptionRule();
-			$ex->start     = $baseStart;
-			$ex->until     = $start;
-			$ex->repeats   = RecursionRule::REPEATS_UNTIL;
-			$ex->frequency = $this->_baseRule->frequency;
-			$set->addExRule($ex->asRRuleArray());
-		}
-
-		return $set;
-	}
-
-	/**
 	 * Gets all the slots withing the given range as an array
 	 *
 	 * @param \DateTime|string $start
@@ -310,20 +238,25 @@ class Event extends Model
 	 */
 	public function getSlotsInRange ($start, $end): array
 	{
-		return $this->getSlotsInRangeAsIterable($start, $end)->getOccurrences();
+		$start = DateTimeHelper::toDateTime($start);
+		$end   = DateTimeHelper::toDateTime($end);
+
+		return $this->_getSet()->getOccurrencesBetween($start, $end);
 	}
 
 	/**
 	 * Gets X number of slots from the given DateTime
 	 *
 	 * @param \DateTime|string $start
-	 * @param int              $count
+	 * @param int|null         $count
 	 *
 	 * @return array
 	 */
-	public function getSlotsFrom ($start, $count = 100): array
+	public function getSlotsFrom ($start, $count = null): array
 	{
-		return $this->getSlotsFromAsIterable($start)->getOccurrences($count);
+		$start = DateTimeHelper::toDateTime($start);
+
+		return $this->_getSet()->getOccurrencesBetween($start, null, $count);
 	}
 
 	/**
