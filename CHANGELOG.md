@@ -1,4 +1,10 @@
 ## [Unreleased] 1.0.0-alpha.6
+### Fixed
+- Fixed postgresql throwing error when querying availability
+- Fixed Recursion Rule issue when given empty timezone
+
+### Improved
+- Days / Weeks without bookable slots are skipped in the Calendar UI
 
 ## 1.0.0-alpha.5
 ### Fixed

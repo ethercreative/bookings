@@ -74,15 +74,36 @@ class Day extends Component {
 	// =========================================================================
 
 	render (_, { days }) {
+		const { formattedSlots } = this.state;
+
+		let skippedPreviousDay = false;
+
 		return (
 			<div class={styles.scroller}>
-				{days.map((day, index) => (
-					<div key={index} class={styles.group}>
-						{Day._renderHeader(day, index)}
-						{Day._renderLabels()}
-						{this._renderCells(day)}
-					</div>
-				))}
+				{days.map((day, index) => {
+					if (!Day._dayHasSlots(formattedSlots, day)) {
+						if (skippedPreviousDay) return null;
+
+						skippedPreviousDay = true;
+
+						return (
+							<div
+								class={styles.skipped}
+								title="Empty days have been hidden"
+							><i/></div>
+						);
+					}
+
+					skippedPreviousDay = false;
+
+					return (
+						<div key={index} class={styles.group}>
+							{Day._renderHeader(day, index)}
+							{Day._renderLabels()}
+							{this._renderCells(day)}
+						</div>
+					);
+				})}
 			</div>
 		);
 	}
@@ -218,7 +239,7 @@ class Day extends Component {
 
 		const days = [firstDay];
 
-		let i = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)),
+		let i = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1,
 			prevDay = firstDay;
 
 		if (i === 0) i = 1;
@@ -408,6 +429,11 @@ class Day extends Component {
 			return 1;
 
 		return this.props.availability[key] < this.props.multiplier;
+	}
+
+	static _dayHasSlots (formattedSlots, day) {
+		const [y, m, d] = Day._correctDateByDay(day, 0);
+		return slotExists(formattedSlots, y, m, d);
 	}
 
 }

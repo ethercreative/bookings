@@ -66,15 +66,36 @@ class Week extends Component {
 	// =========================================================================
 
 	render (_, { weeks }) {
+		const { formattedSlots } = this.state;
+
+		let skippedPreviousWeek = false;
+
 		return (
 			<div class={styles.scroller}>
-				{weeks.map((week, index) => (
-					<div key={index} class={styles.group}>
-						{Week._renderHeader(week)}
-						{Week._renderLabels()}
-						{this._renderCells(week)}
-					</div>
-				))}
+				{weeks.map((week, index) => {
+					if (!Week._weekHasSlots(formattedSlots, week)) {
+						if (skippedPreviousWeek) return null;
+
+						skippedPreviousWeek = true;
+
+						return (
+							<div
+								class={styles.skipped}
+								title="Empty weeks have been hidden"
+							><i /></div>
+						);
+					}
+
+					skippedPreviousWeek = false;
+
+					return (
+						<div key={index} class={styles.group}>
+							{Week._renderHeader(week)}
+							{Week._renderLabels()}
+							{this._renderCells(week)}
+						</div>
+					);
+				})}
 			</div>
 		);
 	}
@@ -451,6 +472,18 @@ class Week extends Component {
 			return 1;
 
 		return this.props.availability[key] < this.props.multiplier;
+	}
+
+	static _weekHasSlots (formattedSlots, week) {
+		let i = 7;
+
+		while (i--) {
+			const [y, m, d] = Week._correctDayByWeek(week, i);
+			if (slotExists(formattedSlots, y, m, d))
+				return true;
+		}
+
+		return false;
 	}
 
 }
