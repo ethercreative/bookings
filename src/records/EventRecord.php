@@ -17,15 +17,18 @@ use craft\records\Field;
 /**
  * Class EventRecord
  *
- * @property int    $id
- * @property int    $elementId
- * @property int    $fieldId
- * @property bool   $enabled
- * @property string $type
- * @property int    $capacity
- * @property int    $multiplier
- * @property array  $baseRule
- * @property array  $exceptions
+ * @property int            $id
+ * @property int            $elementId
+ * @property int            $fieldId
+ * @property bool           $enabled
+ * @property string         $type
+ * @property int            $capacity
+ * @property int            $multiplier
+ * @property array          $baseRule
+ * @property array          $exceptions
+ * @property bool           $isInfinite
+ * @property \DateTime      $firstSlot
+ * @property \DateTime|null $lastSlot
  *
  * @author  Ether Creative
  * @package ether\bookings\records

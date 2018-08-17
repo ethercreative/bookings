@@ -72,8 +72,13 @@ class Install extends Migration
 			'type'       => $this->enum('type', $types)->notNull(),
 			'capacity'   => $this->integer(),
 			'multiplier' => $this->integer(),
+
 			'baseRule'   => $this->json(),
 			'exceptions' => $this->json(),
+
+			'isInfinite' => $this->boolean()->notNull()->defaultValue(false),
+			'firstSlot'  => $this->dateTime()->notNull(),
+			'lastSlot'   => $this->dateTime()->null(),
 
 			'dateCreated' => $this->dateTime()->notNull(),
 			'dateUpdated' => $this->dateTime()->notNull(),

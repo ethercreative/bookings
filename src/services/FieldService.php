@@ -15,6 +15,7 @@ use craft\elements\db\ElementQuery;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\db\MatrixBlockQuery;
 use craft\fields\Matrix;
+use craft\helpers\Db;
 use craft\helpers\Json;
 use ether\bookings\fields\EventField;
 use ether\bookings\fields\TicketField;
@@ -128,12 +129,15 @@ class FieldService extends Component
 			$record->fieldId   = $field->id;
 		}
 
-		$record->enabled    = $model->enabled;
+		$record->enabled    = (bool) $model->enabled;
 		$record->type       = $model->type;
 		$record->capacity   = $model->capacity;
 		$record->multiplier = $model->multiplier;
 		$record->baseRule   = $model->baseRule;
 		$record->exceptions = $model->exceptions;
+		$record->isInfinite = $model->isInfinite;
+		$record->firstSlot  = $model->firstSlot;
+		$record->lastSlot   = $model->lastSlot;
 
 		if (!$record->save())
 		{
@@ -172,20 +176,37 @@ class FieldService extends Component
 
 		$on = [
 			'and',
-			'[[elements.id]] = [[' . $tableAlias . '.ownerId]]',
+			'[[elements.id]] = [[' . $tableAlias . '.elementId]]',
 		];
-
-		$query->query->join(
-			'JOIN',
-			$tableName . ' ' . $tableAlias,
-			$on
-		);
 
 		$query->subQuery->join(
 			'JOIN',
 			$tableName . ' ' . $tableAlias,
 			$on
 		);
+
+		if (array_key_exists('before', $value))
+		{
+			$before = Db::prepareDateForDb($value['before']);
+			$query->subQuery->andWhere(
+				'[[' . $tableAlias . '.firstSlot]] <= \'' . $before . '\''
+			);
+		}
+
+		if (array_key_exists('after', $value))
+		{
+			$after = Db::prepareDateForDb($value['after']);
+			$query->subQuery->andWhere([
+				'or',
+				'[[' . $tableAlias . '.firstSlot]] >= \'' . $after . '\'',
+				'[[' . $tableAlias . '.lastSlot]] >= \'' . $after . '\'',
+				[
+					'and',
+					'[[' . $tableAlias . '.firstSlot]] <= \'' . $after . '\'',
+					'[[' . $tableAlias . '.isInfinite]] = true',
+				]
+			]);
+		}
 	}
 
 	// Ticket Field

@@ -19,8 +19,11 @@ use yii\helpers\Json;
 /**
  * Class Event
  *
- * @property RecursionRule $baseRule
+ * @property RecursionRule   $baseRule
  * @property ExceptionRule[] $exceptions
+ * @property bool            $isInfinite
+ * @property \DateTime       $firstSlot
+ * @property \DateTime|null  $lastSlot
  *
  * @author  Ether Creative
  * @package ether\bookings\models
@@ -124,6 +127,9 @@ class Event extends Model
 	 */
 	public function getBaseRule (): RecursionRule
 	{
+		if (empty($this->_baseRule))
+			$this->_baseRule = new RecursionRule();
+
 		return $this->_baseRule;
 	}
 
@@ -158,6 +164,35 @@ class Event extends Model
 			$exceptions = Json::decode($exceptions);
 
 		$this->_exceptions = $this->_mapExceptions($exceptions);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getIsInfinite ()
+	{
+		return $this->_getSet()->isInfinite();
+	}
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getFirstSlot ()
+	{
+		return $this->_getSet()[0];
+	}
+
+	/**
+	 * @return \DateTime|null
+	 */
+	public function getLastSlot ()
+	{
+		if ($this->isInfinite)
+			return null;
+
+		$set = $this->_getSet();
+
+		return $set[$set->count() - 1];
 	}
 
 	// Methods: Public

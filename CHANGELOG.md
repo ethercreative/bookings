@@ -3,6 +3,9 @@
 - Fixed postgresql throwing error when querying availability
 - Fixed Recursion Rule issue when given empty timezone
 
+### Added
+- Filter elements by their event fields slots using before / after times
+
 ### Improved
 - Days / Weeks without bookable slots are skipped in the Calendar UI
 

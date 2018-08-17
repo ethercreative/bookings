@@ -44,7 +44,7 @@ class RecursionRule extends Model
 	 * @var string The frequency of the rule
 	 * @see Frequency
 	 */
-	public $frequency;
+	public $frequency = Frequency::Monthly;
 
 	/**
 	 * @var \DateTime The rules start datetime
