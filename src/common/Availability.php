@@ -206,7 +206,7 @@ class Availability
 			$where['ticketId'] = $this->_ticket->id;
 
 		$query = (new Query())
-			->select([$group, 'count(DISTINCT bookingId)'])
+			->select([$group, 'count(DISTINCT \'bookingId\')'])
 			->from(BookedSlotRecord::$tableName)
 			->where($where)
 			->andWhere(['>=', 'date', $start]);

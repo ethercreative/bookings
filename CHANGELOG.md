@@ -1,3 +1,5 @@
+## [Unreleased] 1.0.0-alpha.6
+
 ## 1.0.0-alpha.5
 ### Fixed
 - Passing start date when checking availability no longer makes that date the primary rules start date.

@@ -140,6 +140,8 @@ class RecursionRule extends Model
 
 	public function init ()
 	{
+		$defaultTimezone = \Craft::$app->getTimeZone();
+
 		// Normalize dates
 		if ($this->start !== null)
 		{
@@ -150,7 +152,7 @@ class RecursionRule extends Model
 			) {
 				$this->start = new \DateTime(
 					$this->start['date'],
-					new \DateTimeZone($this->start['timezone'])
+					new \DateTimeZone($this->start['timezone'] ?: $defaultTimezone)
 				);
 			}
 
@@ -166,7 +168,7 @@ class RecursionRule extends Model
 			) {
 				$this->until = new \DateTime(
 					$this->until['date'],
-					new \DateTimeZone($this->until['timezone'])
+					new \DateTimeZone($this->until['timezone'] ?: $defaultTimezone)
 				);
 			}
 

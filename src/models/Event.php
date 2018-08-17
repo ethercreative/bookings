@@ -12,7 +12,6 @@ use craft\helpers\DateTimeHelper;
 use ether\bookings\base\Model;
 use ether\bookings\enums\EventType;
 use ether\bookings\records\EventRecord;
-use RRule\RRule;
 use RRule\RSet;
 use yii\helpers\Json;
 
@@ -33,7 +32,7 @@ class Event extends Model
 	// Properties
 	// =========================================================================
 
-	const SLOT_HARD_LIMIT = 1000;
+	const SLOT_HARD_LIMIT = 2000;
 
 	/** @var int */
 	public $id;
