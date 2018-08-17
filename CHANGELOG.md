@@ -1,4 +1,4 @@
-## [Unreleased] 1.0.0-alpha.6
+## 1.0.0-alpha.6
 ### Fixed
 - Fixed postgresql throwing error when querying availability
 - Fixed Recursion Rule issue when given empty timezone
