@@ -106,8 +106,8 @@ class OnOrderEvent
 			$err = \Craft::t(
 				'bookings',
 				$qty > 1
-					? 'Selected Date / Time is unavailable.'
-					: 'Selected Date / Time is unavailable at that quantity.'
+					? 'Selected Date / Time is unavailable at that quantity.'
+					: 'Selected Date / Time is unavailable.'
 			);
 
 			$order->addError('ticket', $err);
