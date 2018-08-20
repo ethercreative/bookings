@@ -73,7 +73,7 @@ class Week extends Component {
 		return (
 			<div class={styles.scroller}>
 				{weeks.map((week, index) => {
-					if (!Week._weekHasSlots(formattedSlots, week)) {
+					if (!Week._weekHasSlots(formattedSlots, week) && index !== 0) {
 						if (skippedPreviousWeek) return null;
 
 						skippedPreviousWeek = true;

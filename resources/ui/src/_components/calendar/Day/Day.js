@@ -81,7 +81,7 @@ class Day extends Component {
 		return (
 			<div class={styles.scroller}>
 				{days.map((day, index) => {
-					if (!Day._dayHasSlots(formattedSlots, day)) {
+					if (!Day._dayHasSlots(formattedSlots, day) && index !== 0) {
 						if (skippedPreviousDay) return null;
 
 						skippedPreviousDay = true;
