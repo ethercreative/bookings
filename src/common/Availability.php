@@ -101,7 +101,7 @@ class Availability
 		return $this;
 	}
 
-	public function count ($value)
+	public function limit ($value)
 	{
 		$this->_count = $value;
 
@@ -229,7 +229,7 @@ class Availability
 				$this->_end
 			);
 
-		return $this->_event->getSlotsFrom($this->_start);
+		return $this->_event->getSlotsFrom($this->_start, $this->_count);
 	}
 
 	private function _getDateFormat ($lang = 'php')

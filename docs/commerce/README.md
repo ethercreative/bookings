@@ -1,8 +1,14 @@
 ---
 title: Craft Commerce
-sidebar: auto
 ---
 
 # Craft Commerce
 
-Coming Soon
+## Templating
+
+- [How to Book](templating/how-to-book.md)
+- [Availability](templating/availability.md)
+
+## API
+
+- [Availability](api/availability.md)

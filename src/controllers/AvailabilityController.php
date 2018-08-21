@@ -52,8 +52,8 @@ class AvailabilityController extends Controller
 		if ($end = $request->getParam('end'))
 			$availability->end($end);
 
-		if ($count = $request->getParam('count'))
-			$availability->count($count);
+		if ($limit = $request->getParam('limit'))
+			$availability->limit($limit);
 
 		if ($group = $request->getParam('group'))
 			$availability->groupBy($group);

@@ -19,36 +19,26 @@ module.exports = {
 		},
 
 		nav: [
-			{ text: "Core", link: "/core/" },
+			{ text: "Stand-Alone", link: "/standalone/" },
 			{ text: "Commerce", link: "/commerce/" },
 			{ text: "Changelog", link: "https://github.com/ethercreative/bookings/blob/master/CHANGELOG.md" },
 		],
 
 		sidebar: {
-			"/core/": [
-				{
-					title: "Introduction",
-					collapsable: false,
-					children: [
-						"concepts",
-					],
-				},
+			"/commerce/": [
 				{
 					title: "Templating",
 					collapsable: false,
 					children: [
-						"templating/functions",
-						"templating/global-variables",
-						"templating/bookings",
+						"templating/how-to-book",
 						"templating/availability",
-					]
+					],
 				},
 				{
-					title: "Example Templates",
+					title: "API",
 					collapsable: false,
 					children: [
-						"example-templates/reserve-slot",
-						"example-templates/confirm-booking",
+						"api/availability",
 					],
 				},
 			],

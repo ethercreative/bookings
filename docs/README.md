@@ -1,7 +1,7 @@
 ---
 home: true
 actionText: Get Started →
-actionLink: /core/
+actionLink: /commerce/
 ---
 
 ::: danger Work in Progress
