@@ -441,7 +441,7 @@ class Booking extends Element
 			])
 			->innerJoin(
 				'{{%content}} content',
-				'{{%content}}.{{%elementId}} = {{%elements}}.{{%id}} AND {{%content}}.{{%siteId}} = ' . \Craft::$app->sites->primarySite->id
+				'content.elementId = elements.id AND content.siteId = ' . \Craft::$app->sites->primarySite->id
 			)
 			->orderBy('content.title asc')
 			->all();

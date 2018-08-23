@@ -1,3 +1,7 @@
+## [Unreleased] 1.0.0-alpha.6.2
+### Fixed
+- Fixed Booking CP section erring when DB was prefixed.
+
 ## 1.0.0-alpha.6.1
 ### Fixed
 - Fixed migration filling DB column with incorrectly formatted date
