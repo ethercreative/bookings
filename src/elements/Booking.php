@@ -425,10 +425,11 @@ class Booking extends Element
 		];
 
 		$enabledBookables = (new Query())
-			->select(['events.elementId'])
+			->select(['events.elementId', 'events.id'])
 			->from([EventRecord::$tableName . ' events'])
 			->where(['events.enabled' => true]);
 
+		$enabledBookableElementToEvent = $enabledBookables->pairs();
 		$enabledBookableElementIds = $enabledBookables->column();
 
 		$elements = (new Query())
@@ -473,8 +474,8 @@ class Booking extends Element
 					'key'         => $key,
 					'label'       => $element['title'],
 					'criteria'    => [
-						'elementId' => $element['id'],
-						'status'    => self::STATUS_COMPLETED,
+						'eventId' => $enabledBookableElementToEvent[$element['id']],
+						'status'  => self::STATUS_COMPLETED,
 					],
 					'defaultSort' => ['slotStart', 'desc']
 				];

@@ -1,6 +1,7 @@
 ## [Unreleased] 1.0.0-alpha.6.2
 ### Fixed
 - Fixed Booking CP section erring when DB was prefixed.
+- Fixed Booking CP not filtering correctly.
 
 ## 1.0.0-alpha.6.1
 ### Fixed

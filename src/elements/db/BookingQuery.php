@@ -39,9 +39,6 @@ class BookingQuery extends ElementQuery
 	public $eventId;
 
 	/** @var int */
-	public $elementId;
-
-	/** @var int */
 	public $userId;
 
 	/** @var int */
@@ -82,16 +79,6 @@ class BookingQuery extends ElementQuery
 			$this->eventId = $value->id;
 		else
 			$this->eventId = $value;
-
-		return $this;
-	}
-
-	public function element ($value)
-	{
-		if ($value instanceof ElementInterface)
-			$this->elementId = $value->id;
-		else
-			$this->elementId = $value;
 
 		return $this;
 	}
