@@ -1,7 +1,10 @@
+## [Unreleased] 1.0.0-alpha.7
+### Fixed
+- Fixed Booking CP not filtering correctly.
+
 ## 1.0.0-alpha.6.2 - 2018-08-23
 ### Fixed
 - Fixed Booking CP section erring when DB was prefixed.
-- Fixed Booking CP not filtering correctly.
 
 ## 1.0.0-alpha.6.1
 ### Fixed
