@@ -205,18 +205,23 @@ class Availability
 		if ($this->_ticket)
 			$where['ticketId'] = $this->_ticket->id;
 
-		$query = (new Query())
-			->select([$group, 'count(DISTINCT \'bookingId\')'])
+		$subQuery = (new Query())
+			->select([$group, 'bookingId'])
 			->from(BookedSlotRecord::$tableName)
 			->where($where)
 			->andWhere(['>=', 'date', $start]);
 
 		if ($end)
-			$query = $query->andWhere(['<=', 'date', $end]);
+			$subQuery = $subQuery->andWhere(['<=', 'date', $end]);
 		else if ($this->_count)
-			$query = $query->andWhere(['<=', 'date', $this->_endDateFromCount()]);
+			$subQuery = $subQuery->andWhere(['<=', 'date', $this->_endDateFromCount()]);
 
-		$query = $query->groupBy(['slot']);
+		$subQuery = $subQuery->groupBy(['bookingId', 'slot']);
+
+		$query = (new Query())
+			->select(['slot', 'count(*)'])
+			->from(['a' => $subQuery])
+			->groupBy('slot');
 
 		return $query->pairs();
 	}
