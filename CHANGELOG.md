@@ -1,4 +1,4 @@
-## [Unreleased] 1.0.0-alpha.7
+## 1.0.0-alpha.7 - 2018-08-30
 ### Fixed
 - Fixed Booking CP not filtering correctly.
 - Fixed Event level slot capacity not taking multiplier into account.
