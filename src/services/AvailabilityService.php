@@ -73,7 +73,7 @@ class AvailabilityService extends Component
 		}
 
 		// Check the event capacity
-		if ($event->capacity && $event->capacity <= count($bookedSlots) + $qty)
+		if ($event->capacity && $event->capacity * ($event->multiplier ?: 1) <= count($bookedSlots) + $qty)
 			return false;
 
 		return true;
