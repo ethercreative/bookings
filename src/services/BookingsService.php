@@ -73,7 +73,7 @@ class BookingsService extends Component
 
 		$where = [
 			'and',
-			'{{%status}} = ' . Booking::STATUS_EXPIRED,
+			'[[status]] = ' . Booking::STATUS_EXPIRED,
 		];
 
 		if (!$force)
@@ -84,7 +84,7 @@ class BookingsService extends Component
 			);
 			$since = '\'' . $since->format(\DateTime::W3C) . '\'';
 
-			$where[] = '{{%reservationExpiry}} < ' . $since;
+			$where[] = '[[reservationExpiry]] < ' . $since;
 		}
 
 		$expiredBookings = Booking::find()->where($where)->all();
