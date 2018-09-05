@@ -6,11 +6,11 @@ export default function modelToRRule (model:RRule|ExRule) {
 		if (key !== "id")
 			obj[key] = model[key];
 
-		if (typeof obj[key] === "object" && obj[key].hasOwnProperty("date")) {
-			obj[key].date.setSeconds(0);
-			obj[key].date.setMilliseconds(0);
+		if (obj[key] instanceof Date) {
+			obj[key].setSeconds(0);
+			obj[key].setMilliseconds(0);
 
-			obj[key] = obj[key].date.toISOString();
+			obj[key] = obj[key].toISOString();
 		}
 
 		return obj;
