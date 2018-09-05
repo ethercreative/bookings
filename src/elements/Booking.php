@@ -313,19 +313,6 @@ class Booking extends Element
 		return parent::afterSave($isNew);
 	}
 
-	/**
-	 * @throws \Throwable
-	 * @throws \yii\db\StaleObjectException
-	 */
-	public function afterDelete ()
-	{
-		BookingRecord::findOne([
-			'id' => $this->id,
-		])->delete();
-
-		parent::afterDelete();
-	}
-
 	// Getters
 	// -------------------------------------------------------------------------
 
