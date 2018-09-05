@@ -149,13 +149,6 @@ class Field extends Component {
 					name={handle}
 					value={JSON.stringify({ enabled, capacity, multiplier, settings })}
 				/>
-
-				<code><pre>{JSON.stringify({
-					enabled,
-					capacity,
-					multiplier,
-					settings
-				}, null, '  ')}</pre></code>
 			</div>
 		);
 	}
