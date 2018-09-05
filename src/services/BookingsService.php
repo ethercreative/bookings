@@ -73,7 +73,7 @@ class BookingsService extends Component
 
 		$where = [
 			'and',
-			'[[status]] = ' . Booking::STATUS_EXPIRED,
+			'[[status]] != ' . Booking::STATUS_COMPLETED,
 		];
 
 		if (!$force)
