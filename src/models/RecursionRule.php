@@ -38,7 +38,7 @@ class RecursionRule extends Model
 	 * @var string The repetition the rule is restricted by (i.e. count, until)
 	 *             TODO: Use the constants above (pass to field type?)
 	 */
-	public $repeats;
+	public $repeats = self::REPEATS_COUNT;
 
 	/**
 	 * @var string The frequency of the rule
