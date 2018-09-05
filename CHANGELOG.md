@@ -1,3 +1,7 @@
+## 1.0.0-alpha.9 - 2018-09-05
+### Fixed
+- Fixed bug where a booking would make itself unavailable
+
 ## 1.0.0-alpha.8 - 2018-09-05
 ### Fixed
 - All dates are converted to UTC. Always.
