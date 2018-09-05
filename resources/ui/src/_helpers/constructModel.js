@@ -12,9 +12,13 @@ export default function constructModel (self, def = {}, overwriteId = false) {
 
 		let value = def[key];
 
-		if (~["start", "until"].indexOf(key) && value) {
+		if (~["start", "until"].indexOf(key)) {
+			if (!value)
+				value = new Date();
+
 			if (!(value instanceof Date))
 				value = new Date(value.date.replace(" ", "T") + "Z");
+
 			value.setSeconds(0);
 			value.setMilliseconds(0);
 		}
