@@ -1,3 +1,7 @@
+## [Unreleased] 1.0.0-alpha.10
+### Fixed
+- Fixed SQL error when running expire command
+
 ## 1.0.0-alpha.9 - 2018-09-05
 ### Fixed
 - Fixed bug where a booking would make itself unavailable
