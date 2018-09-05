@@ -15,7 +15,7 @@ use craft\helpers\Db;
 use craft\helpers\UrlHelper;
 use ether\bookings\Bookings;
 use ether\bookings\elements\db\BookingQuery;
-use ether\bookings\fields\EventField;
+use ether\bookings\helpers\DateHelper;
 use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\records\BookingRecord;
 use ether\bookings\records\EventRecord;
@@ -88,6 +88,12 @@ class Booking extends Element
 		try {
 			$this->expireBooking();
 		} catch (\Throwable $e) {}
+
+		if ($this->dateBooked)
+			$this->dateBooked = DateHelper::toUTCDateTime($this->dateBooked);
+
+		if ($this->reservationExpiry)
+			$this->reservationExpiry = DateHelper::toUTCDateTime($this->reservationExpiry);
 	}
 
 	public static function displayName (): string

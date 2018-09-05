@@ -36,7 +36,7 @@ export function refreshCalendar (state = store()) {
 
 function formatSlotsForStorage (slots) {
 	return slots.reduce((slots, slot) => {
-		const d = new Date(slot.date);
+		const d = new Date(slot.date.replace(" ", "T") + "Z");
 		d.setSeconds(0);
 		d.setMilliseconds(0);
 

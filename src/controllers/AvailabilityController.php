@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: tam
- * Date: 09/08/2018
- * Time: 16:26
+ * Bookings plugin for Craft CMS 3.x
+ *
+ * @link      https://ethercreative.co.uk
+ * @copyright Copyright (c) Ether Creative
  */
 
 namespace ether\bookings\controllers;
@@ -13,6 +13,13 @@ use craft\web\Controller;
 use ether\bookings\Bookings;
 use ether\bookings\common\Availability;
 
+/**
+ * Class AvailabilityController
+ *
+ * @author  Ether Creative
+ * @package ether\bookings\controllers
+ * @since   1.0.0
+ */
 class AvailabilityController extends Controller
 {
 

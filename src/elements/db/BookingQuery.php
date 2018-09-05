@@ -13,6 +13,7 @@ use craft\elements\db\ElementQuery;
 use craft\elements\User;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
+use ether\bookings\helpers\DateHelper;
 use ether\bookings\models\Event;
 use ether\bookings\records\BookingRecord;
 
@@ -122,10 +123,7 @@ class BookingQuery extends ElementQuery
 
 	public function slot ($value)
 	{
-		if (!($value instanceof \DateTime))
-			$this->slot = DateTimeHelper::toDateTime($value);
-		else
-			$this->slot = $value;
+		$this->slot = DateHelper::toUTCDateTime($value);
 
 		return $this;
 	}

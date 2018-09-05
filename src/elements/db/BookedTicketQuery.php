@@ -12,6 +12,7 @@ use craft\elements\db\ElementQuery;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
 use ether\bookings\elements\Booking;
+use ether\bookings\helpers\DateHelper;
 use ether\bookings\models\Ticket;
 use ether\bookings\records\BookedTicketRecord;
 
@@ -85,22 +86,14 @@ class BookedTicketQuery extends ElementQuery
 
 	public function startDate ($value)
 	{
-		if ($value instanceof \DateTime)
-			$this->startDate = $value;
-		else
-			$this->startDate = DateTimeHelper::toDateTime($value);
+		$this->startDate = DateHelper::toUTCDateTime($value);
 
 		return $this;
 	}
 
 	public function endDate ($value)
 	{
-		if ($value instanceof \DateTime)
-			$this->endDate = $value;
-		else if ($value)
-			$this->endDate = DateTimeHelper::toDateTime($value);
-		else
-			$this->endDate = $value;
+		$this->endDate = DateHelper::toUTCDateTime($value);
 
 		return $this;
 	}

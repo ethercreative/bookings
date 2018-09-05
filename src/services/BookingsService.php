@@ -36,7 +36,7 @@ class BookingsService extends Component
 		return Booking::find()->andWhere([
 			'orderId' => $orderId,
 			'eventId' => $eventId,
-			'slot'    => Db::prepareDateForDb($slot),
+			'slot'    => Db::prepareDateForDb($slot->setTimezone(new \DateTimeZone('UTC'))),
 		])->one();
 	}
 
@@ -78,8 +78,11 @@ class BookingsService extends Component
 
 		if (!$force)
 		{
-			$since = time() - ($settings->expiryDuration + $settings->clearExpiredDuration);
-			$since = '\'' . date(\DateTime::W3C, $since) . '\'';
+			$since = new \DateTime('now', new \DateTimeZone('UTC'));
+			$since->setTimestamp(
+				time() - ($settings->expiryDuration + $settings->clearExpiredDuration)
+			);
+			$since = '\'' . $since->format(\DateTime::W3C) . '\'';
 
 			$where[] = '{{%reservationExpiry}} < ' . $since;
 		}

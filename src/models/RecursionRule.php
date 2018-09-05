@@ -8,9 +8,9 @@
 
 namespace ether\bookings\models;
 
-use craft\helpers\DateTimeHelper;
 use ether\bookings\base\Model;
 use ether\bookings\enums\Frequency;
+use ether\bookings\helpers\DateHelper;
 use RRule\RRule;
 
 
@@ -140,40 +140,12 @@ class RecursionRule extends Model
 
 	public function init ()
 	{
-		$defaultTimezone = \Craft::$app->getTimeZone();
-
 		// Normalize dates
 		if ($this->start !== null)
-		{
-			if (
-				is_array($this->start)
-				&& array_key_exists('date', $this->start)
-				&& array_key_exists('timezone', $this->start)
-			) {
-				$this->start = new \DateTime(
-					$this->start['date'],
-					new \DateTimeZone($this->start['timezone'] ?: $defaultTimezone)
-				);
-			}
-
-			else $this->start = DateTimeHelper::toDateTime($this->start);
-		}
+			$this->start = DateHelper::parseDateFromPost($this->start);
 
 		if ($this->until !== null)
-		{
-			if (
-				is_array($this->until)
-				&& array_key_exists('date', $this->until)
-				&& array_key_exists('timezone', $this->until)
-			) {
-				$this->until = new \DateTime(
-					$this->until['date'],
-					new \DateTimeZone($this->until['timezone'] ?: $defaultTimezone)
-				);
-			}
-
-			else $this->until = DateTimeHelper::toDateTime($this->until);
-		}
+			$this->until = DateHelper::parseDateFromPost($this->until);
 
 		parent::init();
 	}

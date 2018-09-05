@@ -15,7 +15,6 @@ use craft\helpers\Db;
 use ether\bookings\Bookings;
 use ether\bookings\elements\BookedTicket;
 use ether\bookings\elements\Booking;
-use \craft\commerce\records\LineItem as LineItemRecord;
 use ether\bookings\helpers\DateHelper;
 use ether\bookings\records\BookedSlotRecord;
 use yii\base\Event;

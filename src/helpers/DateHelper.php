@@ -24,7 +24,7 @@ class DateHelper
 	public static function parseDateFromPost ($param)
 	{
 		if (!is_array($param))
-			return DateTimeHelper::toDateTime($param);
+			return DateHelper::toUTCDateTime($param);
 
 		if (array_key_exists('time', $param))
 		{
@@ -38,7 +38,19 @@ class DateHelper
 			}
 		}
 
-		return DateTimeHelper::toDateTime($param);
+		return DateHelper::toUTCDateTime($param);
+	}
+
+	public static function toUTCDateTime ($param)
+	{
+		if (is_array($param) && array_key_exists('date', $param))
+			$param = $param['date'];
+
+		$date = DateTimeHelper::toDateTime($param);
+
+		$date->setTimezone(new \DateTimeZone('UTC'));
+
+		return $date;
 	}
 
 }

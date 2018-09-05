@@ -11,6 +11,7 @@ namespace ether\bookings\elements;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use ether\bookings\elements\db\BookedTicketQuery;
+use ether\bookings\helpers\DateHelper;
 use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\models\BookedSlot;
 use ether\bookings\models\Ticket;
@@ -54,6 +55,17 @@ class BookedTicket extends Element
 
 	// Methods
 	// =========================================================================
+
+	public function __construct (array $config = [])
+	{
+		parent::__construct($config);
+
+		if ($this->startDate)
+			$this->startDate = DateHelper::toUTCDateTime($this->startDate);
+
+		if ($this->endDate)
+			$this->endDate = DateHelper::toUTCDateTime($this->endDate);
+	}
 
 	public static function find (): ElementQueryInterface
 	{

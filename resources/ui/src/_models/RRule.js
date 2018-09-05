@@ -20,12 +20,9 @@ export default class RRule {
 	frequency = Frequency.Hourly;
 
 	/**
-	 * @type {{date:Date, timezone:String}}
+	 * @type {Date}
 	 */
-	start = {
-		date: new Date(),
-		timezone: "",
-	};
+	start = new Date();
 
 	/**
 	 * @type {number}
@@ -48,12 +45,9 @@ export default class RRule {
 	count = 1;
 
 	/**
-	 * @type {{date:Date, timezone:String}|null}
+	 * @type {Date|null}
 	 */
-	until = {
-		date: new Date(),
-		timezone: "",
-	};
+	until = new Date();
 
 	/**
 	 * @type {Number[]|null}

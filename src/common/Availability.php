@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: tam
- * Date: 09/08/2018
- * Time: 13:03
+ * Bookings plugin for Craft CMS 3.x
+ *
+ * @link      https://ethercreative.co.uk
+ * @copyright Copyright (c) Ether Creative
  */
 
 namespace ether\bookings\common;
@@ -12,11 +12,19 @@ namespace ether\bookings\common;
 use craft\db\Query;
 use craft\helpers\DateTimeHelper;
 use ether\bookings\enums\Frequency;
+use ether\bookings\helpers\DateHelper;
 use ether\bookings\models\Event;
 use ether\bookings\models\RecursionRule;
 use ether\bookings\models\Ticket;
 use ether\bookings\records\BookedSlotRecord;
 
+/**
+ * Class Availability
+ *
+ * @author  Ether Creative
+ * @package ether\bookings\common
+ * @since   1.0.0
+ */
 class Availability
 {
 
@@ -83,20 +91,14 @@ class Availability
 
 	public function start ($value)
 	{
-		if (!($value instanceof \DateTime))
-			$value = DateTimeHelper::toDateTime($value);
-
-		$this->_start = $value;
+		$this->_start = DateHelper::toUTCDateTime($value);
 
 		return $this;
 	}
 
 	public function end ($value)
 	{
-		if (!($value instanceof \DateTime))
-			$value = DateTimeHelper::toDateTime($value);
-
-		$this->_end = $value;
+		$this->_end = DateHelper::toUTCDateTime($value);
 
 		return $this;
 	}
@@ -168,7 +170,6 @@ class Availability
 		$format       = $this->_getDateFormat();
 		$groupedSlots = [];
 
-		$utc     = new \DateTimeZone('UTC');
 		$limit   = $this->_count === null ? PHP_INT_MAX : $this->_count;
 		$slotMax = $this->_event->multiplier;
 
@@ -178,7 +179,7 @@ class Availability
 			if ($i > $limit)
 				break;
 
-			$key = $slot->setTimezone($utc)->format($format);
+			$key = $slot->format($format);
 
 			if (array_key_exists($key, $groupedSlots))
 				$groupedSlots[$key] += $slotMax;
@@ -197,9 +198,8 @@ class Availability
 	{
 		$group = $this->_groupBy('date') . ' as slot';
 
-		$utc = new \DateTimeZone('UTC');
-		$start = $this->_start->setTimezone($utc)->format(\DateTime::W3C);
-		$end = $this->_end ? $this->_end->setTimezone($utc)->format(\DateTime::W3C) : null;
+		$start = $this->_start->format(\DateTime::W3C);
+		$end = $this->_end ? $this->_end->format(\DateTime::W3C) : null;
 
 		$where = ['eventId' => $this->_event->id];
 		if ($this->_ticket)
@@ -335,7 +335,6 @@ class Availability
 		$mod .= ' ' . Frequency::toUnit($baseRule->frequency);
 
 		return (clone $this->_start)
-			->setTimezone(new \DateTimeZone('UTC'))
 			->modify($mod)
 			->format(\DateTime::W3C);
 	}

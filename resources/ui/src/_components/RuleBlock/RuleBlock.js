@@ -59,11 +59,11 @@ class RuleBlock extends Component {
 	});
 
 	onStartDateTimeChange = debounce(dt => {
-		this.updateRule("start", dt);
+		this.updateRule("start", dt.date);
 	});
 
 	onUntilDateTimeChange = debounce(dt => {
-		this.updateRule("until", dt);
+		this.updateRule("until", dt.date);
 	});
 
 	onCountChange = debounce(({ target: { value } }) => {
@@ -154,8 +154,8 @@ class RuleBlock extends Component {
 						<CraftDateTime
 							showDate
 							showTime
-							defaultDate={start.date}
-							defaultTime={start.date}
+							defaultDate={start}
+							defaultTime={start}
 							onChange={this.onStartDateTimeChange}
 							disabled={disabled}
 						/>
@@ -185,8 +185,8 @@ class RuleBlock extends Component {
 							<CraftDateTime
 								showDate
 								showTime
-								defaultDate={until.date}
-								defaultTime={until.date}
+								defaultDate={until}
+								defaultTime={until}
 								onChange={this.onUntilDateTimeChange}
 								disabled={disabled}
 							/>

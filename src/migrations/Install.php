@@ -11,12 +11,10 @@ namespace ether\bookings\migrations;
 use craft\db\Migration;
 use craft\helpers\MigrationHelper;
 use ether\bookings\enums\EventType;
-use ether\bookings\records\BookedEventRecord;
 use ether\bookings\records\BookedSlotRecord;
 use ether\bookings\records\BookedTicketRecord;
 use ether\bookings\records\BookingRecord;
 use ether\bookings\records\EventRecord;
-use ether\bookings\records\TicketFieldSettingsRecord;
 use ether\bookings\records\TicketRecord;
 
 

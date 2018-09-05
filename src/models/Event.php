@@ -11,6 +11,7 @@ namespace ether\bookings\models;
 use craft\helpers\DateTimeHelper;
 use ether\bookings\base\Model;
 use ether\bookings\enums\EventType;
+use ether\bookings\helpers\DateHelper;
 use ether\bookings\records\EventRecord;
 use RRule\RSet;
 use yii\helpers\Json;
@@ -272,8 +273,8 @@ class Event extends Model
 	 */
 	public function getSlotsInRange ($start, $end): array
 	{
-		$start = DateTimeHelper::toDateTime($start);
-		$end   = DateTimeHelper::toDateTime($end);
+		$start = DateHelper::toUTCDateTime($start);
+		$end   = DateHelper::toUTCDateTime($end);
 
 		return $this->_getSet()->getOccurrencesBetween($start, $end);
 	}
@@ -288,7 +289,7 @@ class Event extends Model
 	 */
 	public function getSlotsFrom ($start, $count = null): array
 	{
-		$start = DateTimeHelper::toDateTime($start);
+		$start = DateHelper::toUTCDateTime($start);
 
 		return $this->_getSet()->getOccurrencesBetween($start, null, $count);
 	}
@@ -302,8 +303,7 @@ class Event extends Model
 	 */
 	public function isDateOccurrence ($date)
 	{
-		$date = clone DateTimeHelper::toDateTime($date);
-		$date->setTimezone($this->baseRule->start->getTimezone());
+		$date = clone DateHelper::toUTCDateTime($date);
 		return $this->_getSet()->occursAt($date);
 	}
 
@@ -315,7 +315,7 @@ class Event extends Model
 	public function getNextAvailableSlot ()
 	{
 		$nextAvailable = $this->_getSet()->getOccurrencesBetween(
-			new \DateTime(),
+			new \DateTime('now', new \DateTimeZone('UTC')),
 			null,
 			1
 		);

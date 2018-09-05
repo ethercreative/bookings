@@ -61,6 +61,7 @@ class BookedSlot extends Model
 		$slot->bookingId = $record->bookingId;
 		$slot->bookedTicketId = $record->bookedTicketId;
 		$slot->date = DateTimeHelper::toDateTime($record->date);
+		$slot->date->setTimezone(new \DateTimeZone('UTC'));
 
 		return $slot;
 	}

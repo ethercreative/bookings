@@ -1,3 +1,8 @@
+## 1.0.0-alpha.8 - 2018-09-05
+### Fixed
+- All dates are converted to UTC. Always.
+- Fixed slot dates drifting back by the timezone difference on subsequent saves.
+
 ## 1.0.0-alpha.7 - 2018-08-30
 ### Fixed
 - Fixed Booking CP not filtering correctly.
