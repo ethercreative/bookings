@@ -48,7 +48,8 @@ class DateHelper
 
 		$date = DateTimeHelper::toDateTime($param);
 
-		$date->setTimezone(new \DateTimeZone('UTC'));
+		if ($date instanceof \DateTime)
+			$date->setTimezone(new \DateTimeZone('UTC'));
 
 		return $date;
 	}
