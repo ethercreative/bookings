@@ -47,7 +47,8 @@ class ApiController extends Controller
 
 		$body = Json::decode($request->getRequiredBodyParam('body'), true);
 		$id = $request->getBodyParam('id');
-		list('baseRule' => $baseRule, 'exceptions' => $exceptions) = $body;
+		$baseRule = $body['baseRule'];
+		$exceptions = $body['exceptions'];
 
 		if ($id)
 			$event = Bookings::getInstance()->events->getEventById($id);
