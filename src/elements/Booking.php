@@ -437,7 +437,7 @@ class Booking extends Element
 			])
 			->innerJoin(
 				'{{%content}} content',
-				'content.elementId = elements.id AND content.siteId = ' . \Craft::$app->sites->primarySite->id
+				'content.[[elementId]] = elements.id AND content.[[siteId]] = ' . \Craft::$app->sites->primarySite->id
 			)
 			->orderBy('content.title asc')
 			->all();
@@ -480,12 +480,9 @@ class Booking extends Element
 		return $sources;
 	}
 
-	public static function searchableAttributes (): array
+	protected static function defineSearchableAttributes (): array
 	{
-		return array_merge(
-			['number', 'customerEmail'],
-			parent::searchableAttributes()
-		);
+		return ['number', 'customerEmail'];
 	}
 
 	// Helpers
