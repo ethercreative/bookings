@@ -169,11 +169,12 @@ class OnOrderEvent
 		{
 			$booking = new Booking();
 
-			$booking->status     = Booking::STATUS_RESERVED;
-			$booking->eventId    = $event->id;
-			$booking->orderId    = $order->id;
-			$booking->customerId = $order->customerId;
-			$booking->slot       = $startDate;
+			$booking->status        = Booking::STATUS_RESERVED;
+			$booking->eventId       = $event->id;
+			$booking->orderId       = $order->id;
+			$booking->customerId    = $order->customerId;
+			$booking->customerEmail = $order->email;
+			$booking->slot          = $startDate;
 
 			$craft->elements->saveElement($booking);
 		}

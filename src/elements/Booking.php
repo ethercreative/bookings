@@ -183,10 +183,12 @@ class Booking extends Element
 		$this->reservationExpiry = null;
 		$this->dateBooked = Db::prepareDateForDb(new \DateTime());
 
+		// Ensure we have up-to-date customer data
+		$this->customerId = $this->getOrder()->customerId;
+		$this->customerEmail = $this->getOrder()->email;
+
 		if (\Craft::$app->elements->saveElement($this, false))
-		{
 			return true;
-		}
 
 		\Craft::error(
 			\Craft::t(
@@ -476,6 +478,14 @@ class Booking extends Element
 		}
 
 		return $sources;
+	}
+
+	public static function searchableAttributes (): array
+	{
+		return array_merge(
+			['number', 'customerEmail'],
+			parent::searchableAttributes()
+		);
 	}
 
 	// Helpers

@@ -1,6 +1,10 @@
 ## [Unreleased] 1.0.0-alpha.10
+### Added
+- Added searchable attributes to bookings
+
 ### Fixed
 - Fixed SQL error when running expire command
+- Store customer email from order on booking
 
 ## 1.0.0-alpha.9 - 2018-09-05
 ### Fixed
