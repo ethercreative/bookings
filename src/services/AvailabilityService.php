@@ -67,10 +67,9 @@ class AvailabilityService extends Component
 			$booking !== null
 			&& array_key_exists($booking->id, $bookedByBooking)
 		) {
-			$nextQty = $qty + count($bookedByBooking[$booking->id]);
 			if (
-				($ticket->capacity && $ticket->capacity < $nextQty)
-			    || ($event->capacity && $event->capacity < $nextQty)
+				($ticket->capacity && $ticket->capacity < $qty)
+			    || ($event->capacity && $event->capacity < $qty)
 			) return false;
 		}
 

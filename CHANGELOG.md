@@ -5,6 +5,7 @@
 ### Fixed
 - Fixed SQL error when running expire command
 - Store customer email from order on booking
+- Fixed incorrect qty when checking availability
 
 ## 1.0.0-alpha.9 - 2018-09-05
 ### Fixed
