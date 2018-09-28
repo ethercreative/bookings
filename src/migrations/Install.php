@@ -418,4 +418,15 @@ class Install extends Migration
 		);
 	}
 
+	// Helpers
+	// =========================================================================
+
+	public function json ()
+	{
+		if ($this->db->driverName === 'mysql')
+			return $this->longText();
+
+		return $this->json();
+	}
+
 }
