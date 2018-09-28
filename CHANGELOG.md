@@ -1,3 +1,13 @@
+## [Unreleased] 1.0.0-alpha.11
+### Added
+- Added `$date` param to `Event::getNextAvailableSlot` to get the next available 
+date after the given date.
+
+### Fixed
+- Fixed getNextAvailableSlot shows the current date if booking is not enabled [#8]
+
+[#8](https://github.com/ethercreative/bookings/issues/8)
+
 ## 1.0.0-alpha.10 - 2018-09-28
 ### Added
 - Added searchable attributes to bookings

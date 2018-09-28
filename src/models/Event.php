@@ -310,12 +310,20 @@ class Event extends Model
 	/**
 	 * Returns the next available slot from today
 	 *
+	 * @param \DateTime|null $from - Get the next available slot from this date
+	 *
 	 * @return \DateTime|null
 	 */
-	public function getNextAvailableSlot ()
+	public function getNextAvailableSlot (\DateTime $from = null)
 	{
+		if (!$this->enabled)
+			return null;
+
+		$date = $from ?: new \DateTime('now');
+		$date->setTimezone(new \DateTimeZone('UTC'));
+
 		$nextAvailable = $this->_getSet()->getOccurrencesBetween(
-			new \DateTime('now', new \DateTimeZone('UTC')),
+			$date,
 			null,
 			1
 		);
