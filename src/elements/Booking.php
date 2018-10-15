@@ -470,7 +470,6 @@ class Booking extends Element
 					'label'       => $element['title'],
 					'criteria'    => [
 						'eventId' => $enabledBookableElementToEvent[$element['id']],
-						'status'  => self::STATUS_COMPLETED,
 					],
 					'defaultSort' => ['slotStart', 'desc']
 				];

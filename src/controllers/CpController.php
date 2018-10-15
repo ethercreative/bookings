@@ -10,6 +10,7 @@ namespace ether\bookings\controllers;
 
 use craft\web\Controller;
 use ether\bookings\Bookings;
+use ether\bookings\elements\BookedTicket;
 use ether\bookings\web\assets\bookingindex\BookingIndexAsset;
 use yii\web\HttpException;
 

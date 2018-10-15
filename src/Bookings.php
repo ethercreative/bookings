@@ -228,14 +228,24 @@ class Bookings extends Plugin
 			new OnCommerceUninstall();
 	}
 
+	/**
+	 * @param Event $event
+	 *
+	 * @throws \yii\base\InvalidConfigException
+	 */
 	public function onVariableInit (Event $event)
 	{
 		/** @var CraftVariable $variable */
 		$variable = $event->sender;
-		$variable->attachBehavior(
-			'bookings',
-			CraftVariableBehavior::class
-		);
+		$variable->attachBehaviors([
+			CraftVariableBehavior::class,
+		]);
+
+		if (\Craft::$app->request->isCpRequest)
+		{
+			$variable->set('events', EventsService::class);
+			$variable->set('tickets', TicketsService::class);
+		}
 	}
 
 	public function onRegisterFieldTypes (RegisterComponentTypesEvent $event)

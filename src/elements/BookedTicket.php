@@ -9,6 +9,7 @@
 namespace ether\bookings\elements;
 
 use craft\base\Element;
+use craft\db\Query;
 use craft\elements\db\ElementQueryInterface;
 use ether\bookings\elements\db\BookedTicketQuery;
 use ether\bookings\helpers\DateHelper;
@@ -17,6 +18,7 @@ use ether\bookings\models\BookedSlot;
 use ether\bookings\models\Ticket;
 use ether\bookings\records\BookedSlotRecord;
 use ether\bookings\records\BookedTicketRecord;
+use ether\bookings\records\EventRecord;
 use ether\bookings\records\TicketRecord;
 
 
@@ -153,6 +155,121 @@ class BookedTicket extends Element
 		}, BookedSlotRecord::findAll([
 			'bookedTicketId' => $this->id,
 		]));
+	}
+
+	// Elements Index
+	// =========================================================================
+
+	protected static function defineTableAttributes (): array
+	{
+		return [
+			'id'            => ['label' => \Craft::t('bookings', 'ID')],
+			'dateCreated'   => ['label' => \Craft::t('app', 'Date Created')],
+			'dateUpdated'   => ['label' => \Craft::t('app', 'Date Updated')],
+		];
+	}
+
+	protected static function defineDefaultTableAttributes (string $source): array
+	{
+		$attrs = parent::defineDefaultTableAttributes($source);
+
+		$attrs[] = 'dateUpdated';
+
+		return $attrs;
+	}
+
+	public static function sortOptions (): array
+	{
+		return [
+			'id'         => \Craft::t('bookings', 'ID'),
+			[
+				'label'     => \Craft::t('app', 'Date Updated'),
+				'orderBy'   => BookedTicketRecord::$tableNameUnprefixed . '.dateUpdated',
+				'attribute' => 'dateUpdated',
+			]
+		];
+	}
+
+	protected static function defineSources (string $context = null): array
+	{
+		// TODO: Make default sorting the first slot date?
+		// TODO: This could be improved w/ better grouping of elements (i.e. by Product / Entry Type)
+
+		$sources = [
+			'*' => [
+				'key'         => '*',
+				'label'       => \Craft::t('bookings', 'All Bookings'),
+				'criteria'    => [],
+				'defaultSort' => ['dateBooked', 'desc']
+			],
+		];
+
+		$enabledBookables = (new Query())
+			->select(['events.elementId', 'events.id'])
+			->from([EventRecord::$tableName . ' events'])
+			->where(['events.enabled' => true]);
+
+		$enabledBookableElementToEvent = $enabledBookables->pairs();
+		$enabledBookableElementIds     = $enabledBookables->column();
+
+		$elements = (new Query())
+			->select(['content.title', 'elements.id', 'elements.type'])
+			->from(['{{%elements}} elements'])
+			->where(
+				[
+					'elements.id'       => $enabledBookableElementIds,
+					'elements.enabled'  => true,
+					'elements.archived' => false,
+				]
+			)
+			->innerJoin(
+				'{{%content}} content',
+				'content.[[elementId]] = elements.id AND content.[[siteId]] = ' .
+				\Craft::$app->sites->primarySite->id
+			)
+			->orderBy('content.title asc')
+			->all();
+
+		$byType = [];
+
+		foreach ($elements as $element)
+		{
+			$type = explode('\\', $element['type']);
+			$type = end($type);
+
+			if (!array_key_exists($type, $byType))
+				$byType[$type] = [];
+
+			$byType[$type][] = $element;
+		}
+
+		ksort($byType);
+
+		foreach ($byType as $type => $elements)
+		{
+			$sources[] = ['heading' => $type];
+
+			foreach ($elements as $element)
+			{
+				$key = 'element:' . $element['id'];
+
+				$sources[$key] = [
+					'key'         => $key,
+					'label'       => $element['title'],
+					'criteria'    => [
+						'eventId' => $enabledBookableElementToEvent[$element['id']],
+					],
+					'defaultSort' => ['slotStart', 'desc']
+				];
+			}
+		}
+
+		return $sources;
+	}
+
+	protected static function defineSearchableAttributes (): array
+	{
+		return [];
 	}
 
 }

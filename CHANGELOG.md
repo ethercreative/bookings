@@ -2,6 +2,8 @@
 ### Added
 - Added `$date` param to `Event::getNextAvailableSlot` to get the next available 
 date after the given date.
+- New bookings view
+- Export bookings to CSV
 
 ### Fixed
 - Fixed getNextAvailableSlot shows the current date if booking is not enabled [#8]

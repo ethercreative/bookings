@@ -29,6 +29,7 @@ class CraftVariableBehavior extends Behavior
 	 * @param Event $event
 	 *
 	 * @return Availability
+	 * @throws \Exception
 	 */
 	public function availability (Event $event): Availability
 	{

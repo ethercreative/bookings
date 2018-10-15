@@ -1,8 +1,118 @@
-{% extends "_layouts/elementindex" %}
+{% extends '_layouts/cp' %}
+{% import '_includes/forms' as forms %}
 
-{% set title = "Bookings"|t('bookings') %}
-{% set elementType = 'ether\\bookings\\elements\\Booking' %}
+{% set title = 'Bookings'|t('bookings') %}
+{% set elementType = 'ether\\bookings\\elements\\BookedTicket' %}
 {% set selectedTab = 'bookings' %}
-{% set selectedSubnavItem = "bookings" %}
+{% set selectedSubnavItem = 'bookings' %}
 
-{% js 'window.__bookingsStatus = ' ~ BOOKING_COMPLETED ~ ';' %}
+{% set sources = craft.app.elementIndexes.getSources(elementType, 'index') %}
+{% set elementInstance = craft.app.elements.createElement(elementType) %}
+
+{% set eventId = craft.app.request.getParam('eventId') %}
+{% if eventId %}
+	{% set event = craft.events.getEventById(eventId) %}
+
+	{% set availability = craft.availability(event).groupBy('day').all()|keys %}
+	{% set day = craft.app.request.getParam('day') %}
+	{% set selectedDay = day ?? availability[0] %}
+	{% set selectedSlot = craft.app.request.getParam('slot') %}
+
+	{% if not event %}
+		{% exit 404 %}
+	{% endif %}
+{% else %}
+	{% set event = null %}
+{% endif %}
+
+{% block main %}
+	<a id="sidebar-toggle"><span id="selected-sidebar-item-label"></span>&nbsp;<span data-icon="downangle"></span></a>
+	<div id="sidebar" class="sidebar">
+		<nav>
+			<ul>
+				{% for source in sources %}
+					{% set sourceEventId = source.criteria['eventId'] ?? null %}
+					{% if source.heading is defined %}
+						<li class="heading">
+							<span>{{ source.heading|t('site') }}</span>
+						</li>
+					{% else %}
+						<li>
+							<a
+								href="{{ url('/admin/bookings/', source.criteria) }}"
+								class="{{ sourceEventId == eventId ? 'sel' }}"
+							>
+								<span class="label">{{ source.label }}</span>
+							</a>
+						</li>
+					{% endif %}
+				{% endfor %}
+			</ul>
+		</nav>
+	</div>
+
+	{% if eventId %}
+	<div class="sidebar" style="width:300px">
+		{% set opts = {} %}
+		{% for opt in availability %}
+			{% set opts = opts|merge({
+				(opt): opt|date('short'),
+			}) %}
+		{% endfor %}
+		{{ forms.selectField({
+			id: 'days',
+			options: opts,
+			value: day
+		}) }}
+
+		{% set slotsForDay = craft.availability(event).start(selectedDay).end(selectedDay|date_modify('+1 day')).all()|keys %}
+
+		<nav>
+			<ul>
+				<li>
+					<a
+						href="{{ url('/admin/bookings', { eventId: eventId, day: day }) }}"
+						class="{{ not selectedSlot ? 'sel' }}"
+					>
+						<span class="label">All Slots</span>
+					</a>
+				</li>
+				<li class="heading">
+					<span>Slots</span>
+				</li>
+				{% for slot in slotsForDay %}
+					<li>
+						<a
+							href="{{ url('/admin/bookings', { eventId: eventId, day: selectedDay, slot: slot }) }}"
+							class="{{ selectedSlot == slot ? 'sel' }}"
+						>
+							<span class="label">{{ slot|time('short') }}</span>
+						</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</nav>
+	</div>
+	{% endif %}
+
+	<div id="content-container">
+		<div id="content">
+			<div class="elementindex">
+				{% include "_elements/indexcontainer" with {
+					showSiteMenu: false
+				} %}
+
+				{{ craft.tickets.getTicketTableElement(eventId, selectedSlot)|raw }}
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% js %}
+	document.getElementById('days').addEventListener('change', e => {
+		window.location.href = Craft.getCpUrl('bookings', {
+			eventId: {{ eventId }},
+			day: encodeURI(e.target.value),
+		});
+	});
+{% endjs %}
