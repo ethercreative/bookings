@@ -11,6 +11,7 @@ namespace ether\bookings\elements;
 use craft\base\Element;
 use craft\db\Query;
 use craft\elements\db\ElementQueryInterface;
+use craft\helpers\UrlHelper;
 use ether\bookings\elements\db\BookedTicketQuery;
 use ether\bookings\helpers\DateHelper;
 use ether\bookings\integrations\commerce\CommerceGetters;
@@ -157,6 +158,29 @@ class BookedTicket extends Element
 		]));
 	}
 
+	public function getCustomerEmail ()
+	{
+		return $this->getBooking()->customerEmail;
+	}
+
+	public function getSlot ()
+	{
+		return $this->startDate->format('H:i');
+	}
+
+	public function getTicketName ()
+	{
+		return $this->getLineItem()->purchasable->title;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCpEditUrl (): string
+	{
+		return UrlHelper::cpUrl('bookings/' . $this->bookingId);
+	}
+
 	// Elements Index
 	// =========================================================================
 
@@ -164,19 +188,22 @@ class BookedTicket extends Element
 	{
 		return [
 			'id'            => ['label' => \Craft::t('bookings', 'ID')],
+			'slot'          => ['label' => 'Slot'],
+			'customerEmail' => ['label' => 'Customer Email'],
+			'ticketName'    => ['label' => 'Ticket'],
 			'dateCreated'   => ['label' => \Craft::t('app', 'Date Created')],
 			'dateUpdated'   => ['label' => \Craft::t('app', 'Date Updated')],
 		];
 	}
 
-	protected static function defineDefaultTableAttributes (string $source): array
-	{
-		$attrs = parent::defineDefaultTableAttributes($source);
-
-		$attrs[] = 'dateUpdated';
-
-		return $attrs;
-	}
+//	protected static function defineDefaultTableAttributes (string $source): array
+//	{
+//		$attrs = parent::defineDefaultTableAttributes($source);
+//
+//		$attrs[] = 'dateUpdated';
+//
+//		return $attrs;
+//	}
 
 	public static function sortOptions (): array
 	{

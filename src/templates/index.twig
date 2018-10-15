@@ -10,12 +10,12 @@
 {% set elementInstance = craft.app.elements.createElement(elementType) %}
 
 {% set eventId = craft.app.request.getParam('eventId') %}
+{% set day = craft.app.request.getParam('day') %}
 {% set selectedSlot = craft.app.request.getParam('slot') %}
 {% if eventId %}
 	{% set event = craft.events.getEventById(eventId) %}
 
 	{% set availability = craft.availability(event).groupBy('day').all()|keys %}
-	{% set day = craft.app.request.getParam('day') %}
 	{% set selectedDay = day ?? availability[0] %}
 
 	{% if not event %}
@@ -109,10 +109,13 @@
 {% endblock %}
 
 {% js %}
-	document.getElementById('days').addEventListener('change', e => {
-		window.location.href = Craft.getCpUrl('bookings', {
-			eventId: {{ eventId }},
-			day: encodeURI(e.target.value),
+	const days = document.getElementById('days');
+	if (days) {
+		days.addEventListener('change', e => {
+			window.location.href = Craft.getCpUrl('bookings', {
+				eventId: {{ eventId ?? 'null' }},
+				day: encodeURI(e.target.value),
+			});
 		});
-	});
+	}
 {% endjs %}

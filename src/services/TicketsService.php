@@ -9,8 +9,12 @@
 namespace ether\bookings\services;
 
 use craft\base\Component;
+use craft\db\Query;
 use ether\bookings\elements\BookedTicket;
+use ether\bookings\elements\Booking;
+use ether\bookings\models\Event;
 use ether\bookings\models\Ticket;
+use ether\bookings\records\BookingRecord;
 use ether\bookings\records\TicketRecord;
 
 
@@ -45,10 +49,22 @@ class TicketsService extends Component
 
 	public function getTicketTableElement ($eventId, $slot = null)
 	{
+		$events = (new Query())
+			->select(['booking.id'])
+			->from([BookingRecord::$tableName . ' booking'])
+			->where([
+				'booking.eventId' => $eventId,
+				'booking.status' => Booking::STATUS_COMPLETED,
+			]);
+
+		$ids = array_reduce($events->all(), function ($a, $b) {
+			$a[] = $b['id'];
+			return $a;
+		}, []);
+
 		$query = BookedTicket::find();
-		\Craft::configure(
-			$query, [
-			'bookingId' => $eventId,
+		\Craft::configure($query, [
+			'bookingId' => $ids,
 			'startDate' => $slot,
 			'limit'     => null,
 		]);
