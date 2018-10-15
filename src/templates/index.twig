@@ -25,6 +25,10 @@
 	{% set event = null %}
 {% endif %}
 
+{% block actionButton %}
+	<input type="button" class="btn submit" value="Export to CSV">
+{% endblock %}
+
 {% block main %}
 	<a id="sidebar-toggle"><span id="selected-sidebar-item-label"></span>&nbsp;<span data-icon="downangle"></span></a>
 	<div id="sidebar" class="sidebar">
