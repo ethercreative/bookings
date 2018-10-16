@@ -47,41 +47,4 @@ class TicketsService extends Component
 		return Ticket::fromRecord($record);
 	}
 
-	public function getTicketTableElement ($eventId, $slot = null)
-	{
-		$events = (new Query())
-			->select(['booking.id'])
-			->from([BookingRecord::$tableName . ' booking'])
-			->where([
-				'booking.eventId' => $eventId,
-				'booking.status' => Booking::STATUS_COMPLETED,
-			]);
-
-		$ids = array_reduce($events->all(), function ($a, $b) {
-			$a[] = $b['id'];
-			return $a;
-		}, []);
-
-		$query = BookedTicket::find();
-		\Craft::configure($query, [
-			'bookingId' => $ids,
-			'startDate' => $slot,
-			'limit'     => null,
-		]);
-
-		return BookedTicket::indexHtml(
-			$query,
-			[],
-			[
-				'mode' => 'table',
-				'order'=> 'startDate',
-				'sort' => 'asc',
-			],
-			'',
-			null,
-			true,
-			false
-		);
-	}
-
 }

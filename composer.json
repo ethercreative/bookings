@@ -24,7 +24,8 @@
   ],
   "require": {
     "craftcms/cms": "^3.0.0-RC17",
-    "rlanvin/php-rrule": "^1.6"
+    "rlanvin/php-rrule": "^1.6",
+    "ether/craft-vue": "dev-master"
   },
   "autoload": {
     "psr-4": {

@@ -9,8 +9,8 @@
 namespace ether\bookings\controllers;
 
 use craft\web\Controller;
+use yii\web\Response;
 use ether\bookings\Bookings;
-use ether\bookings\elements\BookedTicket;
 use ether\bookings\web\assets\bookingindex\BookingIndexAsset;
 use yii\web\HttpException;
 
@@ -42,7 +42,21 @@ class CpController extends Controller
 	 */
 	public function actionIndex ()
 	{
-		$this->view->registerAssetBundle(BookingIndexAsset::class);
+		\ether\craftvue\CraftVue::register();
+		$view = \Craft::$app->getView();
+
+		if (getenv('ETHER_ENVIRONMENT'))
+		{
+			$view->registerJsFile(
+				'https://localhost:8000/bundle.js',
+				['async' => true]
+			);
+		}
+		else
+		{
+			$this->view->registerAssetBundle(BookingIndexAsset::class);
+		}
+
 		return $this->renderTemplate('bookings/index');
 	}
 
@@ -66,6 +80,17 @@ class CpController extends Controller
 			'bookings/edit',
 			compact('booking', 'title', 'continueEditingUrl')
 		);
+	}
+
+	public function actionResource (string $fileName = ''): Response
+	{
+		$bundle = new BookingIndexAsset();
+		$baseAssetsUrl = \Craft::$app->assetManager->getPublishedUrl(
+			$bundle->sourcePath
+		);
+		$url = $baseAssetsUrl . '/' . $fileName;
+
+		return $this->redirect($url);
 	}
 
 }

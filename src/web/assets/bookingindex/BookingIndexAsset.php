@@ -30,8 +30,13 @@ class BookingIndexAsset extends AssetBundle
 			CpAsset::class,
 		];
 
+		$manifest = json_decode(
+			file_get_contents(__DIR__ . '/dist/manifest.json'),
+			true
+		);
+
 		$this->js = [
-			'js/BookingsBookingIndex.js',
+			$manifest['BookingsIndex.js'],
 		];
 
 		parent::init();

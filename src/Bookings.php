@@ -196,6 +196,7 @@ class Bookings extends Plugin
 	{
 		$event->rules['bookings'] = 'bookings/cp/index';
 		$event->rules['bookings/<bookingId:\d+>'] = 'bookings/cp/edit';
+		$event->rules['/cpresources/bookings/<fileName>'] = 'bookings/cp/resource';
 	}
 
 	public function onRegisterUserPermissions (RegisterUserPermissionsEvent $event)
