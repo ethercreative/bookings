@@ -72,7 +72,11 @@ class TicketsService extends Component
 		return BookedTicket::indexHtml(
 			$query,
 			[],
-			['mode' => 'table'],
+			[
+				'mode' => 'table',
+				'order'=> 'startDate',
+				'sort' => 'asc',
+			],
 			'',
 			null,
 			true,

@@ -209,6 +209,7 @@ class BookedTicket extends Element
 	{
 		return [
 			'id'         => \Craft::t('bookings', 'ID'),
+			'startDate'  => \Craft::t('bookings', 'Slot'),
 			[
 				'label'     => \Craft::t('app', 'Date Updated'),
 				'orderBy'   => BookedTicketRecord::$tableNameUnprefixed . '.dateUpdated',
@@ -227,7 +228,7 @@ class BookedTicket extends Element
 				'key'         => '*',
 				'label'       => \Craft::t('bookings', 'All Bookings'),
 				'criteria'    => [],
-				'defaultSort' => ['dateBooked', 'desc']
+				'defaultSort' => ['startDate', 'desc']
 			],
 		];
 
@@ -286,7 +287,7 @@ class BookedTicket extends Element
 					'criteria'    => [
 						'eventId' => $enabledBookableElementToEvent[$element['id']],
 					],
-					'defaultSort' => ['slotStart', 'desc']
+					'defaultSort' => ['startDate', 'desc']
 				];
 			}
 		}
