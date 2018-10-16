@@ -1,5 +1,6 @@
 const webpack = require('webpack')
 	, path = require('path')
+	, fs = require('fs')
 	, VueLoaderPlugin = require('vue-loader/lib/plugin')
 	, MiniCssExtractPlugin = require('mini-css-extract-plugin')
 	, UglifyJsPlugin = require('uglifyjs-webpack-plugin')
@@ -8,10 +9,19 @@ const webpack = require('webpack')
 
 const IS_PROD = process.env.NODE_ENV === 'production';
 
+const devPublicPath = 'https://localhost:8000/';
+
 module.exports = {
 	devtool: IS_PROD ? 'source-map' : 'cheap-module-eval-source-map',
 
 	mode: process.env.NODE_ENV || 'development',
+
+	resolve: {
+		extensions: ['.js', '.vue'],
+		alias: {
+			'vue$': 'vue/dist/vue.esm.js',
+		},
+	},
 
 	entry: {
 		BookingsIndex: './src/BookingsIndex.js'
@@ -20,7 +30,7 @@ module.exports = {
 	output: {
 		path: IS_PROD ? path.resolve(__dirname, '../../src/web/assets/bookingindex/dist') : '/',
 		filename: IS_PROD ? '[name].[hash].js' : 'bundle.js',
-		publicPath: IS_PROD ? '/admin/cpresources/bookings/' : 'https://localhost:8080',
+		publicPath: IS_PROD ? '/admin/cpresources/bookings/' : devPublicPath,
 	},
 
 	module: {
@@ -143,15 +153,19 @@ module.exports = {
 	},
 
 	devServer: {
-		public: 'https://localhost:8000',
-		publicPath: '/',
+		public: devPublicPath,
+		publicPath: '',
 		host: '0.0.0.0',
 		port: 8000,
-		https: true,
+		https: {
+			key: fs.readFileSync('/Users/tam/mamp-ssl/3.dev.key'),
+			cert: fs.readFileSync('/Users/tam/mamp-ssl/3.dev.crt'),
+		},
 		hot: true,
 		hotOnly: false,
+		inline: true,
 		overlay: true,
-		compress: false,
+		compress: true,
 		filename: 'bundle.js',
 		quiet: false,
 		noInfo: false,
@@ -167,6 +181,7 @@ module.exports = {
 	plugins: [
 		new VueLoaderPlugin(),
 
+		new webpack.HotModuleReplacementPlugin(),
 		new webpack.NamedModulesPlugin(),
 		new webpack.DefinePlugin({
 			'process.env': {
@@ -194,5 +209,10 @@ module.exports = {
 
 	performance: {
 		hints: false,
+	},
+
+	externals: {
+		'vue': 'Vue',
+		'vue-router': 'VueRouter',
 	},
 };

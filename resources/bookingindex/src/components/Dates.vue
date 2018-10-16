@@ -1,0 +1,42 @@
+<template>
+	<ul :class="$style.dates">
+		<li v-for="i in 3" :key="i" :class="$style.date">
+			{{i + 10}}/01/19
+		</li>
+		<li>and 2 more</li>
+	</ul>
+</template>
+
+<script>
+	export default {
+		name: 'Dates'
+	};
+</script>
+
+<style lang="less" module>
+	.dates {
+		margin-bottom: 9px;
+		list-style: none;
+		font-size: 0;
+
+		li {
+			display: inline-block;
+
+			color: #3F4549;
+			font-size: 10px;
+			letter-spacing: 0;
+
+			&:last-child:not(.date) {
+				margin-left: 5px;
+			}
+		}
+	}
+
+	.date {
+		padding: 2px 5px;
+		margin: 0 3px 3px 0;
+
+		background-color: #E7EEF3;
+		border-radius: 2px;
+	}
+</style>

@@ -29,5 +29,10 @@
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.9",
     "webpack-manifest-plugin": "^2.0.4"
+  },
+  "dependencies": {
+    "seedrandom": "^2.4.4",
+    "vue": "^2.5.17",
+    "vue-router": "^3.0.1"
   }
 }

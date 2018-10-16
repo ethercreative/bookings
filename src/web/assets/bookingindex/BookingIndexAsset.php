@@ -10,6 +10,7 @@ namespace ether\bookings\web\assets\bookingindex;
 
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
+use craft\web\assets\vue\VueAsset;
 
 
 /**
@@ -28,16 +29,26 @@ class BookingIndexAsset extends AssetBundle
 
 		$this->depends = [
 			CpAsset::class,
+			VueAsset::class,
 		];
 
-		$manifest = json_decode(
-			file_get_contents(__DIR__ . '/dist/manifest.json'),
-			true
-		);
+		if (getenv('ETHER_ENVIRONMENT'))
+		{
+			$this->js = [
+				'https://localhost:8000/bundle.js'
+			];
+		}
+		else
+		{
+			$manifest = json_decode(
+				file_get_contents(__DIR__ . '/dist/manifest.json'),
+				true
+			);
 
-		$this->js = [
-			$manifest['BookingsIndex.js'],
-		];
+			$this->js = [
+				$manifest['BookingsIndex.js'],
+			];
+		}
 
 		parent::init();
 	}

@@ -8,7 +8,10 @@
 
 namespace ether\bookings\controllers;
 
+use craft\helpers\StringHelper;
+use craft\helpers\UrlHelper;
 use craft\web\Controller;
+use craft\web\View;
 use yii\web\Response;
 use ether\bookings\Bookings;
 use ether\bookings\web\assets\bookingindex\BookingIndexAsset;
@@ -42,20 +45,13 @@ class CpController extends Controller
 	 */
 	public function actionIndex ()
 	{
-		\ether\craftvue\CraftVue::register();
-		$view = \Craft::$app->getView();
+		$view = $this->getView();
 
-		if (getenv('ETHER_ENVIRONMENT'))
-		{
-			$view->registerJsFile(
-				'https://localhost:8000/bundle.js',
-				['async' => true]
-			);
-		}
-		else
-		{
-			$this->view->registerAssetBundle(BookingIndexAsset::class);
-		}
+		$view->registerJs(
+			'window.bookingsBaseUrl = "' . $this->_getBookingsBaseUrl() . '";',
+			View::POS_BEGIN
+		);
+		$view->registerAssetBundle(BookingIndexAsset::class);
 
 		return $this->renderTemplate('bookings/index');
 	}
@@ -91,6 +87,18 @@ class CpController extends Controller
 		$url = $baseAssetsUrl . '/' . $fileName;
 
 		return $this->redirect($url);
+	}
+
+	// Helpers
+	// =========================================================================
+
+	private function _getBookingsBaseUrl ()
+	{
+		$url      = UrlHelper::url('bookings');
+		$hostInfo = \Craft::$app->getRequest()->getHostInfo();
+		$hostInfo = StringHelper::ensureRight($hostInfo, '/');
+
+		return (string)substr($url, strlen($hostInfo) - 1);
 	}
 
 }

@@ -1,8 +1,33 @@
-/* global Craft */
-Craft.booting(Vue => {
-	import('./BookingsIndex.vue').then(({ default: BookingsIndex }) => {
-		console.log(BookingsIndex);
-		Vue.component('bookings-index', BookingsIndex);
+/* global Garnish */
+
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+
+Garnish.$doc.ready(() => {
+
+	const Index = () => import('./pages/Index');
+
+	const router = new VueRouter({
+		base: window.bookingsBaseUrl,
+		mode: 'history',
+		routes: [
+			{
+				path: '/',
+				name: 'Index',
+				component: Index,
+			},
+			{
+				path: '/past',
+				name: 'Past',
+				component: Index,
+			},
+		],
 	});
-	// Vue.component('bookings-index', require('./BookingsIndex.vue'));
+
+	new Vue({
+		el: '#main',
+		template: '<main id="main" role="main"><router-view /></main>',
+		router,
+	});
+
 });

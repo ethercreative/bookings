@@ -1,13 +1,16 @@
 {% extends '_layouts/cp' %}
 
+{% set crumbs = '' %}
+{% block header %}{% endblock %}
+
 {% set title = 'Bookings'|t('bookings') %}
 {% set selectedTab = 'bookings' %}
 {% set selectedSubnavItem = 'bookings' %}
 
+{% css %}
+	#header { display: none !important }
+{% endcss %}
+
 {% block actionButton %}
 	<input type="button" class="btn submit" value="Export to CSV">
-{% endblock %}
-
-{% block main %}
-	<bookings-index></bookings-index>
 {% endblock %}
