@@ -17,6 +17,7 @@
 
 <script>
 	import seededRandom from '../helpers/seededRandom';
+	import { colourFromValue, complementaryColour, invertColour } from '../helpers/Colour';
 	import Progress from './Progress';
 	import Dates from './Dates';
 
@@ -34,14 +35,15 @@
 
 		computed: {
 			image () {
-				const rng = seededRandom(this.event.id);
-				let start = (rng() * 0xFFFFFF << 0).toString(16),
-					end   = (rng() * 0xFFFFFF << 0).toString(16);
+				// let start = colourFromValue(seededRandom(this.event.id)());
+				// if (start.length < 6) start = '0' + start;
+				// const end = complementaryColour(start);
+				// const end2 = invertColour(start);
 
-				if (start.length < 6) start = '0' + start;
-				if (end.length < 6) end = '0' + end;
+				const url = `https://source.unsplash.com/400x130/?sig=${this.event.id}`;
+				return `url(${url}) center / cover`;
 
-				return `linear-gradient(to right, #${start} 0%, #${end} 100%)`;
+				// return `linear-gradient(to right, #${start} 0%, #${end2} 50%, #${end} 100%)`;
 			}
 		}
 	};
