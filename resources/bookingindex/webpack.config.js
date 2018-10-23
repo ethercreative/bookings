@@ -5,6 +5,7 @@ const webpack = require('webpack')
 	, MiniCssExtractPlugin = require('mini-css-extract-plugin')
 	, UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 	, OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+	, CleanTerminalPlugin = require('clean-terminal-webpack-plugin')
 	, ManifestPlugin = require('webpack-manifest-plugin');
 
 const IS_PROD = process.env.NODE_ENV === 'production';
@@ -78,11 +79,15 @@ module.exports = {
 					loader: 'babel-loader',
 					options: {
 						presets: [
-							require('@babel/preset-env'),
+							[
+								require.resolve("@babel/preset-env"),
+								{ useBuiltIns: 'usage' },
+							],
 						],
 						plugins: [
 							require('@babel/plugin-syntax-dynamic-import'),
 							require('@babel/plugin-proposal-class-properties'),
+							require('babel-plugin-transform-vue-jsx'),
 						],
 						cacheDirectory: true,
 					},
@@ -181,6 +186,8 @@ module.exports = {
 	plugins: [
 		new VueLoaderPlugin(),
 
+		new CleanTerminalPlugin(),
+
 		new webpack.HotModuleReplacementPlugin(),
 		new webpack.NamedModulesPlugin(),
 		new webpack.DefinePlugin({
@@ -214,5 +221,6 @@ module.exports = {
 	externals: {
 		'vue': 'Vue',
 		'vue-router': 'VueRouter',
+		'vuex': 'Vuex',
 	},
 };

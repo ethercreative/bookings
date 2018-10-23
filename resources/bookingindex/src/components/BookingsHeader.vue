@@ -1,6 +1,9 @@
 <template>
 	<header :class="$style.header">
 		<div :class="$style.heading">
+			<router-link v-if="back && to" :to="to">
+				← {{back}}
+			</router-link>
 			<h1>{{heading}}</h1>
 			<p>{{description}}</p>
 		</div>
@@ -16,6 +19,9 @@
 		props: {
 			heading: String,
 			description: String,
+
+			back: String,
+			to: String,
 		}
 	};
 </script>
@@ -33,6 +39,16 @@
 
 	.heading {
 		grid-column: span 6;
+
+		a {
+			display: inline-block;
+			margin-bottom: 12px;
+
+			color: #75889E;
+			font-size: 14px;
+			letter-spacing: 0;
+			line-height: 26px;
+		}
 
 		h1 {
 			font-size: 44px;

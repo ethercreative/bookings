@@ -13,8 +13,10 @@ use craft\helpers\Json;
 use craft\web\Controller;
 use ether\bookings\Bookings;
 use ether\bookings\common\Availability;
+use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\models\Event;
 use ether\bookings\records\BookedSlotRecord;
+use ether\bookings\records\EventRecord;
 
 
 /**
@@ -73,6 +75,19 @@ class ApiController extends Controller
 			'availability' => $availability->all(),
 			'hasAnyBookings' => $hasAnyBookings,
 		]);
+	}
+
+	public function actionGetEvents ()
+	{
+		$enabledEvents = (new Query())
+			->select(['events.elementId'])
+			->from([EventRecord::$tableName . ' events'])
+			->where(['events.enabled' => true]);
+
+		// TODO: Convert this to a query, only getting the columns needed?
+		$products = CommerceGetters::getProductsByIds($enabledEvents->column());
+
+		return $this->asJson($products);
 	}
 
 }

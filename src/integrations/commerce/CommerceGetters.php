@@ -8,6 +8,7 @@
 
 namespace ether\bookings\integrations\commerce;
 
+use craft\commerce\elements\Product;
 use craft\commerce\Plugin;
 
 
@@ -49,6 +50,18 @@ class CommerceGetters
 	public static function getCustomerById ($id)
 	{
 		return Plugin::getInstance()->getCustomers()->getCustomerById($id);
+	}
+
+	/**
+	 * @param $ids
+	 *
+	 * @return \craft\commerce\elements\Product[]
+	 */
+	public static function getProductsByIds ($ids)
+	{
+		return Product::findAll([
+			'id' => $ids,
+		]);
 	}
 
 }

@@ -7,19 +7,23 @@
 			<tabs />
 		</bookings-header>
 
-		<search :perform-search="search" />
+		<search
+			:perform-search="search"
+			placeholder="Search Events"
+		/>
 
 		<deck>
 			<card
-				v-for="i in 8"
-				:key="i"
-				:event="{id: i}"
+				v-for="event in events"
+				:key="event.id"
+				:event="event"
 			/>
 		</deck>
 	</div>
 </template>
 
 <script>
+	import { mapState } from 'vuex';
 	import BookingsHeader from '../components/BookingsHeader';
 	import Tabs from '../components/Tabs';
 	import Search from '../components/Search';
@@ -37,24 +41,25 @@
 			Card,
 		},
 
+		computed: {
+			...mapState([
+				'events',
+			]),
+		},
+
+		mounted () {
+			this.$store.dispatch('getEvents');
+		},
+
 		methods: {
 			search (query, done) {
 				// TODO: Search
 				setTimeout(done, 1000);
-			}
-		}
+			},
+		},
 	};
 </script>
 
 <style lang="less" module>
-	@import (css) url('https://fonts.googleapis.com/css?family=Rubik:400,700');
-
-	.wrap {
-		width: 100%;
-		min-height: 100%;
-
-		font-family: 'Rubik', sans-serif;
-
-		background-color: #fff;
-	}
+	@import "../variables";
 </style>

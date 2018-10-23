@@ -10,12 +10,11 @@ namespace ether\bookings\controllers;
 
 use craft\helpers\StringHelper;
 use craft\helpers\UrlHelper;
+use craft\i18n\Locale;
 use craft\web\Controller;
 use craft\web\View;
 use yii\web\Response;
-use ether\bookings\Bookings;
 use ether\bookings\web\assets\bookingindex\BookingIndexAsset;
-use yii\web\HttpException;
 
 /**
  * Class CpController
@@ -47,35 +46,20 @@ class CpController extends Controller
 	{
 		$view = $this->getView();
 
-		$view->registerJs(
-			'window.bookingsBaseUrl = "' . $this->_getBookingsBaseUrl() . '";',
-			View::POS_BEGIN
+		$dateTimeFormat = \Craft::$app->locale->getDateTimeFormat(
+			Locale::LENGTH_SHORT,
+			Locale::FORMAT_PHP
 		);
+
+		$js = <<<JS
+window.bookingsBaseUrl = '{$this->_getBookingsBaseUrl()}';
+window.bookingsDateTimeFormat = '{$dateTimeFormat}';
+JS;
+
+		$view->registerJs($js, View::POS_BEGIN);
 		$view->registerAssetBundle(BookingIndexAsset::class);
 
 		return $this->renderTemplate('bookings/index');
-	}
-
-	/**
-	 * @param $bookingId
-	 *
-	 * @return \yii\web\Response
-	 * @throws HttpException
-	 */
-	public function actionEdit ($bookingId)
-	{
-		$booking = Bookings::getInstance()->bookings->getBookingById($bookingId);
-
-		if (!$booking)
-			throw new HttpException(404);
-
-		$title = 'Booking #' . $booking->shortNumber;
-		$continueEditingUrl = 'bookings/{id}';
-
-		return $this->renderTemplate(
-			'bookings/edit',
-			compact('booking', 'title', 'continueEditingUrl')
-		);
 	}
 
 	public function actionResource (string $fileName = ''): Response

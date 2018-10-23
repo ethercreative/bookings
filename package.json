@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@babel/polyfill": "^7.0.0",
+    "vuex": "^3.0.1"
+  }
+}

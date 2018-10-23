@@ -1,23 +1,21 @@
 <template>
-	<a href="#" :class="$style.card">
+	<router-link :to="'/events/' + event.id" :class="$style.card">
 		<span
 			:class="$style.image"
 			:style="{background:image}"
 		></span>
 		<span :class="$style.content">
-			<span :class="$style.name">Card Name</span>
+			<span :class="$style.name">{{event.title}}</span>
 
 			<dates />
 
-			<x-progress :width="event.id / 10" />
+			<x-progress :width="0 / 10" />
 		</span>
 		<span :class="$style.content"></span>
-	</a>
+	</router-link>
 </template>
 
 <script>
-	import seededRandom from '../helpers/seededRandom';
-	import { colourFromValue, complementaryColour, invertColour } from '../helpers/Colour';
 	import Progress from './Progress';
 	import Dates from './Dates';
 
@@ -35,15 +33,9 @@
 
 		computed: {
 			image () {
-				// let start = colourFromValue(seededRandom(this.event.id)());
-				// if (start.length < 6) start = '0' + start;
-				// const end = complementaryColour(start);
-				// const end2 = invertColour(start);
-
-				const url = `https://source.unsplash.com/400x130/?sig=${this.event.id}`;
+				const search = this.event.title.toLowerCase().split(' ').join(',');
+				const url = `https://source.unsplash.com/400x130/?${search}&sig=${this.event.id}`;
 				return `url(${url}) center / cover`;
-
-				// return `linear-gradient(to right, #${start} 0%, #${end2} 50%, #${end} 100%)`;
 			}
 		}
 	};

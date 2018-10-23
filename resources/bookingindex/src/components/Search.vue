@@ -9,11 +9,11 @@
 		</svg>
 		<input
 			type="search"
-			placeholder="Search Events"
+			:placeholder="placeholder"
 			autofocus
 			v-model="query"
 		/>
-		<span :class="['spinner', $style.spinner, { [$style.hide]: !busy }]"></span>
+		<span :class="['spinner', $style.spinner, { [$style.hide]: !isBusy }]"></span>
 	</label>
 </template>
 
@@ -28,12 +28,22 @@
 				type: Function,
 				default: (query, done) => done(),
 			},
+
+			placeholder: {
+				type: String,
+				default: 'Search...',
+			},
+
+			busy: {
+				type: Boolean,
+				default: false,
+			},
 		},
 
 		data () {
 			return {
 				query: '',
-				busy: false,
+				intBusy: false,
 			};
 		},
 
@@ -43,11 +53,17 @@
 			}
 		},
 
+		computed: {
+			isBusy () {
+				return this.intBusy || this.busy;
+			},
+		},
+
 		methods: {
 			doSearch: debounce(function () {
-				this.busy = true;
+				this.intBusy = true;
 				this.performSearch(this.query, () => {
-					this.busy = false;
+					this.intBusy = false;
 				});
 			}),
 		},
@@ -55,10 +71,13 @@
 </script>
 
 <style lang="less" module>
+	@import "../variables";
+
 	.search {
 		position: relative;
 
 		display: block;
+		width: 100%;
 		margin: 30px;
 
 		svg {
@@ -83,7 +102,9 @@
 			width: 100%;
 			padding: 10px 0;
 
+			color: @text-color;
 			font-size: 14px;
+			font-family: @font-family;
 			text-indent: 40px;
 
 			background: #fff;
@@ -93,7 +114,7 @@
 			transition: border-color 0.15s ease;
 
 			&:focus {
-				border-color: #0D99F2;
+				border-color: @primary;
 			}
 		}
 
