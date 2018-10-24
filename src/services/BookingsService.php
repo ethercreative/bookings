@@ -12,6 +12,7 @@ use craft\base\Component;
 use craft\helpers\Db;
 use ether\bookings\Bookings;
 use ether\bookings\elements\Booking;
+use ether\bookings\elements\db\BookingQuery;
 
 
 /**
@@ -38,6 +39,33 @@ class BookingsService extends Component
 			'eventId' => $eventId,
 			'slot'    => Db::prepareDateForDb($slot->setTimezone(new \DateTimeZone('UTC'))),
 		])->one();
+	}
+
+	/**
+	 * @param int            $eventId
+	 * @param \DateTime|null $slot
+	 * @param int|null       $offset
+	 *
+	 * @return \craft\base\ElementInterface[]
+	 */
+	public function getBookingsByEventIdAndSlot ($eventId, \DateTime $slot = null, $offset = 0)
+	{
+		/** @var BookingQuery $query */
+		$query = Booking::find();
+		$query = $query->event($eventId);
+
+		if ($slot !== null)
+		{
+			$query = $query->slot(
+				Db::prepareDateForDb(
+					$slot->setTimezone(new \DateTimeZone('UTC'))
+				)
+			);
+		}
+
+		\Craft::dd($query->limit(100)->getRawSql());
+
+		return $query->limit(100)->offset($offset)->all();
 	}
 
 	/**

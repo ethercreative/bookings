@@ -6,7 +6,7 @@ export async function get (action, params = {}) {
 		.join('&');
 
 	let url = Craft.getActionUrl(action);
-	if (params !== '') url += '?' + params;
+	if (params !== '') url += '&' + params;
 
 	return fetch(url, {
 		method: 'GET',

@@ -1,10 +1,10 @@
 <template>
-	<div :class="$style.wrap">
+	<div :class="$style.wrap" v-if="event">
 		<bookings-header
 			back="Back to events"
 			to="/"
 
-			heading="[Event Name]"
+			:heading="event.title"
 			description="[Maecenas faucibus mollis interdum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.]"
 		/>
 
@@ -24,10 +24,7 @@
 		</div>
 
 		<sortable-table
-			:data="[
-				{ id: '#F47KA', name: 'Example Person', email: 'text@example.com', order: '#F47KA', dateBooked: new Date() },
-				{ id: '#H31L0', name: 'Example Person', email: 'text@example.com', order: '#F47KA', dateBooked: new Date() },
-			]"
+			:data="allBookings"
 		>
 			<column label="ID" handle="id">
 				<template slot-scope="{ row }">
@@ -57,6 +54,7 @@
 </template>
 
 <script>
+	import { mapState } from 'vuex';
 	import BookingsHeader from '../components/BookingsHeader';
 	import Search from '../components/Search';
 	import BookingsSelect from '../components/BookingsSelect';
@@ -77,6 +75,30 @@
 		data: () => ({
 			busy: false,
 		}),
+
+		computed: {
+			...mapState([
+				'events',
+				'bookings',
+				'bookingsByEventId',
+			]),
+
+			event () {
+				return this.events[this.$route.params.eventId];
+			},
+
+			allBookings () {
+				const bookingIds = this.bookingsByEventId[this.$route.params.eventId];
+				if (!bookingIds) return [];
+				return bookingIds.map(id => this.bookings[id]);
+			}
+		},
+
+		mounted () {
+			const { eventId } = this.$route.params;
+			this.$store.dispatch('getEvent', { eventId });
+			this.$store.dispatch('getBookings', { eventId });
+		},
 
 		methods: {
 			onSelectChange (/*e*/) {

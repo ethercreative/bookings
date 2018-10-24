@@ -33,11 +33,11 @@
 
 		computed: {
 			image () {
-				const search = this.event.title.toLowerCase().split(' ').join(',');
+				const search = this.event.title.toLowerCase().split(' ').slice(0, 2).join(',');
 				const url = `https://source.unsplash.com/400x130/?${search}&sig=${this.event.id}`;
 				return `url(${url}) center / cover`;
-			}
-		}
+			},
+		},
 	};
 </script>
 

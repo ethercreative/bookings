@@ -13,6 +13,7 @@ use craft\helpers\Json;
 use craft\web\Controller;
 use ether\bookings\Bookings;
 use ether\bookings\common\Availability;
+use ether\bookings\helpers\DateHelper;
 use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\models\Event;
 use ether\bookings\records\BookedSlotRecord;
@@ -77,6 +78,15 @@ class ApiController extends Controller
 		]);
 	}
 
+	public function actionGetEvent ()
+	{
+		$elementId = \Craft::$app->request->getRequiredParam('eventId');
+
+		return $this->asJson(
+			CommerceGetters::getProductsByIds([$elementId])
+		);
+	}
+
 	public function actionGetEvents ()
 	{
 		$enabledEvents = (new Query())
@@ -85,9 +95,29 @@ class ApiController extends Controller
 			->where(['events.enabled' => true]);
 
 		// TODO: Convert this to a query, only getting the columns needed?
+		// TODO: This should work for all elements
 		$products = CommerceGetters::getProductsByIds($enabledEvents->column());
 
 		return $this->asJson($products);
+	}
+
+	public function actionGetBookings ()
+	{
+		$request = \Craft::$app->request;
+		$eventId = $request->getRequiredParam('eventId');
+		$offset  = $request->getParam('offset');
+		$slot    = $request->getParam('slot');
+
+		if ($slot !== null)
+			$slot = DateHelper::toUTCDateTime($slot);
+
+		$bookings = Bookings::getInstance()->bookings->getBookingsByEventIdAndSlot(
+			$eventId,
+			$slot,
+			$offset
+		);
+
+		return $this->asJson($bookings);
 	}
 
 }

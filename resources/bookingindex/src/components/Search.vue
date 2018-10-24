@@ -77,8 +77,8 @@
 		position: relative;
 
 		display: block;
-		width: 100%;
 		margin: 30px;
+		flex-grow: 1;
 
 		svg {
 			position: absolute;
