@@ -29,6 +29,7 @@ use ether\bookings\services\AvailabilityService;
 use ether\bookings\services\BookingsService;
 use ether\bookings\services\EventsService;
 use ether\bookings\services\FieldService;
+use ether\bookings\services\ReportsService;
 use ether\bookings\services\SlotsService;
 use ether\bookings\services\TicketsService;
 use ether\bookings\web\twig\CraftVariableBehavior;
@@ -43,6 +44,7 @@ use yii\base\Model;
  * @property AvailabilityService $availability
  * @property BookingsService $bookings
  * @property SlotsService $slots
+ * @property ReportsService $reports
  *
  * @property Settings $settings
  *
@@ -79,6 +81,7 @@ class Bookings extends Plugin
 			'availability' => AvailabilityService::class,
 			'bookings' => BookingsService::class,
 			'slots' => SlotsService::class,
+			'reports' => ReportsService::class,
 		]);
 
 		// Events

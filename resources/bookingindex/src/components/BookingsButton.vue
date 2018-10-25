@@ -1,5 +1,8 @@
 <template>
-	<button :class="$style.btn">
+	<button
+		:class="$style.btn"
+		@click="$emit('click', $event)"
+	>
 		{{label}}
 	</button>
 </template>

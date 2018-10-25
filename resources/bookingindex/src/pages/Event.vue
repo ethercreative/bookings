@@ -21,7 +21,10 @@
 				:busy="busy"
 				placeholder="Search Bookings"
 			/>
-			<bookings-button label="Export" />
+			<bookings-button
+				label="Export"
+				@click="doExport"
+			/>
 		</div>
 
 		<sortable-table :data="allBookings">
@@ -99,6 +102,22 @@
 			search (query, done) {
 				// TODO: Search
 				setTimeout(done, 1000);
+			},
+
+			async doExport () {
+				const { eventId } = this.$route.params;
+				const a = document.createElement('a');
+				a.setAttribute(
+					'href',
+					Craft.getActionUrl('bookings/api/export') + '&eventId=' + eventId
+				);
+				a.setAttribute(
+					'download',
+					eventId + '.csv'
+				);
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
 			},
 
 			// Render

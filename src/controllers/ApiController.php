@@ -14,7 +14,6 @@ use craft\web\Controller;
 use ether\bookings\Bookings;
 use ether\bookings\common\Availability;
 use ether\bookings\helpers\DateHelper;
-use ether\bookings\integrations\commerce\CommerceGetters;
 use ether\bookings\models\Event;
 use ether\bookings\records\BookedSlotRecord;
 use ether\bookings\records\EventRecord;
@@ -115,6 +114,23 @@ class ApiController extends Controller
 		);
 
 		return $this->asJson($bookings);
+	}
+
+	// Export
+	// -------------------------------------------------------------------------
+
+	public function actionExport ()
+	{
+		$eventId = \Craft::$app->request->getRequiredParam('eventId');
+
+		$slots = Bookings::getInstance()->reports->allSlotsForEvent($eventId);
+
+		$out = fopen('php://output', 'w');
+		fputcsv($out, array_keys($slots[0]));
+		foreach ($slots as $slot)
+			fputcsv($out, array_values($slot));
+		fclose($out);
+		exit();
 	}
 
 	// Helpers
