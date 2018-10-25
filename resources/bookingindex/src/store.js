@@ -53,6 +53,8 @@ export default new Vuex.Store({
 
 		storeBookings (state, bookings) {
 			const { byId, byEventId } = bookings.reduce((a, b) => {
+				b.dateBooked = new Date(b.dateBooked);
+
 				a.byId[b.id] = b;
 
 				if (!a.byEventId.hasOwnProperty(b.eventId))

@@ -1,7 +1,3 @@
-<template>
-	<div v-if="false"><slot /></div>
-</template>
-
 <script>
 	export default {
 		name: 'Column',
@@ -15,6 +11,14 @@
 				required: true,
 				type: String,
 			},
+			render: {
+				required: false,
+				type: Function,
+			},
+		},
+
+		render () {
+			return null;
 		},
 	};
 </script>

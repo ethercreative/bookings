@@ -153,6 +153,13 @@ class Booking extends Element
 		return $attrs;
 	}
 
+	public function attributes ()
+	{
+		return array_merge(parent::attributes(), [
+			'customerName',
+		]);
+	}
+
 	// Actions
 	// -------------------------------------------------------------------------
 
@@ -344,6 +351,30 @@ class Booking extends Element
 		return $this->_bookedTickets = BookedTicket::find()->andWhere([
 			'bookingId' => $this->id,
 		])->all();
+	}
+
+	/**
+	 * @return null|string
+	 * @throws \yii\base\InvalidConfigException
+	 */
+	public function getCustomerName ()
+	{
+		$customer = $this->getCustomer();
+
+		if (!$customer)
+			return null;
+
+		$address = $customer->getPrimaryBillingAddress();
+
+		if ($address && $address->fullName)
+			return $address->fullName;
+
+		$user = $customer->getUser();
+
+		if ($user && $user->fullName)
+			return $user->fullName;
+
+		return null;
 	}
 
 	/**

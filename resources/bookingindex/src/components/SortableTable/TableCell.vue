@@ -1,4 +1,6 @@
 <script>
+	import resolve from '../../helpers/resolve';
+
 	export default {
 		name: 'TableCell',
 		functional: true,
@@ -8,13 +10,11 @@
 			row: Object,
 		},
 
-		render (h, { props }) {
-			const template = props.column.$scopedSlots.default;
+		render (h, { props: { row, column } }) {
+			if (column.render)
+				return <td>{column.render(row, column)}</td>;
 
-			if (template)
-				return h('td', {}, template({ row: props.row  }));
-
-			return h('td', {}, props.row[props.column.handle] + '');
+			return <td>{resolve(column.handle, row)}</td>;
 		},
 	};
 </script>

@@ -52,6 +52,7 @@ class BookingsService extends Component
 	{
 		$where = [
 			'eventId' => $eventId,
+			'status' => Booking::STATUS_COMPLETED,
 		];
 
 		if ($slot !== null)
@@ -64,8 +65,8 @@ class BookingsService extends Component
 		/** @var BookingQuery $query */
 		return Booking::find()
 			->andWhere($where)
-			->limit(100)
-			->offset($offset)
+//			->limit(100)
+//			->offset($offset)
 			->all();
 	}
 

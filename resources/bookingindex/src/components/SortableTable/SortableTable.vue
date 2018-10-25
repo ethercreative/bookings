@@ -67,11 +67,16 @@
 	@import "../../variables";
 
 	.table-wrap {
-		margin: 0 @spacer @spacer;
+		margin: 0 @spacer @spacer*2;
 	}
 
 	.table {
 		width: 100%;
+
+		thead tr {
+			position: sticky;
+			top: 69px;
+		}
 
 		th {
 			padding: 6px 10px;

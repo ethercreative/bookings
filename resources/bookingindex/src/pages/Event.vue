@@ -21,34 +21,15 @@
 				:busy="busy"
 				placeholder="Search Bookings"
 			/>
+			<bookings-button label="Export" />
 		</div>
 
-		<sortable-table
-			:data="allBookings"
-		>
-			<column label="ID" handle="id">
-				<template slot-scope="{ row }">
-					<a href="#">#{{row.id}}</a>
-				</template>
-			</column>
-
-			<column label="Name" handle="name" />
-
+		<sortable-table :data="allBookings">
+			<column label="ID" handle="id" :render="renderId" />
+			<column label="Name" handle="customerName" />
 			<column label="Email" handle="customerEmail" />
-
-			<column label="Order" handle="orderId">
-				<template slot-scope="{ row }">
-					<a :href="'/admin/commerce/orders/' + row.orderId">
-						#{{row.orderId}}
-					</a>
-				</template>
-			</column>
-
-			<column label="Date Booked" handle="dateBooked">
-				<template slot-scope="{ row }">
-					{{row.dateBooked}}
-				</template>
-			</column>
+			<column label="Order" handle="orderId" :render="renderOrder" />
+			<column label="Date Booked" handle="dateBooked" :render="renderDate" />
 		</sortable-table>
 	</div>
 </template>
@@ -58,7 +39,9 @@
 	import BookingsHeader from '../components/BookingsHeader';
 	import Search from '../components/Search';
 	import BookingsSelect from '../components/BookingsSelect';
+	import BookingsButton from '../components/BookingsButton';
 	import { SortableTable, Column } from '../components/SortableTable/index.js';
+	import formatDate from '../helpers/formatDate';
 
 	export default {
 		name: 'Event',
@@ -69,6 +52,7 @@
 			BookingsSelect,
 			SortableTable,
 			Column,
+			BookingsButton,
 		},
 
 		data: () => ({
@@ -100,6 +84,10 @@
 		},
 
 		methods: {
+
+			// Actions
+			// -----------------------------------------------------------------
+
 			onSelectChange (/*e*/) {
 				// TODO: Filter
 				this.busy = true;
@@ -112,6 +100,32 @@
 				// TODO: Search
 				setTimeout(done, 1000);
 			},
+
+			// Render
+			// -----------------------------------------------------------------
+
+			renderId (row) {
+				return (
+					<a href={`/bookings/booking/${row.id}`}>
+						#{row.id}
+					</a>
+				);
+			},
+
+			renderOrder (row) {
+				return (
+					<a href={`/admin/commerce/orders/${row.orderId}`}>
+						#{row.orderId}
+					</a>
+				);
+			},
+
+			renderDate (row, column) {
+				return formatDate(
+					row[column.handle],
+					window.bookingsDateTimeFormat
+				);
+			},
 		},
 	};
 </script>
@@ -120,15 +134,25 @@
 	@import "../variables";
 
 	.filter {
+		position: sticky;
+		top: -15px;
+
 		display: flex;
 
-		label {
+		background-color: #fff;
+
+		> * {
 			&:first-child {
 				margin-right: 5px;
 			}
 
 			&:last-child {
 				margin-left: 5px;
+			}
+
+			&:not(:first-child):not(:last-child) {
+				margin-left: 5px;
+				margin-right: 5px;
 			}
 		}
 	}
