@@ -1,24 +1,33 @@
-<template>
-	<nav :class="$style.tabs">
-		<ul>
-			<li>
-				<router-link to="/" :exact-active-class="$style.active">
-					Active Events
-				</router-link>
-			</li>
-			<li>
-				<router-link to="/past" :exact-active-class="$style.active">
-					Past Events
-				</router-link>
-			</li>
-		</ul>
-	</nav>
-</template>
-
 <script>
-	export default {
-		name: "Tabs"
-	};
+import Vue from 'vue';
+import Component from 'vue-class-component';
+
+@Component
+export default class Tabs extends Vue {
+
+	// Render
+	// =========================================================================
+
+	render () {
+		return (
+			<nav class={this.$style.tabs}>
+				<ul>
+					<li>
+						<router-link to="/" exactActiveClass={this.$style.active}>
+							Active Events
+						</router-link>
+					</li>
+					<li>
+						<router-link to="/past" exactActiveClass={this.$style.active}>
+							Past Events
+						</router-link>
+					</li>
+				</ul>
+			</nav>
+		);
+	}
+
+}
 </script>
 
 <style lang="less" module>

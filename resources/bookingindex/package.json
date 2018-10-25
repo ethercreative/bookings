@@ -35,8 +35,10 @@
     "webpack-manifest-plugin": "^2.0.4"
   },
   "dependencies": {
+    "@babel/plugin-proposal-decorators": "^7.1.2",
     "seedrandom": "^2.4.4",
     "vue": "^2.5.17",
+    "vue-class-component": "^6.3.2",
     "vue-router": "^3.0.1"
   }
 }

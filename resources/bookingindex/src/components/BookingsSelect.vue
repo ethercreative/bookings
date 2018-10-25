@@ -1,28 +1,45 @@
-<template>
-	<label :class="$style.label">
-		<select
-			:class="$style.select"
-			@change="$emit('change', $event)"
-		>
-			<option
-				v-for="(opt, index) in options"
-				:value="opt.value"
-				:key="index"
-			>
-				{{opt.label}}
-			</option>
-		</select>
-	</label>
-</template>
-
 <script>
-	export default {
-		name: 'BookingsSelect',
+import Vue from 'vue';
+import Component from 'vue-class-component';
 
-		props: {
-			options: Array,
-		},
-	};
+@Component({
+	props: {
+		options: Array,
+	},
+})
+export default class Select extends Vue {
+
+	// Events
+	// =========================================================================
+
+	onChange (e) {
+		this.$emit('change', e);
+	}
+
+	// Render
+	// =========================================================================
+
+	render () {
+		return (
+			<label class={this.$style.label}>
+				<select
+					class={this.$style.select}
+					onChange={this.onChange}
+				>
+					{this.$props.options.map((opt, i) => (
+						<option
+							key={i}
+							value={opt.value}
+						>
+							{opt.label}
+						</option>
+					))}
+				</select>
+			</label>
+		);
+	}
+
+}
 </script>
 
 <style lang="less" module>

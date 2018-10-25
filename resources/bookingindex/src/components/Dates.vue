@@ -1,16 +1,27 @@
-<template>
-	<ul :class="$style.dates">
-		<li v-for="i in 3" :key="i" :class="$style.date">
-			{{i + 10}}/01/19
-		</li>
-		<li>and 2 more</li>
-	</ul>
-</template>
-
 <script>
-	export default {
-		name: 'Dates'
-	};
+import Vue from 'vue';
+import Component from 'vue-class-component';
+
+@Component
+export default class Dates extends Vue {
+
+	// Render
+	// =========================================================================
+
+	render () {
+		return (
+			<ul class={this.$style.dates}>
+				{Array.from({ length: 3 }, (_, i) => (
+					<li key={i} class={this.$style.date}>
+						{i + 10}/01/19
+					</li>
+				))}
+				<li>and 2 more</li>
+			</ul>
+		);
+	}
+
+}
 </script>
 
 <style lang="less" module>

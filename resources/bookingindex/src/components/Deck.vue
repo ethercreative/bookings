@@ -1,13 +1,27 @@
-<template>
-	<div :class="$style.deck">
-		<slot />
-	</div>
-</template>
-
 <script>
-	export default {
-		name: "Deck"
-	};
+import Vue from 'vue';
+import Component from 'vue-class-component';
+
+@Component
+export default class Deck extends Vue {
+
+	// Properties
+	// =========================================================================
+
+	name = 'Deck';
+
+	// Render
+	// =========================================================================
+
+	render () {
+		return (
+			<div class={this.$style.deck}>
+				{this.$slots.default}
+			</div>
+		);
+	}
+
+}
 </script>
 
 <style lang="less" module>

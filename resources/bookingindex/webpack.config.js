@@ -85,6 +85,10 @@ module.exports = {
 							],
 						],
 						plugins: [
+							[
+								require('@babel/plugin-proposal-decorators'),
+								{ 'legacy': true }
+							],
 							require('@babel/plugin-syntax-dynamic-import'),
 							require('@babel/plugin-proposal-class-properties'),
 							require('babel-plugin-transform-vue-jsx'),

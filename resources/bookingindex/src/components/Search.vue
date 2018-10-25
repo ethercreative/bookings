@@ -1,73 +1,85 @@
-<template>
-	<label :class="[$style.search, 'icon']">
-		<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-		     viewBox="0 0 18 18">
-			<path
-				d="M11.6363636 5.81890909C11.6363636 2.60581818 9.03127273 0 5.81818182 0 2.60509091 0 0 2.60581818 0 5.81890909 0 9.03127273 2.60509091 11.6363636 5.81818182 11.6363636 9.03127273 11.6363636 11.6363636 9.03127273 11.6363636 5.81890909zM9.93178182 9.93149091L16.0001455 15.9998545"
-				transform="translate(1 1)"
-			/>
-		</svg>
-		<input
-			type="search"
-			:placeholder="placeholder"
-			autofocus
-			v-model="query"
-		/>
-		<span :class="['spinner', $style.spinner, { [$style.hide]: !isBusy }]"></span>
-	</label>
-</template>
-
 <script>
-	import debounce from "../helpers/debounce";
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import debounce from "../helpers/debounce";
 
-	export default {
-		name: "Search",
-
-		props: {
-			performSearch: {
-				type: Function,
-				default: (query, done) => done(),
-			},
-
-			placeholder: {
-				type: String,
-				default: 'Search...',
-			},
-
-			busy: {
-				type: Boolean,
-				default: false,
-			},
+@Component({
+	props: {
+		performSearch: {
+			type: Function,
+			default: (query, done) => done(),
 		},
 
-		data () {
-			return {
-				query: '',
-				intBusy: false,
-			};
+		placeholder: {
+			type: String,
+			default: 'Search...',
 		},
 
-		watch: {
-			query () {
-				this.doSearch();
-			}
+		busy: {
+			type: Boolean,
+			default: false,
 		},
+	},
+})
+export default class Search extends Vue {
 
-		computed: {
-			isBusy () {
-				return this.intBusy || this.busy;
-			},
-		},
+	// Properties
+	// =========================================================================
 
-		methods: {
-			doSearch: debounce(function () {
-				this.intBusy = true;
-				this.performSearch(this.query, () => {
-					this.intBusy = false;
-				});
-			}),
-		},
-	};
+	intBusy = false;
+
+	// Getters
+	// =========================================================================
+
+	get isBusy () {
+		return this.intBusy || this.busy;
+	}
+
+	// Actions
+	// =========================================================================
+
+	doSearch () {
+		return debounce(e => {
+			this.intBusy = true;
+			this.performSearch(e.target.value, () => {
+				this.intBusy = false;
+			});
+		});
+	}
+
+	// Render
+	// =========================================================================
+
+	render () {
+		return (
+			<label class={[this.$style.search, 'icon']}>
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+				     viewBox="0 0 18 18">
+					<path
+						d="M11.6363636 5.81890909C11.6363636 2.60581818 9.03127273 0 5.81818182 0 2.60509091 0 0 2.60581818 0 5.81890909 0 9.03127273 2.60509091 11.6363636 5.81818182 11.6363636 9.03127273 11.6363636 11.6363636 9.03127273 11.6363636 5.81890909zM9.93178182 9.93149091L16.0001455 15.9998545"
+						transform="translate(1 1)"
+					/>
+				</svg>
+
+				<input
+					type="search"
+					placeholder={this.$props.placeholder}
+					autoFocus
+					onInput={this.doSearch()}
+				/>
+
+				<span
+					class={[
+						'spinner',
+						this.$style.spinner,
+						{ [this.$style.hide]: !this.isBusy }
+					]}
+				/>
+			</label>
+		);
+	}
+
+}
 </script>
 
 <style lang="less" module>

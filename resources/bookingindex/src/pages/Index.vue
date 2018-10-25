@@ -1,63 +1,73 @@
-<template>
-	<div :class="$style.wrap">
-		<bookings-header
-			heading="Bookings"
-			description="Welcome to bookings! You made a smart choice on how to manage your bookings with Craft. Click on the event below to view the attendance for each of the bookable slots or in total. Create new bookable products using the field type."
-		>
-			<tabs />
-		</bookings-header>
-
-		<search
-			:perform-search="search"
-			placeholder="Search Events"
-		/>
-
-		<deck>
-			<card
-				v-for="event in events"
-				:key="event.id"
-				:event="event"
-			/>
-		</deck>
-	</div>
-</template>
-
 <script>
-	import { mapState } from 'vuex';
-	import BookingsHeader from '../components/BookingsHeader';
-	import Tabs from '../components/Tabs';
-	import Search from '../components/Search';
-	import Deck from '../components/Deck';
-	import Card from '../components/Card';
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import Header from '../components/BookingsHeader';
+import Tabs from '../components/Tabs';
+import Search from '../components/Search';
+import Deck from '../components/Deck';
+import Card from '../components/Card';
 
-	export default {
-		name: 'Index',
+@Component
+export default class Index extends Vue {
 
-		components: {
-			BookingsHeader,
-			Tabs,
-			Search,
-			Deck,
-			Card,
-		},
+	// Properties
+	// =========================================================================
 
-		computed: {
-			...mapState([
-				'events',
-			]),
-		},
+	// ...
 
-		mounted () {
-			this.$store.dispatch('getEvents');
-		},
+	// Vue
+	// =========================================================================
 
-		methods: {
-			search (query, done) {
-				// TODO: Search
-				setTimeout(done, 1000);
-			},
-		},
-	};
+	mounted () {
+		this.$store.dispatch('getEvents');
+	}
+
+	// Getters
+	// =========================================================================
+
+	get events () {
+		return this.$store.state.events;
+	}
+
+	// Actions
+	// =========================================================================
+
+	search (query, done) {
+		// TODO: Search
+		setTimeout(done, 1000);
+	}
+
+	// Render
+	// =========================================================================
+
+	render () {
+		return (
+			<div class={this.$style.wrap}>
+				<Header
+					heading="Bookings"
+					description="Welcome to bookings! You made a smart choice on how to manage your bookings with Craft. Click on the event below to view the attendance for each of the bookable slots or in total. Create new bookable products using the field type."
+				>
+					<Tabs />
+				</Header>
+
+				<Search
+					performSearch={this.search}
+					placeholder="Search Events"
+				/>
+
+				<Deck>
+					{Object.values(this.events).map(event => (
+						<Card
+							key={event.id}
+							event={event}
+						/>
+					))}
+				</Deck>
+			</div>
+		);
+	}
+
+}
 </script>
 
 <style lang="less" module>

@@ -9,7 +9,7 @@
 
 			<dates />
 
-			<x-progress :width="0 / 10" />
+			<x-progress :width="1 / 10" />
 		</span>
 		<span :class="$style.content"></span>
 	</router-link>

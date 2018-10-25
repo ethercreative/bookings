@@ -1,17 +1,29 @@
-<template>
-	<button
-		:class="$style.btn"
-		@click="$emit('click', $event)"
-	>
-		{{label}}
-	</button>
-</template>
-
 <script>
-	export default {
-		name: 'BookingsButton',
-		props: ['label'],
-	};
+import Vue from 'vue';
+import Component from 'vue-class-component';
+
+@Component({
+	props: ['label'],
+})
+export default class Button extends Vue {
+
+	// Render
+	// =========================================================================
+
+	render () {
+		const { label } = this.$props;
+
+		return (
+			<button
+				class={this.$style.btn}
+				onClick={e => this.$emit('click', e)}
+			>
+				{label}
+			</button>
+		);
+	}
+
+}
 </script>
 
 <style lang="less" module>

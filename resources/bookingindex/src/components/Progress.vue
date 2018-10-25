@@ -1,20 +1,32 @@
-<template>
-	<span :class="$style.bar">
-		<span :class="$style.fill" :style="{width:(width * 100) + '%'}"></span>
-	</span>
-</template>
-
 <script>
-	export default {
-		name: 'Progress',
+import Vue from 'vue';
+import Component from 'vue-class-component';
 
-		props: {
-			width: {
-				type: Number,
-				default: 0,
-			}
+@Component({
+	props: {
+		width: {
+			type: Number,
+			default: 0,
 		},
-	};
+	},
+})
+export default class Progress extends Vue {
+
+	// Render
+	// =========================================================================
+
+	render () {
+		return (
+			<span class={this.$style.bar}>
+				<span
+					class={this.$style.fill}
+					style={{width: (this.$props.width * 100) + '%'}}
+				/>
+			</span>
+		);
+	}
+
+}
 </script>
 
 <style lang="less" module>
