@@ -125,6 +125,9 @@ class ApiController extends Controller
 
 		$slots = Bookings::getInstance()->reports->allSlotsForEvent($eventId);
 
+		if (empty($slots))
+			exit();
+
 		$out = fopen('php://output', 'w');
 		fputcsv($out, array_keys($slots[0]));
 		foreach ($slots as $slot)
@@ -139,9 +142,9 @@ class ApiController extends Controller
 	private function _eventsQuery ()
 	{
 		return (new Query())
-			->select(['e.id', 'c.title'])
+			->select(['e.[[id]]', 'c.[[title]]'])
 			->from([EventRecord::$tableName . ' e'])
-			->leftJoin('{{%content}} c', 'e.elementId = c.elementId');
+			->leftJoin('{{%content}} c', 'e.[[elementId]] = c.[[elementId]]');
 	}
 
 }

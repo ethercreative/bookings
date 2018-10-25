@@ -26,28 +26,28 @@ class ReportsService extends Component
 	{
 		$slots = (new Query())
 			->select([
-				'slots.bookingId',
-				'slots.date as slot',
-				'bookings.orderId',
-				'bookings.dateBooked',
-				'orders.email',
-				'CONCAT(addresses.firstName, \' \', addresses.lastName) as name',
+				'slots.[[bookingId]]',
+				'slots.[[date]] as slot',
+				'bookings.[[orderId]]',
+				'bookings.[[dateBooked]]',
+				'orders.[[email]]',
+				'CONCAT(addresses.[[firstName]], \' \', addresses.[[lastName]]) as name',
 			])
 			->from(BookedSlotRecord::$tableName . ' slots')
-			->where(['slots.eventId' => $eventId])
+			->where(['slots.[[eventId]]' => $eventId])
 			->leftJoin(
 				BookingRecord::$tableName . ' bookings',
-				'slots.bookingId = bookings.id'
+				'slots.[[bookingId]] = bookings.[[id]]'
 			)
 			->leftJoin(
 				'{{%commerce_orders}} orders',
-				'bookings.orderId = orders.id'
+				'bookings.[[orderId]] = orders.[[id]]'
 			)
 			->leftJoin(
 				'{{%commerce_addresses}} addresses',
-				'orders.billingAddressId = addresses.id'
+				'orders.[[billingAddressId]] = addresses.[[id]]'
 			)
-			->orderBy('slots.date ASC, orders.email ASC')
+			->orderBy('slots.[[date]] ASC, orders.[[email]] ASC')
 			->all();
 
 		return $slots;

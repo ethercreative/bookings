@@ -1,3 +1,7 @@
+## [Unreleased] 1.0.0-alpha.12
+### Fixed
+- Fixed Query errors in Postgres
+
 ## 1.0.0-alpha.11
 ### Added
 - Added `$date` param to `Event::getNextAvailableSlot` to get the next available 
