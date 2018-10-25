@@ -15,18 +15,18 @@ export default class Index extends Vue {
 
 	// ...
 
-	// Vue
-	// =========================================================================
-
-	mounted () {
-		this.$store.dispatch('getEvents');
-	}
-
 	// Getters
 	// =========================================================================
 
 	get events () {
 		return this.$store.state.events;
+	}
+
+	// Vue
+	// =========================================================================
+
+	mounted () {
+		this.$store.dispatch('getEvents');
 	}
 
 	// Actions

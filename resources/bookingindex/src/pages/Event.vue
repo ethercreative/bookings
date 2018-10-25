@@ -1,152 +1,165 @@
-<template>
-	<div :class="$style.wrap" v-if="event">
-		<bookings-header
-			back="Back to events"
-			to="/"
-
-			:heading="event.title"
-			description="[Maecenas faucibus mollis interdum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.]"
-		/>
-
-		<div :class="$style.filter">
-			<bookings-select
-				@change="onSelectChange"
-				:options="[
-					{ label: 'All Slots', value: '*' },
-					{ label: '10:00 - 22nd October', value: '10:00' },
-				]"
-			/>
-			<search
-				:perform-search="search"
-				:busy="busy"
-				placeholder="Search Bookings"
-			/>
-			<bookings-button
-				label="Export"
-				@click="doExport"
-			/>
-		</div>
-
-		<sortable-table :data="allBookings">
-			<column label="ID" handle="id" :render="renderId" />
-			<column label="Name" handle="customerName" />
-			<column label="Email" handle="customerEmail" />
-			<column label="Order" handle="orderId" :render="renderOrder" />
-			<column label="Date Booked" handle="dateBooked" :render="renderDate" />
-		</sortable-table>
-	</div>
-</template>
-
 <script>
-	import { mapState } from 'vuex';
-	import BookingsHeader from '../components/BookingsHeader';
-	import Search from '../components/Search';
-	import BookingsSelect from '../components/BookingsSelect';
-	import BookingsButton from '../components/BookingsButton';
-	import { SortableTable, Column } from '../components/SortableTable/index.js';
-	import formatDate from '../helpers/formatDate';
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import Header from '../components/BookingsHeader';
+import Select from '../components/BookingsSelect';
+import Search from '../components/Search';
+import Button from '../components/BookingsButton';
+import { SortableTable, Column } from '../components/SortableTable';
+import formatDate from '../helpers/formatDate';
 
-	export default {
-		name: 'Event',
+@Component
+export default class Event extends Vue {
 
-		components: {
-			BookingsHeader,
-			Search,
-			BookingsSelect,
-			SortableTable,
-			Column,
-			BookingsButton,
-		},
+	// Properties
+	// =========================================================================
 
-		data: () => ({
-			busy: false,
-		}),
+	busy = false;
 
-		computed: {
-			...mapState([
-				'events',
-				'bookings',
-				'bookingsByEventId',
-			]),
+	// Getters
+	// =========================================================================
 
-			event () {
-				return this.events[this.$route.params.eventId];
-			},
+	get events () {
+		return this.$store.state.events;
+	}
 
-			allBookings () {
-				const bookingIds = this.bookingsByEventId[this.$route.params.eventId];
-				if (!bookingIds) return [];
-				return bookingIds.map(id => this.bookings[id]);
-			}
-		},
+	get bookings () {
+		return this.$store.state.bookings;
+	}
 
-		mounted () {
-			const { eventId } = this.$route.params;
-			this.$store.dispatch('getEvent', { eventId });
-			this.$store.dispatch('getBookings', { eventId });
-		},
+	get bookingsByEventId () {
+		return this.$store.state.bookingsByEventId;
+	}
 
-		methods: {
+	get event () {
+		return this.events[this.$route.params.eventId];
+	}
 
-			// Actions
-			// -----------------------------------------------------------------
+	get allBookings () {
+		const bookingIds = this.bookingsByEventId[this.$route.params.eventId];
 
-			onSelectChange (/*e*/) {
-				// TODO: Filter
-				this.busy = true;
-				setTimeout(() => {
-					this.busy = false;
-				}, 1000);
-			},
+		if (!bookingIds)
+			return [];
 
-			search (query, done) {
-				// TODO: Search
-				setTimeout(done, 1000);
-			},
+		return bookingIds.map(id => this.bookings[id]);
+	}
 
-			async doExport () {
-				const { eventId } = this.$route.params;
-				const a = document.createElement('a');
-				a.setAttribute(
-					'href',
-					Craft.getActionUrl('bookings/api/export') + '&eventId=' + eventId
-				);
-				a.setAttribute(
-					'download',
-					eventId + '.csv'
-				);
-				document.body.appendChild(a);
-				a.click();
-				document.body.removeChild(a);
-			},
+	// Vue
+	// =========================================================================
 
-			// Render
-			// -----------------------------------------------------------------
+	mounted () {
+		const { eventId } = this.$route.params;
+		this.$store.dispatch('getEvent', { eventId });
+		this.$store.dispatch('getBookings', { eventId });
+	}
 
-			renderId (row) {
-				return (
-					<a href={`/bookings/booking/${row.id}`}>
-						#{row.id}
-					</a>
-				);
-			},
+	// Actions
+	// =========================================================================
 
-			renderOrder (row) {
-				return (
-					<a href={`/admin/commerce/orders/${row.orderId}`}>
-						#{row.orderId}
-					</a>
-				);
-			},
+	search (query, done) {
+		// TODO: Search
+		setTimeout(done, 1000);
+	}
 
-			renderDate (row, column) {
-				return formatDate(
-					row[column.handle],
-					window.bookingsDateTimeFormat
-				);
-			},
-		},
-	};
+	async export () {
+		const { eventId } = this.$route.params;
+		const a = document.createElement('a');
+		a.setAttribute(
+			'href',
+			Craft.getActionUrl('bookings/api/export') + '&eventId=' + eventId
+		);
+		a.setAttribute(
+			'download',
+			eventId + '.csv'
+		);
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+	}
+
+	// Events
+	// =========================================================================
+
+	onSelectChange () {
+		// TODO: Filter
+		this.busy = true;
+		setTimeout(() => {
+			this.busy = false;
+		}, 1000);
+	}
+
+	// Render
+	// =========================================================================
+
+	render () {
+		// TODO: Show loading screen
+		if (!this.event)
+			return null;
+
+		return (
+			<div class={this.$style.wrap}>
+				<Header
+					back="Back to events"
+					to="/"
+
+					heading={this.event.title}
+					description="[Maecenas faucibus mollis interdum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.]"
+				/>
+
+				<div class={this.$style.filter}>
+					<Select
+						onChange={this.onSelectChange}
+						options={[
+							{ label: 'All Slots', value: '*' },
+							{ label: '10:00 - 22nd October', value: '10:00' },
+						]}
+					/>
+					<Search
+						onSearch={this.search}
+						busy={this.busy}
+						placeholder="Search Bookings"
+					/>
+					<Button
+						label="Export"
+						onClick={this.export}
+					/>
+				</div>
+
+				<SortableTable data={this.allBookings}>
+					<Column label="ID" handle="id" render={this._renderId} />
+					<Column label="Name" handle="customerName" />
+					<Column label="Email" handle="customerEmail" />
+					<Column label="Order" handle="orderId" render={this._renderOrder} />
+					<Column label="Date Booked" handle="dateBooked" render={this._renderDate} />
+				</SortableTable>
+			</div>
+		);
+	}
+
+	_renderId (row) {
+		return (
+			<a href={`/bookings/booking/${row.id}`}>
+				#{row.id}
+			</a>
+		);
+	}
+
+	_renderOrder (row) {
+		return (
+			<a href={`/admin/commerce/orders/${row.orderId}`}>
+				#{row.orderId}
+			</a>
+		);
+	}
+
+	_renderDate (row, column) {
+		return formatDate(
+			row[column.handle],
+			window.bookingsDateTimeFormat
+		);
+	}
+
+}
 </script>
 
 <style lang="less" module>

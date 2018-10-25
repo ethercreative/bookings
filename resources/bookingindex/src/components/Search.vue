@@ -5,7 +5,7 @@ import debounce from "../helpers/debounce";
 
 @Component({
 	props: {
-		performSearch: {
+		onSearch: {
 			type: Function,
 			default: (query, done) => done(),
 		},
@@ -41,7 +41,7 @@ export default class Search extends Vue {
 	doSearch () {
 		return debounce(e => {
 			this.intBusy = true;
-			this.performSearch(e.target.value, () => {
+			this.$emit('search', e.target.value, () => {
 				this.intBusy = false;
 			});
 		});
@@ -119,6 +119,7 @@ export default class Search extends Vue {
 			font-family: @font-family;
 			text-indent: 40px;
 
+			appearance: none;
 			background: #fff;
 			border: 1px solid #D9DDE2;
 			border-radius: 3px;
