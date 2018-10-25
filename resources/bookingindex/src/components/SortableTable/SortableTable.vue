@@ -1,66 +1,79 @@
-<template>
-	<div :class="$style['table-wrap']">
-		<table :class="$style.table" cellpadding="0" cellspacing="0">
-			<thead>
-				<tr>
-					<table-header
-						v-for="column in columns"
-						:key="column.handle"
-						:column="column"
-					/>
-				</tr>
-			</thead>
-			<tbody>
-				<tr
-					v-for="(row, rowIndex) in data"
-					:key="rowIndex"
-				>
-					<table-cell
-						v-for="(column, colIndex) in columns"
-						:key="colIndex * rowIndex"
-						:row="row"
-						:column="column"
-					/>
-				</tr>
-			</tbody>
-		</table>
-
-		<!-- Required so we can get the column child components -->
-		<slot />
-
-		<!-- TODO: Infinite scroll w/ option to switch to pagination -->
-	</div>
-</template>
-
 <script>
-	import TableHeader from './TableHeader';
-	import TableCell from "./TableCell";
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import TableHeader from './TableHeader';
+import TableCell from "./TableCell";
 
-	export default {
-		name: 'SortableTable',
-
-		components: {
-			TableCell,
-			TableHeader,
+@Component({
+	props: {
+		data: {
+			type: Array,
+			required: true,
 		},
+	},
+})
+export default class SortableTable extends Vue {
 
-		props: {
-			data: {
-				type: Array,
-				required: true,
-			},
-		},
+	// Properties
+	// =========================================================================
 
-		data: () => ({
-			columns: [],
-		}),
+	columns = [];
 
-		mounted () {
-			this.columns = this.$slots.default
+	// Vue
+	// =========================================================================
+
+	mounted () {
+		this.columns =
+			this.$slots.default
 				.filter(el => el.componentInstance)
 				.map(el => el.componentInstance);
-		},
-	};
+	}
+
+	// Render
+	// =========================================================================
+
+	render () {
+		return (
+			<div class={this.$style['table-wrap']}>
+				<table
+					class={this.$style.table}
+					cellPadding="0"
+					cellSpacing="0"
+				>
+					<thead>
+						<tr>
+							{this.columns.map(column => (
+								<TableHeader
+									key={column.handle}
+									column={column}
+								/>
+							))}
+						</tr>
+					</thead>
+					<tbody>
+						{this.$props.data.map((row, rowIndex) => (
+							<tr key={rowIndex}>
+								{this.columns.map((column, colIndex) => (
+									<TableCell
+										key={colIndex * rowIndex}
+										row={row}
+										column={column}
+									/>
+								))}
+							</tr>
+						))}
+					</tbody>
+				</table>
+
+				{/* Required for columns to work :( */}
+				{this.$slots.default}
+
+				{/* TODO: Infinite scroll w/ option to switch to pagination */}
+			</div>
+		);
+	}
+
+}
 </script>
 
 <style lang="less" module>
