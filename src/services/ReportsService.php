@@ -10,6 +10,7 @@ namespace ether\bookings\services;
 
 use craft\base\Component;
 use craft\db\Query;
+use ether\bookings\elements\Booking;
 use ether\bookings\records\BookedSlotRecord;
 use ether\bookings\records\BookingRecord;
 
@@ -34,7 +35,10 @@ class ReportsService extends Component
 				'CONCAT(addresses.[[firstName]], \' \', addresses.[[lastName]]) as name',
 			])
 			->from(BookedSlotRecord::$tableName . ' slots')
-			->where(['slots.[[eventId]]' => $eventId])
+			->where([
+				'slots.[[eventId]]' => $eventId,
+				'bookings.[[status]]' => Booking::STATUS_COMPLETED,
+			])
 			->leftJoin(
 				BookingRecord::$tableName . ' bookings',
 				'slots.[[bookingId]] = bookings.[[id]]'
