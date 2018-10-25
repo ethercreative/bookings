@@ -19,29 +19,17 @@ export default class Event extends Vue {
 	// Getters
 	// =========================================================================
 
-	get events () {
-		return this.$store.state.events;
-	}
-
-	get bookings () {
-		return this.$store.state.bookings;
-	}
-
-	get bookingsByEventId () {
-		return this.$store.state.bookingsByEventId;
-	}
-
 	get event () {
-		return this.events[this.$route.params.eventId];
+		return this.$store.state.events[this.$route.params.eventId];
 	}
 
 	get allBookings () {
-		const bookingIds = this.bookingsByEventId[this.$route.params.eventId];
+		const bookingIds = this.$store.state.bookingsByEventId[this.$route.params.eventId];
 
 		if (!bookingIds)
 			return [];
 
-		return bookingIds.map(id => this.bookings[id]);
+		return bookingIds.map(id => this.$store.state.bookings[id]);
 	}
 
 	// Vue
