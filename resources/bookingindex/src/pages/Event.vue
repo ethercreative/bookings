@@ -28,25 +28,25 @@
 		>
 			<column label="ID" handle="id">
 				<template slot-scope="{ row }">
-					<a href="#">{{row.id}}</a>
+					<a href="#">#{{row.id}}</a>
 				</template>
 			</column>
 
 			<column label="Name" handle="name" />
 
-			<column label="Email" handle="email" />
+			<column label="Email" handle="customerEmail" />
 
-			<column label="Order" handle="order">
+			<column label="Order" handle="orderId">
 				<template slot-scope="{ row }">
-					<a :href="'/admin/commerce/orders/' + row.order">
-						{{row.order}}
+					<a :href="'/admin/commerce/orders/' + row.orderId">
+						#{{row.orderId}}
 					</a>
 				</template>
 			</column>
 
 			<column label="Date Booked" handle="dateBooked">
 				<template slot-scope="{ row }">
-					{{formatDate(row.dateBooked)}}
+					{{row.dateBooked}}
 				</template>
 			</column>
 		</sortable-table>
@@ -59,7 +59,6 @@
 	import Search from '../components/Search';
 	import BookingsSelect from '../components/BookingsSelect';
 	import { SortableTable, Column } from '../components/SortableTable/index.js';
-	import formatDate from "../../../ui/src/_helpers/formatDate";
 
 	export default {
 		name: 'Event',
@@ -113,10 +112,6 @@
 				// TODO: Search
 				setTimeout(done, 1000);
 			},
-
-			formatDate (date) {
-				return formatDate(date, window.bookingsDateTimeFormat);
-			}
 		},
 	};
 </script>

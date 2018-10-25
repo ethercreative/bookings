@@ -80,25 +80,22 @@ class ApiController extends Controller
 
 	public function actionGetEvent ()
 	{
-		$elementId = \Craft::$app->request->getRequiredParam('eventId');
+		$eventId = \Craft::$app->request->getRequiredParam('eventId');
 
-		return $this->asJson(
-			CommerceGetters::getProductsByIds([$elementId])
-		);
+		$event = $this->_eventsQuery()
+			->where(['e.id' => $eventId])
+			->one();
+
+		return $this->asJson([$event]);
 	}
 
 	public function actionGetEvents ()
 	{
-		$enabledEvents = (new Query())
-			->select(['events.elementId'])
-			->from([EventRecord::$tableName . ' events'])
-			->where(['events.enabled' => true]);
+		$enabledEvents = $this->_eventsQuery()
+			->where(['e.enabled' => true])
+			->all();
 
-		// TODO: Convert this to a query, only getting the columns needed?
-		// TODO: This should work for all elements
-		$products = CommerceGetters::getProductsByIds($enabledEvents->column());
-
-		return $this->asJson($products);
+		return $this->asJson($enabledEvents);
 	}
 
 	public function actionGetBookings ()
@@ -118,6 +115,17 @@ class ApiController extends Controller
 		);
 
 		return $this->asJson($bookings);
+	}
+
+	// Helpers
+	// =========================================================================
+
+	private function _eventsQuery ()
+	{
+		return (new Query())
+			->select(['e.id', 'c.title'])
+			->from([EventRecord::$tableName . ' e'])
+			->leftJoin('{{%content}} c', 'e.elementId = c.elementId');
 	}
 
 }

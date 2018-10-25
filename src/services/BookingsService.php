@@ -50,22 +50,23 @@ class BookingsService extends Component
 	 */
 	public function getBookingsByEventIdAndSlot ($eventId, \DateTime $slot = null, $offset = 0)
 	{
-		/** @var BookingQuery $query */
-		$query = Booking::find();
-		$query = $query->event($eventId);
+		$where = [
+			'eventId' => $eventId,
+		];
 
 		if ($slot !== null)
 		{
-			$query = $query->slot(
-				Db::prepareDateForDb(
-					$slot->setTimezone(new \DateTimeZone('UTC'))
-				)
+			$where['slot'] = Db::prepareDateForDb(
+				$slot->setTimezone(new \DateTimeZone('UTC'))
 			);
 		}
 
-		\Craft::dd($query->limit(100)->getRawSql());
-
-		return $query->limit(100)->offset($offset)->all();
+		/** @var BookingQuery $query */
+		return Booking::find()
+			->andWhere($where)
+			->limit(100)
+			->offset($offset)
+			->all();
 	}
 
 	/**

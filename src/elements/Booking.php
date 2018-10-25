@@ -153,16 +153,6 @@ class Booking extends Element
 		return $attrs;
 	}
 
-	public function attributes ()
-	{
-		$attrs = parent::attributes();
-
-		$attrs[] = 'shortNumber';
-		$attrs[] = 'email';
-
-		return $attrs;
-	}
-
 	// Actions
 	// -------------------------------------------------------------------------
 

@@ -15,10 +15,6 @@
 				required: true,
 				type: String,
 			},
-			render: {
-				required: false,
-				type: Function,
-			},
 		},
 	};
 </script>

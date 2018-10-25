@@ -59,6 +59,8 @@ export default new Vuex.Store({
 					a.byEventId[b.eventId] = [];
 
 				a.byEventId[b.eventId].push(b.id);
+
+				return a;
 			}, { byId: {}, byEventId: {} });
 
 			state.bookings = {

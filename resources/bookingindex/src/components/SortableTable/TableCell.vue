@@ -12,9 +12,9 @@
 			const template = props.column.$scopedSlots.default;
 
 			if (template)
-				return h('td', {}, template({ row: props.row }));
+				return h('td', {}, template({ row: props.row  }));
 
-			return h('td', {}, props.row[props.column.handle].toString());
+			return h('td', {}, props.row[props.column.handle] + '');
 		},
 	};
 </script>
