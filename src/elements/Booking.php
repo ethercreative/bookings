@@ -37,6 +37,7 @@ class Booking extends Element
 	const STATUS_RESERVED = 0;
 	const STATUS_COMPLETED = 1;
 	const STATUS_EXPIRED = 2;
+	const STATUS_REFUNDED = 3;
 
 	// Properties
 	// =========================================================================
@@ -247,7 +248,7 @@ class Booking extends Element
 					'Couldn\'t expire booking {number}. Booking save failed during expiration with errors: {errors}',
 					[
 						'number' => $this->number,
-						'errors' => json_encode($this->errors)
+						'errors' => json_encode($this->errors),
 					],
 					__METHOD__
 				)
@@ -257,6 +258,45 @@ class Booking extends Element
 		}
 
 		return true;
+	}
+
+	/**
+	 * Marks the booking as refunded
+	 *
+	 * @return bool
+	 * @throws \Throwable
+	 * @throws \craft\errors\ElementNotFoundException
+	 * @throws \yii\base\Exception
+	 */
+	public function markAsRefunded (): bool
+	{
+		if ($this->status === self::STATUS_REFUNDED)
+			return true;
+
+		// Remove slots (but keep them on the order)
+		/** @var BookedTicket $ticket */
+		foreach ($this->getBookedTickets() as $ticket)
+			Bookings::getInstance()->slots->clearSlotsFromTicket($ticket);
+
+		// Set the new status
+		$this->status = self::STATUS_REFUNDED;
+
+		if (\Craft::$app->elements->saveElement($this, false))
+			return true;
+
+		\Craft::error(
+			\Craft::t(
+				'bookings',
+				'Couldn\'t mark booking {number} as refunded. Booking save failed during completion with errors: {errors}',
+				[
+					'number' => $this->number,
+					'errors' => json_encode($this->errors),
+				],
+				__METHOD__
+			)
+		);
+
+		return false;
 	}
 
 	// Events
@@ -422,7 +462,7 @@ class Booking extends Element
 				'label' => \Craft::t('app', 'Date Updated'),
 				'orderBy' => BookingRecord::$tableNameUnprefixed . '.dateUpdated',
 				'attribute' => 'dateUpdated',
-			]
+			],
 		];
 	}
 
@@ -436,7 +476,7 @@ class Booking extends Element
 				'key' => '*',
 				'label' => \Craft::t('bookings', 'All Bookings'),
 				'criteria' => ['status' => self::STATUS_COMPLETED],
-				'defaultSort' => ['dateBooked', 'desc']
+				'defaultSort' => ['dateBooked', 'desc'],
 			],
 		];
 
@@ -492,7 +532,7 @@ class Booking extends Element
 					'criteria'    => [
 						'eventId' => $enabledBookableElementToEvent[$element['id']],
 					],
-					'defaultSort' => ['slotStart', 'desc']
+					'defaultSort' => ['slotStart', 'desc'],
 				];
 			}
 		}

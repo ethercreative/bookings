@@ -23,7 +23,7 @@ use craft\web\UrlManager;
 use ether\bookings\fields\EventField;
 use ether\bookings\fields\TicketField;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
-use ether\bookings\integrations\commerce\OnOrderEvent;
+use ether\bookings\integrations\commerce\OnCommerceEvent;
 use ether\bookings\models\Settings;
 use ether\bookings\services\AvailabilityService;
 use ether\bookings\services\BookingsService;
@@ -128,19 +128,25 @@ class Bookings extends Plugin
 			Event::on(
 				\craft\commerce\models\LineItem::class,
 				Model::EVENT_AFTER_VALIDATE,
-				[new OnOrderEvent, 'onBeforeSaveLineItem']
+				[new OnCommerceEvent, 'onBeforeSaveLineItem']
 			);
 
 			Event::on(
 				\craft\commerce\services\LineItems::class,
 				\craft\commerce\services\LineItems::EVENT_AFTER_SAVE_LINE_ITEM,
-				[new OnOrderEvent, 'onAfterSaveLineItem']
+				[new OnCommerceEvent, 'onAfterSaveLineItem']
 			);
 
 			Event::on(
 				\craft\commerce\elements\Order::class,
 				\craft\commerce\elements\Order::EVENT_BEFORE_COMPLETE_ORDER,
-				[new OnOrderEvent, 'onComplete']
+				[new OnCommerceEvent, 'onComplete']
+			);
+
+			Event::on(
+				\craft\commerce\services\Payments::class,
+				\craft\commerce\services\Payments::EVENT_AFTER_REFUND_TRANSACTION,
+				[new OnCommerceEvent, 'onRefund']
 			);
 		}
 
@@ -198,7 +204,6 @@ class Bookings extends Plugin
 	public function onRegisterCpUrlRules (RegisterUrlRulesEvent $event)
 	{
 		$event->rules['bookings'] = 'bookings/cp/index';
-//		$event->rules['bookings/<bookingId:\d+>'] = 'bookings/cp/edit';
 		$event->rules['bookings/<url:(.*)>'] = 'bookings/cp/index';
 		$event->rules['/cpresources/bookings/<fileName>'] = 'bookings/cp/resource';
 	}

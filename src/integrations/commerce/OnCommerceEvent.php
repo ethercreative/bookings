@@ -10,6 +10,7 @@ namespace ether\bookings\integrations\commerce;
 
 use craft\commerce\elements\Order;
 use craft\commerce\events\LineItemEvent;
+use craft\commerce\events\RefundTransactionEvent;
 use craft\commerce\models\LineItem;
 use craft\helpers\Db;
 use ether\bookings\Bookings;
@@ -21,14 +22,17 @@ use yii\base\Event;
 
 
 /**
- * Class OnOrderComplete
+ * Class OnCommerceEvent
  *
  * @author  Ether Creative
  * @package ether\bookings\integrations\commerce
  * @since   1.0.0
  */
-class OnOrderEvent
+class OnCommerceEvent
 {
+
+	// Orders
+	// =========================================================================
 
 	/**
 	 * @param Event $event
@@ -252,6 +256,20 @@ class OnOrderEvent
 		/** @var Booking $booking */
 		foreach ($bookings as $booking)
 			$booking->markAsComplete();
+	}
+
+	// Payments
+	// =========================================================================
+
+	public function onRefund (RefundTransactionEvent $event)
+	{
+		$order = $event->transaction->order;
+
+		$bookings = Bookings::getInstance()->bookings->getBookingsByOrderId($order->id);
+
+		/** @var Booking $booking */
+		foreach ($bookings as $booking)
+			$booking->expireBooking();
 	}
 
 }
