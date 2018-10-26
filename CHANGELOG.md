@@ -1,4 +1,4 @@
-## [Unreleased] 1.0.0-alpha.12
+## 1.0.0-alpha.12
 ### Fixed
 - Fixed Query errors in Postgres
 
