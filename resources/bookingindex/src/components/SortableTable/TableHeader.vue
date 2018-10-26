@@ -8,9 +8,11 @@
 		},
 
 		render (h, { props }) {
+			const label = props.column.label;
+
 			return (
-				<th role="columnheader">
-					{props.column.label}
+				<th role="columnheader" style={props.column.styles}>
+					{typeof label === 'function' ? label() : label}
 				</th>
 			);
 		},

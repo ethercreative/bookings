@@ -108,8 +108,7 @@ export default class SortableTable extends Vue {
 				border-radius: 0 3px 0 0;
 			}
 
-			&:first-child,
-			&:last-child {
+			&:first-child:last-child {
 				border-radius: 3px 3px 0 0;
 			}
 		}

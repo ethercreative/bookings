@@ -2,6 +2,9 @@
 ### Fixed
 - Fixed Query errors in Postgres
 
+### Improved
+- The slots of refunded orders are now made available again
+
 ## 1.0.0-alpha.11
 ### Added
 - Added `$date` param to `Event::getNextAvailableSlot` to get the next available 

@@ -5,7 +5,7 @@
 		props: {
 			label: {
 				required: true,
-				type: String,
+				type: [String, Function, Object],
 			},
 			handle: {
 				required: true,
@@ -14,6 +14,10 @@
 			render: {
 				required: false,
 				type: Function,
+			},
+			styles: {
+				required: false,
+				type: Object,
 			},
 		},
 
