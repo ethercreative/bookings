@@ -35,10 +35,15 @@ export default class Event extends Vue {
 	// Vue
 	// =========================================================================
 
-	mounted () {
+	async mounted () {
 		const { eventId } = this.$route.params;
-		this.$store.dispatch('getEvent', { eventId });
-		this.$store.dispatch('getBookings', { eventId });
+
+		this.busy = true;
+
+		await this.$store.dispatch('getEvent', { eventId });
+		await this.$store.dispatch('getBookings', { eventId });
+
+		this.busy = false;
 	}
 
 	// Actions

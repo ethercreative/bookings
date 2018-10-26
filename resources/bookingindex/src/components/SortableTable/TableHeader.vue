@@ -1,15 +1,18 @@
-<template>
-	<th
-		role="columnheader"
-	>{{column.label}}</th>
-</template>
-
 <script>
 	export default {
 		name: 'TableHeader',
+		functional: true,
 
 		props: {
 			column: Object,
+		},
+
+		render (h, { props }) {
+			return (
+				<th role="columnheader">
+					{props.column.label}
+				</th>
+			);
 		},
 	};
 </script>

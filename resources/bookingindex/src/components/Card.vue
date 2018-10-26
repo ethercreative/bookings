@@ -1,44 +1,52 @@
-<template>
-	<router-link :to="'/events/' + event.id" :class="$style.card">
-		<span
-			:class="$style.image"
-			:style="{background:image}"
-		></span>
-		<span :class="$style.content">
-			<span :class="$style.name">{{event.title}}</span>
-
-			<dates />
-
-			<x-progress :width="1 / 10" />
-		</span>
-		<span :class="$style.content"></span>
-	</router-link>
-</template>
-
 <script>
-	import Progress from './Progress';
-	import Dates from './Dates';
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import Progress from './Progress';
+import Dates from './Dates';
 
-	export default {
-		name: 'Card',
+@Component({
+	props: {
+		event: Object,
+	},
+})
+export default class Card extends Vue {
 
-		props: {
-			event: Object,
-		},
+	// Getters
+	// =========================================================================
 
-		components: {
-			'x-progress': Progress,
-			Dates,
-		},
+	get image () {
+		const search = this.event.title.toLowerCase().split(' ').slice(0, 2).join('+');
+		const url = `https://source.unsplash.com/400x130/?${search}&sig=${this.event.id}`;
+		return `url(${url}) center / cover`;
+	}
 
-		computed: {
-			image () {
-				const search = this.event.title.toLowerCase().split(' ').slice(0, 2).join(',');
-				const url = `https://source.unsplash.com/400x130/?${search}&sig=${this.event.id}`;
-				return `url(${url}) center / cover`;
-			},
-		},
-	};
+	// Render
+	// =========================================================================
+
+	render () {
+		const { event } = this.$props;
+
+		return (
+			<router-link to={`/events/${event.id}`} class={this.$style.card}>
+				<span
+					class={this.$style.image}
+					style={{background:this.image}}
+				/>
+				<span class={this.$style.content}>
+					<span class={this.$style.name}>
+						{event.title}
+					</span>
+
+					<Dates />
+
+					<Progress width={1 / 10} />
+				</span>
+				<span class={this.$style.content} />
+			</router-link>
+		);
+	}
+
+};
 </script>
 
 <style lang="less" module>
