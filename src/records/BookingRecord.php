@@ -53,6 +53,11 @@ class BookingRecord extends ActiveRecord
 		return self::$tableName;
 	}
 
+	public function getEvent ()
+	{
+		return $this->hasOne(EventRecord::class, ['id' => 'eventId']);
+	}
+
 	public function getUser ()
 	{
 		return $this->hasOne(User::class, ['id' => 'userId']);
