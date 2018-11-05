@@ -7,6 +7,7 @@ import Search from '../components/Search';
 import Button from '../components/BookingsButton';
 import { SortableTable, Column } from '../components/SortableTable';
 import formatDate from '../helpers/formatDate';
+import MiniCalendar from '../components/MiniCalendar';
 
 @Component
 export default class Event extends Vue {
@@ -15,6 +16,7 @@ export default class Event extends Vue {
 	// =========================================================================
 
 	busy = false;
+	activeDate = new Date();
 
 	// Getters
 	// =========================================================================
@@ -97,13 +99,20 @@ export default class Event extends Vue {
 
 					heading={this.event.title}
 					description="[Maecenas faucibus mollis interdum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.]"
-				/>
+				>
+					<div class={this.$style.calendar}>
+						<MiniCalendar
+							activeDate={this.activeDate}
+						/>
+					</div>
+				</Header>
 
 				<div class={this.$style.filter}>
 					<Select
 						onChange={this.onSelectChange}
 						options={[
 							{ label: 'All Slots', value: '*' },
+							{ label: 'All Slots for 22nd October', value: '*:2018-10-1' },
 							{ label: '10:00 - 22nd October', value: '10:00' },
 						]}
 					/>
@@ -180,6 +189,10 @@ export default class Event extends Vue {
 
 <style lang="less" module>
 	@import "../variables";
+
+	.calendar {
+		grid-column: span 6;
+	}
 
 	.filter {
 		position: sticky;

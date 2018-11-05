@@ -41,6 +41,9 @@ export default class Header extends Vue {
 
 <style lang="less" module>
 	.header {
+		position: relative;
+		z-index: 1;
+
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
 		grid-gap: 30px;

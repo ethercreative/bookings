@@ -91,6 +91,7 @@ module.exports = {
 							],
 							require('@babel/plugin-syntax-dynamic-import'),
 							require('@babel/plugin-proposal-class-properties'),
+							require('@babel/plugin-transform-spread'),
 							require('babel-plugin-transform-vue-jsx'),
 						],
 						cacheDirectory: true,

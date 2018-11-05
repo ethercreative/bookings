@@ -26,14 +26,16 @@ export default class Select extends Vue {
 					class={this.$style.select}
 					onChange={this.onChange}
 				>
-					{this.$props.options.map((opt, i) => (
-						<option
-							key={i}
-							value={opt.value}
-						>
-							{opt.label}
-						</option>
-					))}
+					{this.$props.options.map((opt, i) => {
+						return (
+							<option
+								key={i}
+								value={opt.value}
+							>
+								{opt.label}
+							</option>
+						);
+					})}
 				</select>
 			</label>
 		);

@@ -8,6 +8,7 @@
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/plugin-transform-spread": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
     "babel-loader": "^8.0.4",
