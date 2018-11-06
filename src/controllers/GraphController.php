@@ -26,23 +26,27 @@ class GraphController extends Controller
 
 	public function actionIndex ()
 	{
-		$types = new Types();
+		\Craft::dd(\ether\bookings\graph\Example::run());
 
-		$schema = new Schema([
-			'query' => $types->get('query'),
-		]);
-
-		$query = '{ events { id title tickets { id } } }';
-
-		$result = GraphQL::executeQuery(
-			$schema,
-			$query,
-			null,
-			null,
-			[]
-		);
-
-		\Craft::dd($result);
+////		$types = new Types();
+//		$types = new \ether\bookings\graph\Example();
+//
+//		$schema = new Schema([
+//			'query' => $types->_get('query'),
+//		]);
+//
+////		$query = '{ events { id title tickets { id } } }';
+//		$query = '{ events { id title __typename } }';
+//
+//		$result = GraphQL::executeQuery(
+//			$schema,
+//			$query,
+//			null,
+//			null,
+//			[]
+//		);
+//
+//		\Craft::dd($result);
 	}
 
 }
