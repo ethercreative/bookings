@@ -5,6 +5,7 @@ import Component from 'vue-class-component';
 @Component({
 	props: {
 		options: Array,
+		class: String,
 	},
 })
 export default class Select extends Vue {
@@ -21,7 +22,10 @@ export default class Select extends Vue {
 
 	render () {
 		return (
-			<label class={this.$style.label}>
+			<label class={[
+				this.$style.label,
+				this.$props.class,
+			]}>
 				<select
 					class={this.$style.select}
 					onChange={this.onChange}

@@ -28,11 +28,23 @@ export default class Modal extends Vue {
 	}
 
 	beforeMount () {
-		// TODO: Esc event
+		window.addEventListener('keydown', this.onKeyDown, true);
+	}
+
+	beforeDestroy () {
+		window.removeEventListener('keydown', this.onKeyDown, true);
 	}
 
 	// Events
 	// =========================================================================
+
+	onKeyDown (e) {
+		if (e.key !== 'Escape')
+			return;
+
+		e.preventDefault();
+		this.$props.whenRequestClose();
+	}
 
 	onOverlayClick (e) {
 		if (e.target !== this.$refs.overlay)
@@ -49,17 +61,23 @@ export default class Modal extends Vue {
 	render () {
 		return (
 			<portal target-el="#modal-container">
-				{this.$props.isOpen && (
-					<div
-						className={this.$style.overlay}
-						ref="overlay"
-						onClick={this.onOverlayClick}
-					>
-						<div className={this.$style.modal}>
-							{this.$slots.default}
+				<transition
+					duration={150}
+					enterClass={this.$style.hide}
+					leaveToClass={this.$style.hide}
+				>
+					{this.$props.isOpen && (
+						<div
+							class={this.$style.overlay}
+							ref="overlay"
+							onClick={this.onOverlayClick}
+						>
+							<div class={this.$style.modal}>
+								{this.$slots.default}
+							</div>
 						</div>
-					</div>
-				)}
+					)}
+				</transition>
 			</portal>
 		);
 	}
@@ -86,6 +104,17 @@ export default class Modal extends Vue {
 		background-color: rgba(0,0,0,0.4);
 
 		overflow: auto;
+
+		transition: opacity 0.15s ease;
+
+		&.hide {
+			opacity: 0;
+			pointer-events: none;
+
+			.modal {
+				transform: scale(0.9);
+			}
+		}
 	}
 
 	.modal {
@@ -96,5 +125,7 @@ export default class Modal extends Vue {
 		background: #fff;
 		box-shadow: 0 2px 20px 0 rgba(0, 0, 0, 0.30);
 		border-radius: 4px;
+
+		transition: transform 0.15s ease;
 	}
 </style>

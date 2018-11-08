@@ -75,7 +75,6 @@ export default class Booking extends Vue {
 					{this._renderCustomerDetails()}
 
 					<ul class={this.$style.tickets}>
-						<li>Tickets</li>
 						{this.booking.bookedTickets.map(this._renderTicket)}
 					</ul>
 				</div>
@@ -178,9 +177,12 @@ export default class Booking extends Vue {
 	}
 
 	_renderEditModal () {
+		if (this.activeTicket === null)
+			return;
+
 		return (
 			<Modal
-				isOpen={this.editModalOpen}
+				isOpen={this.editModalOpen && this.activeTicket !== null}
 				whenRequestClose={this.onRequestCloseEditModal}
 			>
 				<h1 class={this.$style.modalHeading}>
@@ -191,7 +193,7 @@ export default class Booking extends Vue {
 
 				<div class={this.$style.modalCalendar}>
 					<MiniCalendar
-						activeDate={this.booking.dateBooked}
+						activeDate={this.activeTicket.startDate}
 					/>
 				</div>
 
@@ -199,6 +201,7 @@ export default class Booking extends Vue {
 
 				<Select
 					options={[]}
+					class={this.$style.modalSelect}
 				/>
 
 				<Button label="Update Ticket" wide />
@@ -263,11 +266,7 @@ export default class Booking extends Vue {
 		grid-column: span 12;
 		list-style: none;
 
-		li:first-child {
-			margin-bottom: @spacer/2;
-		}
-
-		li:not(:first-child) {
+		li {
 			display: flex;
 			align-items: center;
 			margin-bottom: 10px;
@@ -315,9 +314,14 @@ export default class Booking extends Vue {
 			margin: 0 !important;
 			float: none !important;
 
+			background-color: transparent;
 			box-shadow: none !important;
 
 			transform: scale(1.2);
 		}
+	}
+
+	.modalSelect {
+		margin-bottom: -@spacer/2;
 	}
 </style>
