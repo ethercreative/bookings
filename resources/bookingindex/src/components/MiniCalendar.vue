@@ -9,6 +9,19 @@ import formatDate from '../helpers/formatDate';
 			type: Date,
 			default: new Date(),
 		},
+		activeDay: {
+			type: Number,
+		},
+		availability: {
+			type: Object,
+		},
+		includeFullyBooked: {
+			type: Boolean,
+			default: false,
+		},
+		whenDayClick: {
+			type: Function,
+		},
 	},
 	watch: {
 		activeDate () {
@@ -23,12 +36,21 @@ export default class MiniCalendar extends Vue {
 
 	offset = 0;
 	days = 0;
+	dateTemplate = null;
 
 	// Vue
 	// =========================================================================
 
 	beforeMount () {
 		this.cacheDays();
+	}
+
+	// Events
+	// =========================================================================
+
+	onDateClick (date, e) {
+		e.preventDefault();
+		this.$props.whenDayClick && this.$props.whenDayClick(date);
 	}
 
 	// Render
@@ -65,7 +87,23 @@ export default class MiniCalendar extends Vue {
 	_renderDay (_, day) {
 		day++; // 0 index to 1
 
-		// TODO: Show button if day has slots
+		const availability = this.$props.availability;
+		const minAvailability = this.$props.includeFullyBooked ? -1 : 0;
+		const date = this.dateTemplate.replace('[]', (day + '').padStart(2, '0'));
+
+		if (availability && availability.hasOwnProperty(date) && availability[date] > minAvailability) {
+			return (
+				<button
+					key={day}
+					onClick={this.onDateClick.bind(this, date)}
+					class={{
+						[this.$style.active]: date === this.$props.activeDay
+					}}
+				>
+					{day}
+				</button>
+			);
+		}
 
 		return (
 			<span key={day}>
@@ -90,6 +128,11 @@ export default class MiniCalendar extends Vue {
 		this.offset = offset;
 
 		this.days = end.getDate();
+
+		this.dateTemplate = formatDate(
+			start,
+			'Y-m-[] 00:00:00'
+		);
 	}
 
 }
@@ -142,10 +185,12 @@ export default class MiniCalendar extends Vue {
 	}
 
 	.days {
+		button,
 		span {
 			display: block;
 			width: 27px;
 			height: 27px;
+			padding: 0;
 
 			color: #97A2AE;
 			font-size: 11px;
@@ -156,6 +201,20 @@ export default class MiniCalendar extends Vue {
 
 			background-color: #F1F5F8;
 			border-radius: 7px;
+		}
+
+		button {
+			color: #29A601;
+
+			appearance: none;
+			background-color: #EAF6E6;
+			border: none;
+			cursor: pointer;
+
+			&.active {
+				color: #fff;
+				background-color: #097DFF;
+			}
 		}
 	}
 </style>

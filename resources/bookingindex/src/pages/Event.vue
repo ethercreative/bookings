@@ -103,6 +103,7 @@ export default class Event extends Vue {
 					<div class={this.$style.calendar}>
 						<MiniCalendar
 							activeDate={this.activeDate}
+							includeFullyBooked
 						/>
 					</div>
 				</Header>

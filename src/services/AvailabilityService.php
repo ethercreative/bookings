@@ -45,20 +45,17 @@ class AvailabilityService extends Component
 			'date'    => $time->format(\DateTime::W3C),
 		])->select('ticketId, bookingId')->all();
 
-		$bookedByTicket = ArrayHelper::groupBy(
+		$bookedByBooking = ArrayHelper::groupBy(
 			$bookedSlots,
-			'ticketId',
 			'bookingId'
 		);
 
-		$bookedByBooking =
-			array_key_exists($ticket->id, $bookedByTicket)
-				? $bookedByTicket[$ticket->id]
-				: [];
-
 		// Check the event multiplier
 		$uniqueBookings = count($bookedByBooking);
-		if ($booking !== null) $uniqueBookings--; // Exclude current booking
+		if (
+			$booking !== null &&
+			array_key_exists($booking->id, $bookedByBooking)
+		) $uniqueBookings--; // Exclude current booking
 		if ($event->multiplier && $event->multiplier <= $uniqueBookings)
 			return false;
 

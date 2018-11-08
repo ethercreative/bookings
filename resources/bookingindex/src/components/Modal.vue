@@ -118,6 +118,8 @@ export default class Modal extends Vue {
 	}
 
 	.modal {
+		position: relative;
+
 		width: 100%;
 		max-width: 450px;
 		margin: auto;
@@ -126,6 +128,7 @@ export default class Modal extends Vue {
 		box-shadow: 0 2px 20px 0 rgba(0, 0, 0, 0.30);
 		border-radius: 4px;
 
+		overflow: hidden;
 		transition: transform 0.15s ease;
 	}
 </style>

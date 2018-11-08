@@ -16,3 +16,14 @@ export async function get (action, params = {}) {
 		},
 	}).then(res => res.json());
 }
+
+export async function post (action, body = {}) {
+	return fetch(Craft.getActionUrl(action), {
+		method: 'POST',
+		headers: {
+			'Accepts': 'application/json',
+			'X-CSRF-Token': Craft.csrfTokenValue,
+		},
+		body: JSON.stringify(body),
+	}).then(res => res.json());
+}

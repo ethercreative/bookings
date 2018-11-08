@@ -18,6 +18,7 @@ use ether\bookings\elements\BookedTicket;
 use ether\bookings\elements\Booking;
 use ether\bookings\helpers\DateHelper;
 use ether\bookings\records\BookedSlotRecord;
+use ether\bookings\services\TicketsService;
 use yii\base\Event;
 
 
@@ -61,7 +62,15 @@ class OnCommerceEvent
 		if (!$ticketId)
 			return;
 
-		$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
+		// Are we updating an existing BookedTicket?
+		if (TicketsService::$previousTicketDate !== null) {
+			$prevDate  = DateHelper::parseDateFromPost(TicketsService::$previousTicketDate);
+			$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
+		} else {
+			$prevDate  = DateHelper::parseDateFromPost($options['ticketDate']);
+			$startDate = $prevDate;
+		}
+
 		// TODO: Date ranges
 		$endDate = null;
 
@@ -97,7 +106,7 @@ class OnCommerceEvent
 		$booking = $bookings->bookings->getBookingByOrderEventAndSlot(
 			$order->id,
 			$event->id,
-			$startDate
+			$prevDate
 		);
 
 		// Is time available?
@@ -150,7 +159,15 @@ class OnCommerceEvent
 		if (!$ticketId)
 			return;
 
-		$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
+		// Are we updating an existing BookedTicket?
+		if (TicketsService::$previousTicketDate !== null){
+			$prevDate  = DateHelper::parseDateFromPost(TicketsService::$previousTicketDate);
+			$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
+		} else {
+			$prevDate  = DateHelper::parseDateFromPost($options['ticketDate']);
+			$startDate = $prevDate;
+		}
+
 		// TODO: Date ranges
 		$endDate = null;
 //		$endDate = $craft->request->getBodyParam('ticketEndDate');
@@ -165,7 +182,7 @@ class OnCommerceEvent
 		$booking = $bookings->bookings->getBookingByOrderEventAndSlot(
 			$order->id,
 			$event->id,
-			$startDate
+			$prevDate
 		);
 
 		// Create a new booking if one doesn't exist
@@ -190,7 +207,7 @@ class OnCommerceEvent
 				'ticketId'   => $ticket->id,
 				'bookingId'  => $booking->id,
 				'lineItemId' => $lineItem->id,
-				'startDate'  => $startDate,
+				'startDate'  => $prevDate,
 				'endDate'    => $endDate,
 			]);
 

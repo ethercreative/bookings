@@ -7,6 +7,7 @@ import Select from '../components/BookingsSelect';
 import Modal from '../components/Modal';
 import MiniCalendar from '../components/MiniCalendar';
 import formatDate from '../helpers/formatDate';
+import { post } from '../helpers/fetch';
 
 @Component
 export default class Booking extends Vue {
@@ -18,6 +19,13 @@ export default class Booking extends Vue {
 
 	editModalOpen = false;
 	activeTicket = null;
+	availability = null;
+	activeDay = null;
+	slots = [];
+
+	selectedNewSlot = null;
+
+	error = null;
 
 	// Getters
 	// =========================================================================
@@ -31,26 +39,139 @@ export default class Booking extends Vue {
 
 	async mounted () {
 		const { bookingId } = this.$route.params;
+		await this.$store.dispatch('getBooking', { bookingId });
+	}
+
+	// Actions
+	// =========================================================================
+
+	async getAvailability () {
+		const start = new Date(this.activeTicket.startDate.getTime())
+			, end   = new Date(this.activeTicket.startDate.getTime());
+
+		start.setDate(0);
+		end.setMonth(end.getMonth() + 1);
+		end.setDate(0);
 
 		this.busy = true;
-
-		await this.$store.dispatch('getBooking', { bookingId });
-
+		this.availability = await post('bookings/availability', {
+			eventId: this.booking.eventId,
+			start,
+			end,
+			group: 'day',
+		});
 		this.busy = false;
+	}
+
+	async getSlots () {
+		const start = new Date(this.activeDay)
+			, end   = new Date(this.activeDay);
+
+		start.setHours(0);
+		start.setMinutes(0);
+		end.setHours(23);
+		end.setMinutes(59);
+
+		this.busy = true;
+		const slots = await post('bookings/availability', {
+			eventId: this.booking.eventId,
+			start,
+			end,
+		});
+
+		const bookingSlots = this.booking.bookedTickets.reduce((a, b) => {
+			b.slots.forEach(({ date: { date } }) => {
+				if (a.indexOf(date) === -1)
+					a.push(date.replace('.000000', ''));
+			});
+
+			return a;
+		}, []);
+
+		this.slots = Object.keys(slots).reduce((a, b) => {
+			const date = new Date(b);
+			let left = slots[b];
+
+			if (bookingSlots.indexOf(b) > -1)
+				left++;
+
+			const disabled = left === 0;
+
+			let suffix = ' ';
+			if (disabled) suffix += '(Fully Booked)';
+			else suffix += `(${left} slot${left === 1 ? '' : 's'} left)`;
+
+			a.push({
+				label: formatDate(date, window.bookingsDateTimeFormat) + suffix,
+				value: formatDate(date, 'Y-m-d H:i:s'),
+				disabled,
+			});
+			return a;
+		}, []);
+		this.selectedNewSlot = new Date(this.slots[0].value);
+		this.busy = false;
+	}
+
+	async updateTicket () {
+		this.busy = true;
+		this.error = null;
+
+		try {
+			const { success, errors } = await post('bookings/api/update-ticket', {
+				ticketId: this.activeTicket.id,
+				slot: this.selectedNewSlot,
+			});
+
+			if (success === false) {
+				this.busy = false;
+				let err = Object.values(errors);
+				if (Array.isArray(err)) err = err[0];
+				this.error = err;
+				return;
+			}
+		} catch (e) {
+			this.busy = false;
+			return;
+		}
+
+		await this.$store.dispatch('getBooking', {
+			bookingId: this.booking.id,
+		});
+		this.busy = false;
+
+		this.editModalOpen = false;
+		this.selectedNewSlot = null;
 	}
 
 	// Events
 	// =========================================================================
 
-	onEditClick (ticket, e) {
+	async onEditClick (ticket, e) {
 		e.preventDefault();
 
 		this.activeTicket = ticket;
 		this.editModalOpen = true;
+
+		this.availability = null;
+		await this.getAvailability();
 	}
 
 	onRequestCloseEditModal () {
 		this.editModalOpen = false;
+	}
+
+	async onDayClick (day) {
+		this.activeDay = day;
+		this.getSlots();
+	}
+
+	onSlotSelectChange (e) {
+		this.selectedNewSlot = new Date(e.target.value);
+	}
+
+	onUpdateClick (e) {
+		e.preventDefault();
+		this.updateTicket();
 	}
 
 	// Render
@@ -59,7 +180,7 @@ export default class Booking extends Vue {
 	render () {
 		// TODO: Show loading screen
 		if (this.booking === undefined || this.booking.shortNumber === undefined)
-			return null;
+			return <span className="spinner"/>;
 
 		return (
 			<div class={this.$style.wrap}>
@@ -178,13 +299,20 @@ export default class Booking extends Vue {
 
 	_renderEditModal () {
 		if (this.activeTicket === null)
-			return;
+			return null;
 
 		return (
 			<Modal
 				isOpen={this.editModalOpen && this.activeTicket !== null}
 				whenRequestClose={this.onRequestCloseEditModal}
 			>
+				<div class={[
+					this.$style.modalBusy,
+					{ [this.$style.show]: this.busy }
+				]}>
+					<span class="spinner"/>
+				</div>
+
 				<h1 class={this.$style.modalHeading}>
 					Edit this ticket
 				</h1>
@@ -194,17 +322,37 @@ export default class Booking extends Vue {
 				<div class={this.$style.modalCalendar}>
 					<MiniCalendar
 						activeDate={this.activeTicket.startDate}
+						activeDay={this.activeDay}
+						availability={this.availability}
+						whenDayClick={this.onDayClick}
 					/>
 				</div>
 
 				<hr/>
 
-				<Select
-					options={[]}
-					class={this.$style.modalSelect}
-				/>
+				{this.activeDay && this.slots.length > 0 ? (
+					<div>
+						{this.error && (
+							<p class={this.$style.modalError}>{this.error}</p>
+						)}
 
-				<Button label="Update Ticket" wide />
+						<Select
+							options={this.slots}
+							class={this.$style.modalSelect}
+							onChange={this.onSlotSelectChange}
+						/>
+
+						<Button
+							label="Update Ticket"
+							wide
+							onClick={this.onUpdateClick}
+						/>
+					</div>
+				) : (
+					<p class={this.$style.modalEmpty}>
+						Please select a date
+					</p>
+				)}
 			</Modal>
 		);
 	}
@@ -323,5 +471,42 @@ export default class Booking extends Vue {
 
 	.modalSelect {
 		margin-bottom: -@spacer/2;
+	}
+
+	.modalBusy {
+		position: absolute;
+		z-index: 3;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		background-color: rgba(255, 255, 255, 0.7);
+
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.15s ease;
+
+		&.show {
+			opacity: 1;
+			pointer-events: all;
+		}
+	}
+
+	.modalEmpty {
+		padding: 0 @spacer @spacer;
+
+		text-align: center;
+
+		opacity: 0.25;
+	}
+
+	.modalError {
+		margin: 0 30px -20px;
+		color: @craft-primary;
 	}
 </style>

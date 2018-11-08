@@ -34,6 +34,12 @@ class AvailabilityController extends Controller
 		$this->requirePostRequest();
 		$bookings = Bookings::getInstance();
 		$request = \Craft::$app->request;
+		$request->setBodyParams(
+			json_decode(
+				file_get_contents('php://input'),
+				true
+			)
+		);
 
 		$eventId = $request->getRequiredParam('eventId');
 

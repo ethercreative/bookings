@@ -143,6 +143,42 @@ class ApiController extends Controller
 		return $this->asJson($bookings);
 	}
 
+	public function actionUpdateTicket ()
+	{
+		$this->requirePostRequest();
+		$request = \Craft::$app->request;
+		$request->setBodyParams(
+			json_decode(
+				file_get_contents('php://input'),
+				true
+			)
+		);
+
+		$ticketId = (int) $request->getRequiredParam('ticketId');
+		$newSlot = $request->getRequiredParam('slot');
+		$newSlot = DateHelper::parseDateFromPost($newSlot);
+
+		$ticket = Bookings::getInstance()->tickets->getBookedTicketById($ticketId);
+
+		if (!$ticket)
+			return $this->asErrorJson(
+				\Craft::t(
+					'bookings',
+					'Unable to find ticket matching the given ID'
+				)
+			);
+
+
+		$errors = Bookings::getInstance()->tickets->updateTicketSlot(
+			$ticket, $newSlot
+		);
+
+		if (!empty($errors))
+			return $this->asJson(['success' => false, 'errors' => $errors]);
+
+		return $this->asJson(['success' => true]);
+	}
+
 	// Export
 	// -------------------------------------------------------------------------
 

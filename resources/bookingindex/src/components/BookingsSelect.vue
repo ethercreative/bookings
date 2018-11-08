@@ -35,6 +35,7 @@ export default class Select extends Vue {
 							<option
 								key={i}
 								value={opt.value}
+								disabled={opt.disabled}
 							>
 								{opt.label}
 							</option>

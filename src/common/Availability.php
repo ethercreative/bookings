@@ -11,6 +11,7 @@ namespace ether\bookings\common;
 
 use craft\db\Query;
 use craft\helpers\DateTimeHelper;
+use ether\bookings\elements\Booking;
 use ether\bookings\enums\Frequency;
 use ether\bookings\helpers\DateHelper;
 use ether\bookings\models\Event;
@@ -202,6 +203,7 @@ class Availability
 		$end = $this->_end ? $this->_end->format(\DateTime::W3C) : null;
 
 		$where = ['eventId' => $this->_event->id];
+
 		if ($this->_ticket)
 			$where['ticketId'] = $this->_ticket->id;
 
