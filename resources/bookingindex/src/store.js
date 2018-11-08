@@ -51,6 +51,19 @@ export default new Vuex.Store({
 		// Bookings
 		// ---------------------------------------------------------------------
 
+		storeBooking (state, booking) {
+			booking.dateBooked = new Date(booking.dateBooked);
+			booking.dateCreated = new Date(booking.dateCreated);
+			booking.dateUpdated = new Date(booking.dateUpdated);
+
+			booking.bookedTickets = booking.bookedTickets.map(ticket => {
+				ticket.startDate = new Date(ticket.startDate.date);
+				return ticket;
+			});
+
+			state.bookings[booking.id] = booking;
+		},
+
 		storeBookings (state, bookings) {
 			const { byId, byEventId } = bookings.reduce((a, b) => {
 				b.dateBooked = new Date(b.dateBooked);
@@ -74,7 +87,7 @@ export default new Vuex.Store({
 				...state.bookingsByEventId,
 				...byEventId,
 			};
-		}
+		},
 
 	},
 
@@ -103,6 +116,11 @@ export default new Vuex.Store({
 
 		// Bookings
 		// ---------------------------------------------------------------------
+
+		async getBooking({ commit }, { bookingId }) {
+			const booking = await get('bookings/api/get-booking', { bookingId });
+			commit('storeBooking', booking);
+		},
 
 		async getBookings ({ commit }, { eventId }) {
 			const bookings = await get('bookings/api/get-bookings', { eventId });

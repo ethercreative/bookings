@@ -140,6 +140,17 @@ class Booking extends Element
 		];
 	}
 
+	public function extraFields ()
+	{
+		$fields = parent::extraFields();
+
+		$fields[] = 'shortNumber';
+		$fields[] = 'order';
+		$fields[] = 'bookedTickets';
+
+		return $fields;
+	}
+
 	// Attributes
 	// -------------------------------------------------------------------------
 

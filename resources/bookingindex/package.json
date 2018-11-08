@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.1.2",
+    "portal-vue": "^1.4.0",
     "seedrandom": "^2.4.4",
     "vue": "^2.5.17",
     "vue-class-component": "^6.3.2",

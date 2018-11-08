@@ -9,6 +9,7 @@
 namespace ether\bookings\elements;
 
 use craft\base\Element;
+use craft\commerce\elements\Variant;
 use craft\db\Query;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\UrlHelper;
@@ -73,6 +74,17 @@ class BookedTicket extends Element
 	public static function find (): ElementQueryInterface
 	{
 		return new BookedTicketQuery(self::class);
+	}
+
+	public function extraFields ()
+	{
+		$fields = parent::extraFields();
+
+		$fields[] = 'productName';
+		$fields[] = 'ticketName';
+		$fields[] = 'slots';
+
+		return $fields;
 	}
 
 	// Events
@@ -173,12 +185,24 @@ class BookedTicket extends Element
 		return $this->getLineItem()->purchasable->title;
 	}
 
+	public function getProductName ()
+	{
+		$purchasable = $this->getLineItem()->purchasable;
+
+		$title = '';
+
+		if ($purchasable instanceof Variant)
+			$title = $purchasable->product->title;
+
+		return $title;
+	}
+
 	/**
 	 * @return string
 	 */
 	public function getCpEditUrl (): string
 	{
-		return UrlHelper::cpUrl('bookings/' . $this->bookingId);
+		return UrlHelper::cpUrl('bookings/bookings/' . $this->bookingId);
 	}
 
 	// Elements Index

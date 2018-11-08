@@ -3,7 +3,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 
 @Component({
-	props: ['label'],
+	props: ['label', 'small', 'wide'],
 })
 export default class Button extends Vue {
 
@@ -11,11 +11,17 @@ export default class Button extends Vue {
 	// =========================================================================
 
 	render () {
-		const { label } = this.$props;
+		const { label, small, wide } = this.$props;
 
 		return (
 			<button
-				class={this.$style.btn}
+				class={[
+					this.$style.btn,
+					{
+						[this.$style.small]: small,
+						[this.$style.wide]: wide,
+					}
+				]}
 				onClick={e => this.$emit('click', e)}
 			>
 				{label}
@@ -33,6 +39,7 @@ export default class Button extends Vue {
 		display: inline-block;
 		margin: @spacer;
 		padding: 10px 20px;
+		box-sizing: border-box;
 
 		color: #fff;
 		font-size: 14px;
@@ -53,6 +60,19 @@ export default class Button extends Vue {
 
 		&:active {
 			background-position: 0 100%;
+		}
+
+		&.small {
+			margin: 0;
+			padding: 7px 15px;
+		}
+
+		&.wide {
+			width: calc(~"100% - "@spacer*2);
+
+			&.small {
+				width: 100%;
+			}
 		}
 	}
 </style>

@@ -32,6 +32,9 @@ class ApiController extends Controller
 	// Actions
 	// =========================================================================
 
+	// Field
+	// -------------------------------------------------------------------------
+
 	/**
 	 * Gets a preview of the calendar for the given rules.
 	 *
@@ -77,6 +80,9 @@ class ApiController extends Controller
 		]);
 	}
 
+	// CP Section
+	// -------------------------------------------------------------------------
+
 	public function actionGetEvent ()
 	{
 		$eventId = \Craft::$app->request->getRequiredParam('eventId');
@@ -95,6 +101,27 @@ class ApiController extends Controller
 			->all();
 
 		return $this->asJson($enabledEvents);
+	}
+
+	public function actionGetBooking ()
+	{
+		$bookingId = \Craft::$app->request->getRequiredParam('bookingId');
+
+		$booking =
+			Bookings::getInstance()->bookings->getBookingById($bookingId);
+
+		return $this->asJson($booking->toArray(
+			[],
+			[
+				'shortNumber',
+				'order.billingAddress',
+				'bookedTickets',
+				'bookedTickets.productName',
+				'bookedTickets.ticketName',
+				'bookedTickets.slots',
+			],
+			true
+		));
 	}
 
 	public function actionGetBookings ()

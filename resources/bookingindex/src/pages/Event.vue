@@ -145,9 +145,9 @@ export default class Event extends Vue {
 
 	_renderId (row) {
 		return (
-			<a href={`/bookings/booking/${row.id}`}>
+			<router-link to={`/bookings/${row.id}`}>
 				#{row.id}
-			</a>
+			</router-link>
 		);
 	}
 

@@ -84,6 +84,7 @@ export default class Select extends Vue {
 		position: relative;
 		z-index: 1;
 
+		width: 100%;
 		padding: 9px 30px 9px 9px;
 
 		color: @text-color;

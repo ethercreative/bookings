@@ -28,7 +28,7 @@ export default class Header extends Vue {
 						</router-link>
 					)}
 					<h1>{heading}</h1>
-					<p>{description}</p>
+					{description && <p>{description}</p>}
 				</div>
 
 				{this.$slots.default}

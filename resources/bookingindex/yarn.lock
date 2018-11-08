@@ -4804,6 +4804,11 @@ pluralize@^7.0.0:
   resolved "https://registry.yarnpkg.com/pluralize/-/pluralize-7.0.0.tgz#298b89df8b93b0221dbf421ad2b1b1ea23fc6777"
   integrity sha512-ARhBOdzS3e41FbkW/XWrTEtukqqLoK5+Z/4UeDaLuSW+39JPeFgs4gCGqsrJHVZX0fUrx//4OF0K1CUGwlIFow==
 
+portal-vue@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/portal-vue/-/portal-vue-1.4.0.tgz#f689621783e309a64daa5af4603c649d0eddc4a1"
+  integrity sha512-23uEh3TwFPevZqvXMfepgcgEEgkilLIY3uBOEQNkA12nC2EN74RKEcnAiVpmKXwsjjU0Pr7iKE68awvXa7cqGQ==
+
 portfinder@^1.0.9:
   version "1.0.17"
   resolved "https://registry.yarnpkg.com/portfinder/-/portfinder-1.0.17.tgz#a8a1691143e46c4735edefcf4fbcccedad26456a"
