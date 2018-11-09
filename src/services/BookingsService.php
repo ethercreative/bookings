@@ -11,6 +11,7 @@ namespace ether\bookings\services;
 use craft\base\Component;
 use craft\helpers\Db;
 use ether\bookings\Bookings;
+use ether\bookings\elements\BookedTicket;
 use ether\bookings\elements\Booking;
 use ether\bookings\elements\db\BookingQuery;
 
@@ -121,6 +122,63 @@ class BookingsService extends Component
 
 		foreach ($expiredBookings as $booking)
 			\Craft::$app->elements->deleteElement($booking);
+	}
+
+	public function updateBookingSlot (Booking $booking, \DateTime $newSlot)
+	{
+		$prevSlot = $booking->slot;
+
+		// 1. Update the bookings slot
+		$booking->slot = $newSlot;
+		\Craft::$app->elements->saveElement($booking);
+
+		$bookedTickets = $booking->getBookedTickets();
+		$errors = null;
+
+		// 2. Update the tickets
+		/** @var BookedTicket $ticket */
+		foreach ($bookedTickets as $ticket)
+		{
+			$li = $ticket->getLineItem();
+			$opts = $li->getOptions();
+			$opts['ticketDate'] = $newSlot->format('c');
+			$li->setOptions($opts);
+
+			if (!\craft\commerce\Plugin::getInstance()->lineItems->saveLineItem($li))
+			{
+				$errors = $li->getErrors();
+				break;
+			}
+		}
+
+		// 3. Handle errors, revert changes
+		if ($errors !== null)
+		{
+			$booking->slot = $prevSlot;
+			\Craft::$app->elements->saveElement($booking);
+
+			/** @var BookedTicket $ticket */
+			foreach ($booking->getBookedTickets() as $ticket)
+			{
+				if ($ticket->startDate === $prevSlot)
+					continue;
+
+				$li = $ticket->getLineItem();
+				$opts = $li->getOptions();
+				$opts['ticketDate'] = $prevSlot->format('c');
+				$li->setOptions($opts);
+
+				\craft\commerce\Plugin::getInstance()->lineItems->saveLineItem($li);
+			}
+
+			return $errors;
+		}
+
+		// 4. Delete old tickets
+		foreach ($bookedTickets as $ticket)
+			\Craft::$app->elements->deleteElement($ticket);
+
+		return null;
 	}
 
 }

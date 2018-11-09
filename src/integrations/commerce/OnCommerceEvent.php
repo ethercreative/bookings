@@ -62,15 +62,7 @@ class OnCommerceEvent
 		if (!$ticketId)
 			return;
 
-		// Are we updating an existing BookedTicket?
-		if (TicketsService::$previousTicketDate !== null) {
-			$prevDate  = DateHelper::parseDateFromPost(TicketsService::$previousTicketDate);
-			$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
-		} else {
-			$prevDate  = DateHelper::parseDateFromPost($options['ticketDate']);
-			$startDate = $prevDate;
-		}
-
+		$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
 		// TODO: Date ranges
 		$endDate = null;
 
@@ -106,7 +98,7 @@ class OnCommerceEvent
 		$booking = $bookings->bookings->getBookingByOrderEventAndSlot(
 			$order->id,
 			$event->id,
-			$prevDate
+			$startDate
 		);
 
 		// Is time available?
@@ -159,14 +151,7 @@ class OnCommerceEvent
 		if (!$ticketId)
 			return;
 
-		// Are we updating an existing BookedTicket?
-		if (TicketsService::$previousTicketDate !== null){
-			$prevDate  = DateHelper::parseDateFromPost(TicketsService::$previousTicketDate);
-			$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
-		} else {
-			$prevDate  = DateHelper::parseDateFromPost($options['ticketDate']);
-			$startDate = $prevDate;
-		}
+		$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
 
 		// TODO: Date ranges
 		$endDate = null;
@@ -182,7 +167,7 @@ class OnCommerceEvent
 		$booking = $bookings->bookings->getBookingByOrderEventAndSlot(
 			$order->id,
 			$event->id,
-			$prevDate
+			$startDate
 		);
 
 		// Create a new booking if one doesn't exist
@@ -207,7 +192,7 @@ class OnCommerceEvent
 				'ticketId'   => $ticket->id,
 				'bookingId'  => $booking->id,
 				'lineItemId' => $lineItem->id,
-				'startDate'  => $prevDate,
+				'startDate'  => $startDate,
 				'endDate'    => $endDate,
 			]);
 

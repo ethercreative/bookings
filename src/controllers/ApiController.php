@@ -143,7 +143,7 @@ class ApiController extends Controller
 		return $this->asJson($bookings);
 	}
 
-	public function actionUpdateTicket ()
+	public function actionUpdateBooking ()
 	{
 		$this->requirePostRequest();
 		$request = \Craft::$app->request;
@@ -154,23 +154,23 @@ class ApiController extends Controller
 			)
 		);
 
-		$ticketId = (int) $request->getRequiredParam('ticketId');
+		$bookingId = (int) $request->getRequiredParam('bookingId');
 		$newSlot = $request->getRequiredParam('slot');
 		$newSlot = DateHelper::parseDateFromPost($newSlot);
 
-		$ticket = Bookings::getInstance()->tickets->getBookedTicketById($ticketId);
+		$booking = Bookings::getInstance()->bookings->getBookingById($bookingId);
 
-		if (!$ticket)
+		if (!$booking)
 			return $this->asErrorJson(
 				\Craft::t(
 					'bookings',
-					'Unable to find ticket matching the given ID'
+					'Unable to find booking matching the given ID'
 				)
 			);
 
 
-		$errors = Bookings::getInstance()->tickets->updateTicketSlot(
-			$ticket, $newSlot
+		$errors = Bookings::getInstance()->bookings->updateBookingSlot(
+			$booking, $newSlot
 		);
 
 		if (!empty($errors))

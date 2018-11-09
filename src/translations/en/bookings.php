@@ -48,6 +48,7 @@ return [
 	'Selected Date / Time is invalid.' => 'Selected Date / Time is invalid.',
 	'Selected Date / Time is unavailable.' => 'Selected Date / Time is unavailable.',
 	'Selected Date / Time is unavailable at that quantity.' => 'Selected Date / Time is unavailable at that quantity.',
+	'Unable to find booking matching the given ID' => 'Unable to find booking matching the given ID',
 
 	'Number' => 'Number',
 	'ID' => 'ID',

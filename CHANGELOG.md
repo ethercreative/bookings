@@ -1,3 +1,7 @@
+## 1.0.0-alpha.13 - 2018-10-09
+### Added
+- It's now possible to update a bookings slot via the admin.
+
 ## 1.0.0-alpha.12
 ### Fixed
 - Fixed Query errors in Postgres

@@ -70,36 +70,4 @@ class TicketsService extends Component
 		return BookedTicket::find()->id($bookedTicketId)->one();
 	}
 
-	/**
-	 * Updates the slot of the given BookedTicket
-	 *
-	 * @param BookedTicket $ticket
-	 * @param \DateTime    $newSlot
-	 *
-	 * @return array
-	 * @throws \Throwable
-	 */
-	public function updateTicketSlot (BookedTicket $ticket, \DateTime $newSlot)
-	{
-		$lineItem = $ticket->getLineItem();
-		$opts = $lineItem->getOptions();
-
-		self::$previousTicketDate = $opts['ticketDate'];
-
-		// TODO: All tickets on a booking need to be updated at once, and share at datetime
-		// 0. Move this into BookingsService
-		// 1. Update the booking slot to the new time
-		// 2. For each ticket update its line item (skipping duplicates)
-
-		$opts['ticketDate'] = $newSlot->format('c');
-		$lineItem->setOptions($opts);
-
-		if (!\craft\commerce\Plugin::getInstance()->lineItems->saveLineItem($lineItem))
-			return $lineItem->getErrors();
-
-		self::$previousTicketDate = null;
-
-		return [];
-	}
-
 }

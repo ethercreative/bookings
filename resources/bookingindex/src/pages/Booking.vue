@@ -108,6 +108,7 @@ export default class Booking extends Vue {
 			});
 			return a;
 		}, []);
+
 		this.selectedNewSlot = new Date(this.slots[0].value);
 		this.busy = false;
 	}
@@ -117,8 +118,8 @@ export default class Booking extends Vue {
 		this.error = null;
 
 		try {
-			const { success, errors } = await post('bookings/api/update-ticket', {
-				ticketId: this.activeTicket.id,
+			const { success, errors } = await post('bookings/api/update-booking', {
+				bookingId: this.booking.id,
 				slot: this.selectedNewSlot,
 			});
 
@@ -146,10 +147,10 @@ export default class Booking extends Vue {
 	// Events
 	// =========================================================================
 
-	async onEditClick (ticket, e) {
+	async onEditClick (e) {
 		e.preventDefault();
 
-		this.activeTicket = ticket;
+		this.activeTicket = this.booking.bookedTickets[0];
 		this.editModalOpen = true;
 
 		this.availability = null;
@@ -194,6 +195,17 @@ export default class Booking extends Vue {
 				<div class={this.$style.content}>
 					{this._renderOrderDetails()}
 					{this._renderCustomerDetails()}
+
+					<header class={this.$style.ticketsHeader}>
+						<p>Tickets</p>
+
+
+						<Button
+							label="Edit"
+							small
+							onClick={this.onEditClick}
+						/>
+					</header>
 
 					<ul class={this.$style.tickets}>
 						{this.booking.bookedTickets.map(this._renderTicket)}
@@ -287,12 +299,6 @@ export default class Booking extends Vue {
 					ticket.startDate,
 					window.bookingsDateTimeFormat
 				)}
-
-				<Button
-					label="Edit"
-					small
-					onClick={this.onEditClick.bind(this, ticket)}
-				/>
 			</li>
 		);
 	}
@@ -314,7 +320,7 @@ export default class Booking extends Vue {
 				</div>
 
 				<h1 class={this.$style.modalHeading}>
-					Edit this ticket
+					Edit this booking
 				</h1>
 
 				<hr/>
@@ -408,6 +414,17 @@ export default class Booking extends Vue {
 
 	.customer {
 		grid-column: span 5;
+	}
+
+	.ticketsHeader {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		grid-column: span 12;
+
+		p {
+			margin-bottom: 0;
+		}
 	}
 
 	.tickets {
