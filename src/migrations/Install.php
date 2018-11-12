@@ -15,7 +15,6 @@ use ether\bookings\records\BookedSlotRecord;
 use ether\bookings\records\BookedTicketRecord;
 use ether\bookings\records\BookingRecord;
 use ether\bookings\records\EventRecord;
-use ether\bookings\records\SlotRecord;
 use ether\bookings\records\TicketRecord;
 
 
@@ -33,7 +32,6 @@ class Install extends Migration
 	{
 		$this->_createEventsTable();
 		$this->_createTicketsTable();
-		$this->_createSlotsTable();
 
 		$this->_createBookingsTable();
 		$this->_createBookedTicketsTable();
@@ -44,14 +42,12 @@ class Install extends Migration
 	{
 		MigrationHelper::dropAllForeignKeysOnTable(EventRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(TicketRecord::$tableName);
-		MigrationHelper::dropAllForeignKeysOnTable(SlotRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(BookingRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(BookedTicketRecord::$tableName);
 		MigrationHelper::dropAllForeignKeysOnTable(BookedSlotRecord::$tableName);
 
 		$this->dropTableIfExists(EventRecord::$tableName);
 		$this->dropTableIfExists(TicketRecord::$tableName);
-		$this->dropTableIfExists(SlotRecord::$tableName);
 		$this->dropTableIfExists(BookingRecord::$tableName);
 		$this->dropTableIfExists(BookedTicketRecord::$tableName);
 		$this->dropTableIfExists(BookedSlotRecord::$tableName);
@@ -417,35 +413,6 @@ class Install extends Migration
 			BookedSlotRecord::$tableName,
 			'bookedTicketId',
 			BookedTicketRecord::$tableName,
-			'id',
-			'CASCADE',
-			null
-		);
-	}
-
-	// All Slots (for sorting / filtering)
-	// -------------------------------------------------------------------------
-
-	private function _createSlotsTable ()
-	{
-		$this->createTable(SlotRecord::$tableName, [
-			'id'      => $this->primaryKey(),
-			'eventId' => $this->integer()->notNull(),
-			'slot'    => $this->dateTime()->notNull(),
-		]);
-
-		$this->createIndex(
-			null,
-			SlotRecord::$tableName,
-			'eventId',
-			false
-		);
-
-		$this->addForeignKey(
-			null,
-			SlotRecord::$tableName,
-			'eventId',
-			EventRecord::$tableName,
 			'id',
 			'CASCADE',
 			null

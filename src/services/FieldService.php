@@ -17,6 +17,7 @@ use craft\elements\db\MatrixBlockQuery;
 use craft\fields\Matrix;
 use craft\helpers\Db;
 use craft\helpers\Json;
+use ether\bookings\Bookings;
 use ether\bookings\fields\EventField;
 use ether\bookings\fields\TicketField;
 use ether\bookings\models\Event;

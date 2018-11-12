@@ -12,6 +12,7 @@ use craft\base\Component;
 use ether\bookings\elements\BookedTicket;
 use ether\bookings\models\Event;
 use ether\bookings\records\BookedSlotRecord;
+use ether\bookings\records\SlotRecord;
 
 
 /**
