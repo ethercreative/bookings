@@ -27,6 +27,7 @@ use craft\records\Field;
  * @property array          $baseRule
  * @property array          $exceptions
  * @property bool           $isInfinite
+ * @property \DateTime|null $nextSlot
  * @property \DateTime      $firstSlot
  * @property \DateTime|null $lastSlot
  *

@@ -32,6 +32,7 @@ module.exports = {
 					children: [
 						"templating/how-to-book",
 						"templating/availability",
+						"templating/sorting",
 					],
 				},
 				{

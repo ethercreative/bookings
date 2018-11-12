@@ -8,6 +8,7 @@ title: Craft Commerce
 
 - [How to Book](templating/how-to-book.md)
 - [Availability](templating/availability.md)
+- [Sorting](templating/sorting.md)
 
 ## API
 

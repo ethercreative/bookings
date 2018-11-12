@@ -76,6 +76,7 @@ class Install extends Migration
 			'exceptions' => $this->json(),
 
 			'isInfinite' => $this->boolean()->notNull()->defaultValue(false),
+			'nextSlot'   => $this->dateTime()->null(),
 			'firstSlot'  => $this->dateTime()->notNull(),
 			'lastSlot'   => $this->dateTime()->null(),
 

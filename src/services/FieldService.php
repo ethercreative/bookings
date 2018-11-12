@@ -25,6 +25,7 @@ use ether\bookings\models\Ticket;
 use ether\bookings\records\EventRecord;
 use ether\bookings\records\TicketRecord;
 use yii\base\InvalidConfigException;
+use yii\db\Expression;
 
 
 /**
@@ -137,6 +138,7 @@ class FieldService extends Component
 		$record->baseRule   = $model->baseRule;
 		$record->exceptions = $model->exceptions;
 		$record->isInfinite = $model->isInfinite;
+		$record->nextSlot   = $model->getNextAvailableSlot();
 		$record->firstSlot  = $model->firstSlot;
 		$record->lastSlot   = $model->lastSlot;
 
@@ -169,33 +171,25 @@ class FieldService extends Component
 	{
 		/** @var ElementQuery $query */
 
-		if (!$value)
-			return;
-
 		$tableName = EventRecord::$tableName;
 		$tableAlias = 'events' . bin2hex(openssl_random_pseudo_bytes(5));
 
-		$on = [
-			'and',
-			'[[elements.id]] = [[' . $tableAlias . '.elementId]]',
-		];
+		$shouldJoin = false;
 
-		$query->subQuery->join(
-			'JOIN',
-			$tableName . ' ' . $tableAlias,
-			$on
-		);
-
-		if (array_key_exists('before', $value))
+		if ($value && array_key_exists('before', $value))
 		{
+			$shouldJoin = true;
+
 			$before = Db::prepareDateForDb($value['before']);
 			$query->subQuery->andWhere(
 				'[[' . $tableAlias . '.firstSlot]] <= \'' . $before . '\''
 			);
 		}
 
-		if (array_key_exists('after', $value))
+		if ($value && array_key_exists('after', $value))
 		{
+			$shouldJoin = true;
+
 			$after = Db::prepareDateForDb($value['after']);
 			$query->subQuery->andWhere([
 				'or',
@@ -207,6 +201,32 @@ class FieldService extends Component
 					'[[' . $tableAlias . '.isInfinite]] = true',
 				]
 			]);
+		}
+
+		if (is_array($query->orderBy) && array_key_exists('bookings:nextSlot', $query->orderBy))
+		{
+			$shouldJoin = true;
+
+			$query->orderBy['bookings_nextSlot'] = $query->orderBy['bookings:nextSlot'];
+			unset($query->orderBy['bookings:nextSlot']);
+
+			$query->subQuery->addSelect(
+				'[[' . $tableAlias . '.nextSlot]] as [[bookings_nextSlot]]'
+			);
+		}
+
+		if ($shouldJoin)
+		{
+			$on = [
+				'and',
+				'[[elements.id]] = [[' . $tableAlias . '.elementId]]',
+			];
+
+			$query->subQuery->join(
+				'JOIN',
+				$tableName . ' ' . $tableAlias,
+				$on
+			);
 		}
 	}
 

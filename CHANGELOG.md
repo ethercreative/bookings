@@ -1,3 +1,9 @@
+## 1.0.0-alpha.14 - 2018-11-12
+### Added
+- Added element sorting parameter `bookings:nextSlot`, see the [Sorting] docs for more.
+
+[Sorting Docs]: http://localhost:8080/bookings/commerce/templating/sorting.html
+
 ## 1.0.0-alpha.13 - 2018-10-09
 ### Added
 - It's now possible to update a bookings slot via the admin.

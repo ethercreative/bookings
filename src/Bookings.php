@@ -17,6 +17,7 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\services\Fields;
 use craft\services\Plugins;
+use craft\services\Updates;
 use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
@@ -58,7 +59,7 @@ class Bookings extends Plugin
 	// Properties
 	// =========================================================================
 
-	public $schemaVersion = '1.0.5';
+	public $schemaVersion = '1.0.6';
 
 	public $hasCpSettings = true;
 
