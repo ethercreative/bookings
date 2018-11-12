@@ -50,37 +50,53 @@ class EventsService extends Component
 	 */
 	public function refreshNextAvailableSlot (bool $includeNull = false)
 	{
+		echo '├ Starting Next Available Refresh' . PHP_EOL;
+
 		$now = Db::prepareDateForDb(new \DateTime('now'));
+		$table = EventRecord::$tableName;
 
 		$where = [
 			'or',
-			['<', 'nextSlot', $now],
+			['<', $table . '.[[nextSlot]]', $now],
 		];
 
 		if ($includeNull)
 		{
 			$where[] = [
-				'nextSlot' => null,
+				"$table.[[nextSlot]]" => null,
 			];
 		}
 
+		echo '├ Ready to get events' . PHP_EOL;
+
 		$outOfDateEvents = EventRecord::find()->where([
 			'and',
-			['>=', 'lastSlot', $now],
+			['>=', $table . '.[[lastSlot]]', $now],
 			$where,
 		])->all();
 
+		echo '├ Got events' . PHP_EOL;
+
 		if (empty($outOfDateEvents))
+		{
+			echo '└ No events to refresh' . PHP_EOL;
 			return;
+		}
+
+		echo '├ Starting refresh' . PHP_EOL;
 
 		/** @var EventRecord $record */
 		foreach ($outOfDateEvents as $record)
 		{
+			echo '│ ├ Refreshing #' . $record->id . PHP_EOL;
+
 			$event = Event::fromRecord($record);
 
 			$record->nextSlot = $event->getNextAvailableSlot();
 			$record->save();
 		}
+
+		echo '└ Next Available Refresh Complete' . PHP_EOL;
 	}
 
 }

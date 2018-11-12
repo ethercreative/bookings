@@ -39,14 +39,18 @@ class DefaultController extends Controller
 		$schedule = new Schedule();
 
 		// Clear expired bookings
-		$schedule->queue(function () {
-			Bookings::getInstance()->bookings->clearExpiredBookings();
-		})->everyMinute();
+		// FIXME: See BookingsService.php:128
+//		$schedule->queue(function () {
+//			echo 'Clearing Expired' . PHP_EOL;
+//			Bookings::getInstance()->bookings->clearExpiredBookings();
+//		})->everyMinute();
 
 		// Update next available cache
 		$schedule->queue(function () {
+			echo 'Updating Next Available Cache' . PHP_EOL;
 			Bookings::getInstance()->events->refreshNextAvailableSlot();
 		})->everyFiveMinutes();
+
 
 		$schedule->run();
 

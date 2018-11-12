@@ -14,6 +14,7 @@ use ether\bookings\Bookings;
 use ether\bookings\elements\BookedTicket;
 use ether\bookings\elements\Booking;
 use ether\bookings\elements\db\BookingQuery;
+use ether\bookings\records\BookingRecord;
 
 
 /**
@@ -100,7 +101,11 @@ class BookingsService extends Component
 	 */
 	public function clearExpiredBookings (bool $force = false)
 	{
+		echo '├ Starting Clear' . PHP_EOL;
+
 		$settings = Bookings::getInstance()->settings;
+
+		echo '├ Getting bookings settings' . PHP_EOL;
 
 		$where = [
 			'and',
@@ -118,10 +123,24 @@ class BookingsService extends Component
 			$where[] = '[[reservationExpiry]] < ' . $since;
 		}
 
+		echo '├ Ready to get expired' . PHP_EOL;
+
+		// FIXME: This causes a timeout
+		// (something to do with populating the bookings element)
 		$expiredBookings = Booking::find()->where($where)->all();
 
+		echo '├ Starting expire' . PHP_EOL;
+
+		/** @var Booking $booking */
 		foreach ($expiredBookings as $booking)
+		{
+			echo '│ ├ Expiring #' . $booking->number . PHP_EOL;
 			\Craft::$app->elements->deleteElement($booking);
+		}
+
+		echo '├ Expired ' . count($expiredBookings) . ' bookings' . PHP_EOL;
+
+		echo '└ Clear Expired Complete' . PHP_EOL;
 	}
 
 	public function updateBookingSlot (Booking $booking, \DateTime $newSlot)
