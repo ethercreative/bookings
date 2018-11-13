@@ -4,6 +4,7 @@ namespace ether\bookings\migrations;
 
 use Craft;
 use craft\db\Migration;
+use ether\bookings\Bookings;
 use ether\bookings\records\EventRecord;
 
 /**
@@ -21,6 +22,8 @@ class m181112_162653_AddNextSlotColumnToEvents extends Migration
 	        'nextSlot',
 	        $this->dateTime()->null()
         );
+
+	    Bookings::getInstance()->events->refreshNextAvailableSlot();
     }
 
     /**
