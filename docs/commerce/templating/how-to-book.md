@@ -6,7 +6,7 @@ title: How to Book
 
 Note `options[ticketDate]` can be any valid [DateTime value](http://php.net/manual/en/datetime.formats.php).
 
-e.g. `<input type="text" name="options[ticketDate][date]" value="2018-11-14 15:38:00">`
+e.g. `<input type="text" name="options[ticketDate]" value="2018-11-14 15:38:00">`
 
 ## Add Single
 
