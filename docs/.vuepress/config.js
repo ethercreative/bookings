@@ -33,6 +33,7 @@ module.exports = {
 						"templating/how-to-book",
 						"templating/availability",
 						"templating/sorting",
+						"templating/ticket-custom-fields",
 					],
 				},
 				{

@@ -21,6 +21,7 @@ use craft\services\Updates;
 use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
+use ether\bookings\controllers\DefaultController;
 use ether\bookings\fields\EventField;
 use ether\bookings\fields\TicketField;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
@@ -59,7 +60,7 @@ class Bookings extends Plugin
 	// Properties
 	// =========================================================================
 
-	public $schemaVersion = '1.0.6';
+	public $schemaVersion = '1.0.8.2';
 
 	public $hasCpSettings = true;
 
@@ -296,6 +297,44 @@ class Bookings extends Plugin
 				header_remove('X-Powered-By');
 			}
 		}
+	}
+
+	/**
+	 * Adds support for additional actions on the Default controller
+	 *
+	 * `bookings/save` => DefaultController::save
+	 * `bookings/availability` => AvailabilityController::index
+	 *
+	 * @param string $route
+	 *
+	 * @return array|bool
+	 * @throws \yii\base\InvalidConfigException
+	 */
+	public function createController ($route)
+	{
+		if (strpos($route, '/') === false)
+		{
+			if (strpos($route, '-') !== false)
+			{
+				$route = $this->defaultRoute . '/' . $route;
+			}
+			else
+			{
+				$className = $className = preg_replace_callback(
+					'%-([a-z0-9_])%i',
+					function ($matches) {
+						return ucfirst($matches[1]);
+					}, ucfirst($route)
+				) . 'Controller';
+
+				$className = $this->controllerNamespace . '\\' . $className;
+
+				if (!class_exists($className))
+					$route = $this->defaultRoute . '/' . $route;
+			}
+		}
+
+		return parent::createController($route);
 	}
 
 }

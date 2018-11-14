@@ -20,6 +20,7 @@ use craft\records\Field;
  * @property int $eventId
  * @property int $elementId
  * @property int $fieldId
+ * @property int $fieldLayoutId
  * @property int $capacity
  *
  * @author  Ether Creative

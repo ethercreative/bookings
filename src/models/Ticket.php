@@ -43,6 +43,9 @@ class Ticket extends Model
 	/** @var int */
 	public $fieldId;
 
+	/** @var int */
+	public $fieldLayoutId;
+
 	/**
 	 * @var int - The max number of this type of ticket that can be sold per
 	 * slot (or selected slot range if flexible)
@@ -64,11 +67,12 @@ class Ticket extends Model
 	{
 		$model = new Ticket();
 
-		$model->id        = $record->id;
-		$model->eventId   = $record->eventId;
-		$model->elementId = $record->elementId;
-		$model->fieldId   = $record->fieldId;
-		$model->capacity  = $record->capacity;
+		$model->id            = $record->id;
+		$model->eventId       = $record->eventId;
+		$model->elementId     = $record->elementId;
+		$model->fieldId       = $record->fieldId;
+		$model->capacity      = $record->capacity;
+		$model->fieldLayoutId = $record->fieldLayoutId;
 
 		return $model;
 	}

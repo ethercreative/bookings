@@ -12,6 +12,7 @@ use craft\base\Component;
 use craft\db\Query;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
+use craft\helpers\Json;
 use ether\bookings\elements\BookedTicket;
 use ether\bookings\elements\Booking;
 use ether\bookings\helpers\DateHelper;
@@ -39,6 +40,9 @@ class TicketsService extends Component
 	// Methods
 	// =========================================================================
 
+	// Ticket
+	// -------------------------------------------------------------------------
+
 	/**
 	 * Finds the ticket with the given ID
 	 *
@@ -58,6 +62,9 @@ class TicketsService extends Component
 		return Ticket::fromRecord($record);
 	}
 
+	// Booked Ticket
+	// -------------------------------------------------------------------------
+
 	/**
 	 * Finds the booked ticket with the given ID
 	 *
@@ -68,6 +75,21 @@ class TicketsService extends Component
 	public function getBookedTicketById ($bookedTicketId)
 	{
 		return BookedTicket::find()->id($bookedTicketId)->one();
+	}
+
+	/**
+	 * @param BookedTicket $ticket
+	 * @param bool         $runValidation
+	 * @param bool         $propagate
+	 *
+	 * @return bool
+	 * @throws \Throwable
+	 * @throws \craft\errors\ElementNotFoundException
+	 * @throws \yii\base\Exception
+	 */
+	public function saveBookedTicket (BookedTicket $ticket, bool $runValidation = true, bool $propagate = true)
+	{
+		return \Craft::$app->elements->saveElement($ticket, $runValidation, $propagate);
 	}
 
 }

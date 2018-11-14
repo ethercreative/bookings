@@ -13,6 +13,7 @@ use craft\base\Field;
 use craft\elements\db\ElementQueryInterface;
 use craft\models\FieldLayout;
 use ether\bookings\Bookings;
+use ether\bookings\elements\BookedTicket;
 use ether\bookings\models\Ticket;
 use ether\bookings\web\assets\ticketfield\TicketFieldAsset;
 
@@ -32,6 +33,9 @@ class TicketField extends Field
 
 	/** @var array */
 	public $fieldLayout;
+
+	/** @var array */
+	public $requiredFields;
 
 	/** @var int|null */
 	public $fieldLayoutId;
@@ -136,8 +140,11 @@ class TicketField extends Field
 	{
 		if ($this->fieldLayout)
 		{
-			$fieldLayout = \Craft::$app->getFields()->assembleLayout($this->fieldLayout);
-			$fieldLayout->type = 'ether\\bookings\\elements\\Ticket';
+			$fieldLayout = \Craft::$app->getFields()->assembleLayout(
+				$this->fieldLayout,
+				$this->requiredFields ?: []
+			);
+			$fieldLayout->type = BookedTicket::class;
 
 			if ($this->fieldLayoutId !== null)
 				$fieldLayout->id = $this->fieldLayoutId;

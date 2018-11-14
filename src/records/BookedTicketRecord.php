@@ -20,6 +20,7 @@ use craft\db\ActiveRecord;
  * @property int $lineItemId
  * @property \DateTime $startDate
  * @property \DateTime|null $endDate
+ * @property mixed $snapshot
  *
  * @author  Ether Creative
  * @package ether\bookings\records

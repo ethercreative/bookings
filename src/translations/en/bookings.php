@@ -58,4 +58,7 @@ return [
 	'All Bookings' => 'All Bookings',
 
 	'Unable to find event matching the given ID' => 'Unable to find event matching the given ID',
+
+	'Unable to update booked ticket.' => 'Unable to update booked ticket.',
+	'Booked ticket updated.' => 'Booked ticket updated.',
 ];

@@ -72,8 +72,8 @@ class Install extends Migration
 			'capacity'   => $this->integer(),
 			'multiplier' => $this->integer(),
 
-			'baseRule'   => $this->json(),
-			'exceptions' => $this->json(),
+			'baseRule'   => $this->_json(),
+			'exceptions' => $this->_json(),
 
 			'isInfinite' => $this->boolean()->notNull()->defaultValue(false),
 			'nextSlot'   => $this->dateTime()->null(),
@@ -126,11 +126,12 @@ class Install extends Migration
 	private function _createTicketsTable ()
 	{
 		$this->createTable(TicketRecord::$tableName, [
-			'id'        => $this->primaryKey(),
-			'eventId'   => $this->integer(),
-			'elementId' => $this->integer()->notNull(),
-			'fieldId'   => $this->integer()->notNull(),
-			'capacity'  => $this->integer(),
+			'id'            => $this->primaryKey(),
+			'eventId'       => $this->integer(),
+			'elementId'     => $this->integer()->notNull(),
+			'fieldId'       => $this->integer()->notNull(),
+			'fieldLayoutId' => $this->integer()->null(),
+			'capacity'      => $this->integer(),
 
 			'dateCreated' => $this->dateTime()->notNull(),
 			'dateUpdated' => $this->dateTime()->notNull(),
@@ -287,6 +288,7 @@ class Install extends Migration
 			'lineItemId' => $this->integer()->null(),
 			'startDate'  => $this->dateTime()->notNull(),
 			'endDate'    => $this->dateTime()->null(),
+			'snapshot'   => $this->_json()->null(),
 
 			'dateCreated' => $this->dateTime()->notNull(),
 			'dateUpdated' => $this->dateTime()->notNull(),
@@ -423,7 +425,7 @@ class Install extends Migration
 	// Helpers
 	// =========================================================================
 
-	public function json ()
+	public function _json ()
 	{
 		if ($this->db->driverName === 'mysql')
 			return $this->longText();

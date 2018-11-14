@@ -12,6 +12,7 @@ use craft\base\Element;
 use craft\commerce\elements\Variant;
 use craft\db\Query;
 use craft\elements\db\ElementQueryInterface;
+use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use ether\bookings\elements\db\BookedTicketQuery;
 use ether\bookings\helpers\DateHelper;
@@ -52,6 +53,9 @@ class BookedTicket extends Element
 	/** @var \DateTime|null */
 	public $endDate = null;
 
+	/** @var mixed */
+	public $snapshot;
+
 	// Properties: Private
 	// -------------------------------------------------------------------------
 
@@ -69,6 +73,14 @@ class BookedTicket extends Element
 
 		if ($this->endDate)
 			$this->endDate = DateHelper::toUTCDateTime($this->endDate);
+
+		if ($this->snapshot && is_string($this->snapshot))
+			$this->snapshot = Json::decodeIfJson($this->snapshot);
+	}
+
+	public static function hasContent (): bool
+	{
+		return true;
 	}
 
 	public static function find (): ElementQueryInterface
@@ -115,6 +127,10 @@ class BookedTicket extends Element
 		$record->lineItemId = $this->lineItemId;
 		$record->startDate = $this->startDate;
 		$record->endDate = $this->endDate;
+
+		$snapshot = $this->toArray($this->attributes());
+		unset($snapshot['snapshot']);
+		$record->snapshot = $snapshot;
 
 		$record->save();
 

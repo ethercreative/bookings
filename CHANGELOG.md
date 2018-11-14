@@ -1,3 +1,7 @@
+## 1.0.0-alpha.15 - 2018-11-14
+### Added
+- Booked tickets can now have custom fields (via the Bookable Ticket field)!
+
 ## 1.0.0-alpha.14 - 2018-11-12
 ### Added
 - Added element sorting parameter `bookings:nextSlot`, see the [Sorting] docs for more.

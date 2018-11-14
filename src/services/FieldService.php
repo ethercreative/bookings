@@ -300,13 +300,14 @@ class FieldService extends Component
 
 		if (!$record)
 		{
-			$record            = new TicketRecord();
-			$record->elementId = $element->id;
-			$record->fieldId   = $field->id;
-			$record->eventId   = $this->_findEventIdFromTicket($element);
+			$record                = new TicketRecord();
+			$record->elementId     = $element->id;
+			$record->fieldId       = $field->id;
+			$record->eventId       = $this->_findEventIdFromTicket($element);
 		}
 
 		$record->capacity = $model->capacity;
+		$record->fieldLayoutId = $field->fieldLayoutId;
 
 		if (!$record->save())
 		{

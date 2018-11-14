@@ -42,7 +42,7 @@ class Extension extends \Twig_Extension implements \Twig_Extension_GlobalsInterf
 	public function getFunctions ()
 	{
 		return [
-			new \Twig_Function('getTickets', [$this, 'getTickets']),
+			new \Twig_Function('getBookedTickets', [$this, 'getBookedTickets']),
 //			new \Twig_Function('placeBookingInput', [$this, 'placeBookingInput']),
 //			new \Twig_Function('confirmBookingInput', [$this, 'confirmBookingInput']),
 		];
@@ -58,7 +58,7 @@ class Extension extends \Twig_Extension implements \Twig_Extension_GlobalsInterf
 	 *
 	 * @return array
 	 */
-	public function getTickets (LineItem $lineItem)
+	public function getBookedTickets (LineItem $lineItem)
 	{
 		if (!$lineItem->id)
 			return [];

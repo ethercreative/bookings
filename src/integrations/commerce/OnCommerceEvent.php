@@ -208,13 +208,14 @@ class OnCommerceEvent
 		{
 			$bookedTicket = new BookedTicket();
 
-			$bookedTicket->ticketId = $ticket->id;
-			$bookedTicket->bookingId = $booking->id;
-			$bookedTicket->lineItemId = $lineItem->id;
-			$bookedTicket->startDate = $startDate;
-			$bookedTicket->endDate = $endDate;
+			$bookedTicket->ticketId      = $ticket->id;
+			$bookedTicket->bookingId     = $booking->id;
+			$bookedTicket->lineItemId    = $lineItem->id;
+			$bookedTicket->startDate     = $startDate;
+			$bookedTicket->endDate       = $endDate;
+			$bookedTicket->fieldLayoutId = $ticket->fieldLayoutId;
 
-			$craft->elements->saveElement($bookedTicket);
+			Bookings::getInstance()->tickets->saveBookedTicket($bookedTicket);
 			$bookedTickets[] = $bookedTicket;
 		}
 
