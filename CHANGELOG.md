@@ -2,6 +2,9 @@
 ### Changed
 - If event multiplier is 0, availability will show the capacity.
 
+### Fixed
+- Fixed capacity and multiplier being set to 1 after being set to 0.
+
 ## 1.0.0-alpha.15 - 2018-11-14
 ### Added
 - Booked tickets can now have custom fields (via the Bookable Ticket field)!

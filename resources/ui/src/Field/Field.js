@@ -96,7 +96,7 @@ class Field extends Component {
 						min={0}
 						value={capacity}
 						required
-						onChange={e => dispatch("set:capacity", +e.target.value.trim() || 1)}
+						onChange={e => dispatch("set:capacity", +e.target.value.trim())}
 					/>
 				</CraftLabel>
 
@@ -112,7 +112,7 @@ class Field extends Component {
 						min={0}
 						value={multiplier}
 						required
-						onChange={e => dispatch("set:multiplier", +e.target.value.trim() || 1)}
+						onChange={e => dispatch("set:multiplier", +e.target.value.trim())}
 					/>
 				</CraftLabel>
 
