@@ -172,7 +172,7 @@ class Availability
 		$groupedSlots = [];
 
 		$limit   = $this->_count === null ? PHP_INT_MAX : $this->_count;
-		$slotMax = $this->_event->multiplier;
+		$slotMax = $this->_event->multiplier ?: $this->_event->capacity;
 
 		/** @var \DateTime $slot */
 		foreach ($slots as $i => $slot)
