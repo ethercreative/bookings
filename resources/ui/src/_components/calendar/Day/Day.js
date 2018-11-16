@@ -405,7 +405,7 @@ class Day extends Component {
 		let min = slot.minute + this.props.baseRule.duration,
 			hr = slot.hour;
 
-		if (min >= 60) {
+		while (min >= 60) {
 			min -= 60;
 			hr += 1;
 		}
@@ -414,6 +414,7 @@ class Day extends Component {
 			hr -= 24;
 
 		let to = padZero(hr) + ":" + padZero(min);
+		console.log(slot);
 
 		return from + " - " + to;
 	}
