@@ -36,7 +36,7 @@ class Event extends Model
 	// Properties
 	// =========================================================================
 
-	const SLOT_HARD_LIMIT = 2000;
+	const SLOT_HARD_LIMIT = 1000;
 
 	/** @var int */
 	public $id;
@@ -290,6 +290,9 @@ class Event extends Model
 	public function getSlotsFrom ($start, $count = null): array
 	{
 		$start = DateHelper::toUTCDateTime($start);
+
+		if ($count === null)
+			$count = self::SLOT_HARD_LIMIT;
 
 		return $this->_getSet()->getOccurrencesBetween($start, null, $count);
 	}
