@@ -42,8 +42,8 @@ class App extends Component {
 	 * @param state
 	 */
 	static onStateChange (state) {
-		if (process.env.NODE_ENV === "development")
-			console.log(state);
+		// if (process.env.NODE_ENV === "development")
+		// 	console.log(state);
 
 		// Compare the new state (without props we want to ignore) w/ the previous one
 		let nextState = { ...state };

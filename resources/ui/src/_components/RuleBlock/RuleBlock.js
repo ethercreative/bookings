@@ -90,6 +90,10 @@ class RuleBlock extends Component {
 		this.updateRule("byMinute", value);
 	});
 
+	onByDayChange = debounce(({ target: { value } }) => {
+		this.updateRule("byDay", value);
+	});
+
 	// Events: Buttons
 	// -------------------------------------------------------------------------
 
@@ -121,7 +125,7 @@ class RuleBlock extends Component {
 		const { rule, isBaseRule, disabled } = this.props;
 		const {
 			frequency, repeats, start, until, count, interval, duration,
-			byHour, byMinute
+			byHour, byMinute, byDay
 		} = rule;
 
 		return (
@@ -253,6 +257,18 @@ class RuleBlock extends Component {
 							type="text"
 							value={byMinute}
 							onInput={this.onByMinuteChange}
+							disabled={disabled}
+						/>
+					</Label>
+				</Row>
+
+				<Row>
+					<Label label="By Day (MO, TU, WE, TH, FR, SA, SU)">
+						<input
+							class="text"
+							type="text"
+							value={byDay}
+							onInput={this.onByDayChange}
 							disabled={disabled}
 						/>
 					</Label>

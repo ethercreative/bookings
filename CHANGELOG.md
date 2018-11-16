@@ -1,12 +1,17 @@
 ## [Unreleased] 1.0.0-alpha.16
+### Added
+- Added "By Day" field to calendar UI.
+
 ### Changed
 - If event multiplier is 0, availability will show the capacity.
 
 ### Fixed
 - Fixed capacity and multiplier being set to 1 after being set to 0.
 - Fixed day view showing duration end minutes incorrectly above a certain time [#21]
+- Fixed minutes that end on an hour from extending an extra hour [#22]
 
-[#21]: https://github.com/ethercreative/bookings/issues/21 
+[#21]: https://github.com/ethercreative/bookings/issues/21
+[#22]: https://github.com/ethercreative/bookings/issues/22
 
 ## 1.0.0-alpha.15 - 2018-11-14
 ### Added

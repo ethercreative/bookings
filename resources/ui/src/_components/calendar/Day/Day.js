@@ -325,7 +325,7 @@ class Day extends Component {
 			prevDate = slot.date,
 			prevHour = slot.date.getHours();
 
-		if (widthInclStartOffset === 120)
+		if (widthInclStartOffset === 60 * extraWholeChunks)
 			--extraWholeChunks;
 
 		while (extraWholeChunks--) {
@@ -414,7 +414,6 @@ class Day extends Component {
 			hr -= 24;
 
 		let to = padZero(hr) + ":" + padZero(min);
-		console.log(slot);
 
 		return from + " - " + to;
 	}
