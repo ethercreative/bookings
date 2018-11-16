@@ -243,8 +243,11 @@ class RecursionRule extends Model
 		$rRule = [
 			'FREQ'     => RRule::$frequencies[$this->frequency],
 			'DTSTART'  => $this->start,
-			'INTERVAL' => $this->interval + $this->duration,
+//			'INTERVAL' => $this->interval/* + $this->duration*/,
 		];
+
+		if ($this->interval)
+			$rRule['INTERVAL'] = $this->interval;
 
 		if ($this->count && $this->repeats === 'count')
 			$rRule['COUNT'] = (int)$this->count;

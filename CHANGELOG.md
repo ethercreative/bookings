@@ -1,9 +1,17 @@
 ## [Unreleased] 1.0.0-alpha.16
+
+> {warning} Previously we were artificially increasing the interval by the 
+duration to prevent the overlap of slots. This was causing issues if your slots 
+were more disparate, so we have removed this functionality. This **will cause 
+issues** with your recurrence rules. To fix these issues simply increase your 
+interval by your duration.
+
 ### Added
 - Added "By Day" field to calendar UI.
 
 ### Changed
 - If event multiplier is 0, availability will show the capacity.
+- **Breaking:** Interval is no longer artificially increased by the duration.
 
 ### Fixed
 - Fixed capacity and multiplier being set to 1 after being set to 0.
