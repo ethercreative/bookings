@@ -38,41 +38,47 @@ class AvailabilityService extends Component
 	public function isTimeAvailable (
 		$booking, Ticket $ticket, \DateTime $time, int $qty = 1
 	): bool {
-		$event = $ticket->getEvent();
-
-		$bookedSlots = BookedSlotRecord::find()->andWhere([
-			'eventId' => $event->id,
-			'date'    => $time->format(\DateTime::W3C),
-		])->select('ticketId, bookingId')->all();
-
-		$bookedByBooking = ArrayHelper::groupBy(
-			$bookedSlots,
-			'bookingId'
-		);
-
-		// Check the event multiplier
-		$uniqueBookings = count($bookedByBooking);
-		if (
-			$booking !== null &&
-			array_key_exists($booking->id, $bookedByBooking)
-		) $uniqueBookings--; // Exclude current booking
-		if ($event->multiplier && $event->multiplier <= $uniqueBookings)
-			return false;
-
 		// Check the ticket capacity
-		if (
-			$booking !== null
-			&& array_key_exists($booking->id, $bookedByBooking)
-		) {
-			if (
-				($ticket->capacity && $ticket->capacity < $qty)
-			    || ($event->capacity && $event->capacity < $qty)
-			) return false;
+		if (!!$ticket->capacity && $ticket->capacity < $qty)
+		{
+			\Craft::info('No ticket capacity', 'bookings');
+			return false;
 		}
 
+		// Get the Event
+		$event = $ticket->getEvent();
+
+		// Get all currently booked slots for this event & slot time
+		$bookedSlots = BookedSlotRecord::find()
+			->select('ticketId, bookingId')
+			->where([
+				'eventId' => $event->id,
+				'date'    => $time->format(\DateTime::W3C),
+			]);
+
+		if ($booking !== null && $booking->id)
+			$bookedSlots->andWhere(['!=', 'bookingId', $booking->id]);
+
+		$bookedSlots = $bookedSlots->all();
+
 		// Check the event capacity
-		if ($event->capacity && $event->capacity * ($event->multiplier ?: 1) < count($bookedSlots) + $qty)
+		if (!!$event->capacity && $event->capacity < count($bookedSlots) + $qty)
+		{
+			\Craft::info('No event capacity', 'bookings');
 			return false;
+		}
+
+		// Check the multiplier
+		$bookedByBookingCount = count(ArrayHelper::groupBy(
+			$bookedSlots,
+			'bookingId'
+		));
+
+		if (!!$event->multiplier && $event->multiplier <= $bookedByBookingCount)
+		{
+			\Craft::info('No multiplier capacity', 'bookings');
+			return false;
+		}
 
 		return true;
 	}

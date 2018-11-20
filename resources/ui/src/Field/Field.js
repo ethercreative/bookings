@@ -86,7 +86,7 @@ class Field extends Component {
 
 				<CraftLabel
 					label="Capacity"
-					instructions="The maximum number of tickets that can be booked per-slot (or range of slots if the event is flexible) per booking."
+					instructions="The maximum number of tickets that can be booked per-slot (or range of slots if the event is flexible) across all bookings."
 					className={cls}
 				>
 					<input

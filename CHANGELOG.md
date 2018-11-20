@@ -17,6 +17,7 @@ interval by your duration.
 - Fixed capacity and multiplier being set to 1 after being set to 0.
 - Fixed day view showing duration end minutes incorrectly above a certain time [#21]
 - Fixed minutes that end on an hour from extending an extra hour [#22]
+- Fixed issues with availability checking when using a multiplier of 0.
 
 [#21]: https://github.com/ethercreative/bookings/issues/21
 [#22]: https://github.com/ethercreative/bookings/issues/22

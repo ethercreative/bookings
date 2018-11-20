@@ -218,7 +218,8 @@ class Availability
 		else if ($this->_count)
 			$subQuery = $subQuery->andWhere(['<=', 'date', $this->_endDateFromCount()]);
 
-		$subQuery = $subQuery->groupBy(['bookingId', 'slot']);
+		if (!!$this->_event->multiplier)
+			$subQuery = $subQuery->groupBy(['bookingId', 'slot']);
 
 		$query = (new Query())
 			->select(['slot', 'count(*)'])
