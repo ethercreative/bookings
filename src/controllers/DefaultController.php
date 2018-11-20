@@ -8,8 +8,10 @@
 
 namespace ether\bookings\controllers;
 
+use craft\base\Field;
 use craft\web\Controller;
 use ether\bookings\Bookings;
+use ether\bookings\elements\BookedTicket;
 use yii\web\HttpException;
 
 /**
@@ -44,7 +46,31 @@ class DefaultController extends Controller
 		$craft = \Craft::$app;
 		$request = $craft->request;
 
-		$id = $request->getRequiredBodyParam('id');
+		if ($tickets = $request->getBodyParam('tickets'))
+			return $this->_saveBookedTickets($tickets);
+
+		return $this->_saveBookedTicket();
+	}
+
+	// Helpers
+	// =========================================================================
+
+	/**
+	 * Updates a single ticket
+	 *
+	 * @return null|\yii\web\Response
+	 * @throws HttpException
+	 * @throws \Throwable
+	 * @throws \craft\errors\ElementNotFoundException
+	 * @throws \yii\base\Exception
+	 * @throws \yii\web\BadRequestHttpException
+	 */
+	private function _saveBookedTicket ()
+	{
+		$craft   = \Craft::$app;
+		$request = $craft->request;
+
+		$id     = $request->getRequiredBodyParam('id');
 		$ticket = Bookings::getInstance()->tickets->getBookedTicketById($id);
 
 		if (!$ticket)
@@ -55,15 +81,16 @@ class DefaultController extends Controller
 		if (
 			!$ticket->validate() ||
 			!Bookings::getInstance()->tickets->saveBookedTicket($ticket)
-		) {
+		)
+		{
 			$error = \Craft::t('tickets', 'Unable to update booked ticket.');
 
 			if ($request->getAcceptsJson())
 			{
 				return $this->asJson([
-					'error' => $error,
+					'error'   => $error,
 					'success' => !$ticket->hasErrors(),
-					'ticket' => $ticket->toArray(),
+					'ticket'  => $ticket->toArray(),
 				]);
 			}
 
@@ -80,7 +107,7 @@ class DefaultController extends Controller
 		{
 			return $this->asJson([
 				'success' => !$ticket->hasErrors(),
-				'ticket' => $ticket->toArray(),
+				'ticket'  => $ticket->toArray(),
 			]);
 		}
 
@@ -90,6 +117,92 @@ class DefaultController extends Controller
 
 		$craft->urlManager->setRouteParams([
 			'ticket' => $ticket,
+		]);
+
+		return $this->redirectToPostedUrl();
+	}
+
+	/**
+	 * Saves multiple tickets
+	 *
+	 * @param $tickets
+	 *
+	 * @return \yii\web\Response
+	 * @throws HttpException
+	 * @throws \Throwable
+	 * @throws \craft\errors\ElementNotFoundException
+	 * @throws \yii\base\Exception
+	 * @throws \yii\db\Exception
+	 * @throws \yii\web\BadRequestHttpException
+	 */
+	private function _saveBookedTickets ($tickets)
+	{
+		$ids = array_keys($tickets);
+		$fieldsByTicketId = $tickets;
+
+		$tickets = Bookings::getInstance()->tickets->getBookedTicketsByIds($ids);
+
+		if (count($tickets) !== count($ids))
+			throw new HttpException('Unable to find all tickets with those ID\'s');
+
+		$craft = \Craft::$app;
+
+		// Set the fields
+		// ---------------------------------------------------------------------
+
+		/** @var BookedTicket $ticket */
+		foreach ($tickets as $ticket)
+		{
+			$fields = $fieldsByTicketId[$ticket->id];
+
+			/** @var Field $field */
+			foreach ($ticket->getFieldLayout()->getFields() as $field)
+			{
+				$value = $fields[$field->handle];
+
+				if (!isset($value))
+					continue;
+
+				$ticket->setFieldValue($field->handle, $value);
+			}
+		}
+
+		// Save the tickets
+		// ---------------------------------------------------------------------
+
+		$transaction = \Craft::$app->db->beginTransaction();
+		$failed = false;
+
+		foreach ($tickets as $ticket)
+		{
+			if (Bookings::getInstance()->tickets->saveBookedTicket($ticket))
+				continue;
+
+			$transaction->rollBack();
+			$failed = true;
+			break;
+		}
+
+		$transaction->commit();
+
+		// Return
+		// ---------------------------------------------------------------------
+
+		if ($failed) {
+			$craft->session->setError(
+				\Craft::t('bookings', 'Unable to update booked tickets.')
+			);
+		} else {
+			$craft->session->setError(
+				\Craft::t('bookings', 'Booked tickets updated.')
+			);
+		}
+
+		$craft->urlManager->setRouteParams([
+			'tickets' => array_reduce($tickets, function ($a, $b) {
+				$a[$b->id] = $b;
+				return $a;
+			}, []),
 		]);
 
 		return $this->redirectToPostedUrl();

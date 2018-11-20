@@ -19,6 +19,9 @@ fields to fill.
 The code below shows how you can update a booked tickets contents (currently 
 this is only possible after a booking has been added to a cart, not during).
 
+A `ticket` variable will be returned, which you can use to get any errors on the 
+ticket.
+
 ::: code
 
 ```twig
@@ -35,6 +38,27 @@ this is only possible after a booking has been added to a cart, not during).
         </form>
     {% endfor %}
 {% endfor %}
+```
+
+:::
+
+### Updating multiple tickets
+
+A `tickets` array, keyed by the ID of the ticket, will be returned.
+
+::: code
+
+```twig
+<form method="post">
+    {{ csrfInput() }}
+    <input type="hidden" name="action" value="bookings/save-booked-ticket" />
+    {% for item in cart.lineItems %}
+        {% for ticket in getBookedTickets(item) %}
+            <input type="text" name="tickets[{{ ticket.id }}][myField]" value="{{ ticket.myField }}" />
+        {% endfor %}
+    {% endfor %}  
+    <button>Save</button>
+</form>
 ```
 
 :::

@@ -68,13 +68,25 @@ class TicketsService extends Component
 	/**
 	 * Finds the booked ticket with the given ID
 	 *
-	 * @param $bookedTicketId
+	 * @param int $bookedTicketId
 	 *
 	 * @return \craft\base\ElementInterface|null|BookedTicket
 	 */
 	public function getBookedTicketById ($bookedTicketId)
 	{
 		return BookedTicket::find()->id($bookedTicketId)->one();
+	}
+
+	/**
+	 * Finds booked tickets by the given IDs
+	 *
+	 * @param array $bookedTicketIds
+	 *
+	 * @return \craft\base\ElementInterface[]
+	 */
+	public function getBookedTicketsByIds ($bookedTicketIds)
+	{
+		return BookedTicket::find()->id($bookedTicketIds)->all();
 	}
 
 	/**

@@ -60,5 +60,7 @@ return [
 	'Unable to find event matching the given ID' => 'Unable to find event matching the given ID',
 
 	'Unable to update booked ticket.' => 'Unable to update booked ticket.',
+	'Unable to update booked tickets.' => 'Unable to update booked tickets.',
 	'Booked ticket updated.' => 'Booked ticket updated.',
+	'Booked tickets updated.' => 'Booked tickets updated.',
 ];
