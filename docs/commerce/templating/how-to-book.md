@@ -38,12 +38,12 @@ e.g. `<input type="text" name="options[ticketDate]" value="2018-11-14 15:38:00">
         {% for variant in product.variants %}
             <li>
                 <p><strong>{{ variant.title }}</strong> - {{ variant.price|currency }}</p>
-                <input type="hidden" name="purchasables[{{loop.index}}]][id]" value="{{ variant.id }}" />
-                <input type="hidden" name="purchasables[{{loop.index}}]][options][ticketId]" value="{{ variant.myTicketField.id }}" />
-                <input type="date" name="purchasables[{{loop.index}}]][options][ticketDate][date]" />
-                <input type="time" name="purchasables[{{loop.index}}]][options][ticketDate][time]" />
-                <input type="hidden" name="purchasables[{{loop.index}}]][options][ticketDate][timezone]" value="{{ craft.app.getTimeZone() }}" />
-                <input type="number" name="purchasables[{{loop.index}}]][qty]" value="1" />
+                <input type="hidden" name="purchasables[{{loop.index}}][id]" value="{{ variant.id }}" />
+                <input type="hidden" name="purchasables[{{loop.index}}][options][ticketId]" value="{{ variant.myTicketField.id }}" />
+                <input type="date" name="purchasables[{{loop.index}}][options][ticketDate][date]" />
+                <input type="time" name="purchasables[{{loop.index}}][options][ticketDate][time]" />
+                <input type="hidden" name="purchasables[{{loop.index}}][options][ticketDate][timezone]" value="{{ craft.app.getTimeZone() }}" />
+                <input type="number" name="purchasables[{{loop.index}}][qty]" value="1" />
             </li>
         {% endfor %}
     </ul>
