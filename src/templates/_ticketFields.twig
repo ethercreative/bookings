@@ -1,0 +1,14 @@
+{% for bt in booking.bookedTickets %}
+	<fieldset>
+		<h4>{{ loop.index }}. {{ bt.productName }} - {{ bt.ticketName }}</h4>
+		{% for tab in bt.getFieldLayout().getTabs() %}
+			<div id="{{ tab.getHtmlId() }}"{% if not loop.first %} class="hidden"{% endif %}>
+				{% include '_includes/fields' with {
+					fields:  tab.getFields(),
+					element: bt,
+					static:  true,
+				} only %}
+			</div>
+		{% endfor %}
+	</fieldset>
+{% endfor %}

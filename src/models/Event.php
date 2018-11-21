@@ -196,6 +196,11 @@ class Event extends Model
 		return $set[$set->count() - 1];
 	}
 
+	public function getElement ()
+	{
+		return \Craft::$app->elements->getElementById($this->elementId);
+	}
+
 	// Methods: Public
 	// -------------------------------------------------------------------------
 

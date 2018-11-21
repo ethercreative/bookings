@@ -5,6 +5,7 @@ import Header from '../components/BookingsHeader';
 import Button from '../components/BookingsButton';
 import Select from '../components/BookingsSelect';
 import Modal from '../components/Modal';
+import TicketFields from '../components/TicketFields';
 import MiniCalendar from '../components/MiniCalendar';
 import formatDate from '../helpers/formatDate';
 import { post } from '../helpers/fetch';
@@ -210,6 +211,13 @@ export default class Booking extends Vue {
 					<ul class={this.$style.tickets}>
 						{this.booking.bookedTickets.map(this._renderTicket)}
 					</ul>
+
+					<div class={this.$style.customFields}>
+						<p>Custom Fields</p>
+						<TicketFields
+							bookingId={this.booking.id}
+						/>
+					</div>
 				</div>
 
 				{this._renderEditModal()}
@@ -262,18 +270,20 @@ export default class Booking extends Vue {
 			<div class={[this.$style.block, this.$style.customer]}>
 				<h2>Customer Details</h2>
 
-				<p>
-					{a.attention}{a.attention && <br/>}
-					{a.businessName}{a.businessName && <br/>}
-					{a.fullName}{a.fullName && <br/>}
-					{a.address1}{a.address1 && <br/>}
-					{a.address2}{a.address2 && <br/>}
-					{a.city}{a.city && <br/>}
-					{a.stateText}{a.stateText && <br/>}
-					{a.countryText}{a.countryText && <br/>}
-					{a.zipCode}{a.zipCode && <br/>}
-				</p>
-				{(a.phone || a.alternativePhone) && (
+				{a && (
+					<p>
+						{a.attention}{a.attention && <br/>}
+						{a.businessName}{a.businessName && <br/>}
+						{a.fullName}{a.fullName && <br/>}
+						{a.address1}{a.address1 && <br/>}
+						{a.address2}{a.address2 && <br/>}
+						{a.city}{a.city && <br/>}
+						{a.stateText}{a.stateText && <br/>}
+						{a.countryText}{a.countryText && <br/>}
+						{a.zipCode}{a.zipCode && <br/>}
+					</p>
+				)}
+				{a && (a.phone || a.alternativePhone) && (
 					<p>
 						{a.phone}{a.phone && <br/>}
 						{a.alternativePhone}
@@ -445,6 +455,10 @@ export default class Booking extends Vue {
 		button {
 			margin-left: 10px !important;
 		}
+	}
+
+	.customFields {
+		grid-column: span 12;
 	}
 
 	.slots {

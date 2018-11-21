@@ -10,6 +10,7 @@ interval by your duration.
 - Added "By Day" field to calendar UI.
 - Added support for updating multiple booked tickets custom fields in a single
 request.
+- Custom booked ticket fields now show (static) in the booking edit screen.
 
 ### Changed
 - If event multiplier is 0, availability will show the capacity.

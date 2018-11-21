@@ -1,6 +1,6 @@
 /* global Craft */
 
-export async function get (action, params = {}) {
+export async function get (action, params = {}, asText = false) {
 	params = Object.keys(params)
 		.map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
 		.join('&');
@@ -14,7 +14,7 @@ export async function get (action, params = {}) {
 			'Accepts': 'application/json',
 			'X-CSRF-Token': Craft.csrfTokenValue,
 		},
-	}).then(res => res.json());
+	}).then(res => asText ? res.text() : res.json());
 }
 
 export async function post (action, body = {}) {

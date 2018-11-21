@@ -366,6 +366,11 @@ class Booking extends Element
 	// Getters
 	// -------------------------------------------------------------------------
 
+	public function getEvent ()
+	{
+		return Bookings::getInstance()->events->getEventById($this->eventId);
+	}
+
 	public function getCustomer ()
 	{
 		if ($this->customerId === null)
