@@ -101,6 +101,8 @@ class BookingsService extends Component
 	 */
 	public function clearExpiredBookings (bool $force = false)
 	{
+		$craft = \Craft::$app;
+
 		echo '├ Starting Clear' . PHP_EOL;
 
 		$settings = Bookings::getInstance()->settings;
@@ -123,24 +125,54 @@ class BookingsService extends Component
 			$where[] = '[[reservationExpiry]] < ' . $since;
 		}
 
-		echo '├ Ready to get expired' . PHP_EOL;
+		echo '├ Getting bookings to expire' . PHP_EOL;
 
-		// FIXME: This causes a timeout
-		// (something to do with populating the bookings element)
-		$expiredBookings = Booking::find()->where($where)->all();
+		$expiredBookings = BookingRecord::find()->where($where)->all();
 
-		echo '├ Starting expire' . PHP_EOL;
-
-		/** @var Booking $booking */
-		foreach ($expiredBookings as $booking)
+		if (empty($expiredBookings))
 		{
-			echo '│ ├ Expiring #' . $booking->number . PHP_EOL;
-			\Craft::$app->elements->deleteElement($booking);
+			echo '└ Nothing to expire' . PHP_EOL;
+			return;
 		}
 
-		echo '├ Expired ' . count($expiredBookings) . ' bookings' . PHP_EOL;
+		echo '├ Starting deletions' . PHP_EOL;
 
-		echo '└ Clear Expired Complete' . PHP_EOL;
+		$transaction = $craft->db->beginTransaction();
+
+		try {
+
+			echo '├ ┐' . PHP_EOL;
+
+			/** @var BookingRecord $booking */
+			foreach ($expiredBookings as $booking)
+			{
+				echo '│ ├ Deleting #' . $booking->number . PHP_EOL;
+
+				$elementId = $booking->id;
+
+				$craft->templateCaches->deleteCachesByElementId($elementId, false);
+
+				$craft->db->createCommand()
+					->delete('{{%elements}}', ['id' => $elementId])
+					->execute();
+
+				$craft->db->createCommand()
+					->delete('{{%searchindex}}', ['elementId' => $elementId])
+					->execute();
+			}
+
+			echo '├ ┘' . PHP_EOL;
+
+			$transaction->commit();
+
+			echo '├ Deleted ' . count($expiredBookings) . ' bookings' . PHP_EOL;
+
+			echo '└ Clear Expired Complete' . PHP_EOL;
+
+		} catch (\Exception $e) {
+			$transaction->rollBack();
+			echo '└ Clear Expired Failed (no bookings were deleted)' . PHP_EOL;
+		}
 	}
 
 	public function updateBookingSlot (Booking $booking, \DateTime $newSlot)
