@@ -193,7 +193,7 @@ class DefaultController extends Controller
 				\Craft::t('bookings', 'Unable to update booked tickets.')
 			);
 		} else {
-			$craft->session->setError(
+			$craft->session->setNotice(
 				\Craft::t('bookings', 'Booked tickets updated.')
 			);
 		}

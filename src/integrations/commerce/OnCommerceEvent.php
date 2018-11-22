@@ -185,7 +185,12 @@ class OnCommerceEvent
 			$craft->elements->saveElement($booking);
 		}
 
-		// Clear any existing booked tickets (will Cascade to slots) if we're updating
+		// Create the booked tickets
+		$bookedTickets = [];
+
+		$i = $lineItem->qty;
+
+		// Find any existing tickets to update
 		if ($isNew === false)
 		{
 			$bookedTickets = BookedTicket::findAll([
@@ -195,16 +200,20 @@ class OnCommerceEvent
 				'startDate'  => $startDate,
 				'endDate'    => $endDate,
 			]);
-
-			foreach ($bookedTickets as $bookedTicket)
-				$craft->elements->deleteElement($bookedTicket);
 		}
 
-		// Create the booked tickets
-		$bookedTickets = [];
+		$previousTicketCount = count($bookedTickets);
 
-		$i = $lineItem->qty;
-		while ($i--)
+		if ($previousTicketCount > $i)
+		{
+			while (--$previousTicketCount > $i)
+			{
+				$craft->elements->deleteElement($bookedTickets[$previousTicketCount]);
+				unset($bookedTickets[$previousTicketCount]);
+			}
+		}
+
+		while ($i-- > 0)
 		{
 			$bookedTicket = new BookedTicket();
 
@@ -215,7 +224,7 @@ class OnCommerceEvent
 			$bookedTicket->endDate       = $endDate;
 			$bookedTicket->fieldLayoutId = $ticket->fieldLayoutId;
 
-			Bookings::getInstance()->tickets->saveBookedTicket($bookedTicket);
+			$bookings->tickets->saveBookedTicket($bookedTicket);
 			$bookedTickets[] = $bookedTicket;
 		}
 

@@ -1,3 +1,8 @@
+## 1.0.0-alpha.17 - 2018-11-22
+
+### Fixed
+- Fixed booked ticket custom field data being when line items were updated
+
 ## 1.0.0-alpha.16 - 2018-11-22
 
 > {warning} Previously we were artificially increasing the interval by the 
