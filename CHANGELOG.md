@@ -1,4 +1,4 @@
-## [Unreleased] 1.0.0-alpha.16
+## 1.0.0-alpha.16 - 2018-11-22
 
 > {warning} Previously we were artificially increasing the interval by the 
 duration to prevent the overlap of slots. This was causing issues if your slots 
