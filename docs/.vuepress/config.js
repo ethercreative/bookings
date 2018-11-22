@@ -27,6 +27,13 @@ module.exports = {
 		sidebar: {
 			"/commerce/": [
 				{
+					title: "CRON",
+					collapsable: false,
+					children: [
+						"cron",
+					],
+				},
+				{
 					title: "Templating",
 					collapsable: false,
 					children: [

@@ -4,6 +4,8 @@ title: Craft Commerce
 
 # Craft Commerce
 
+- [CRON](cron.md)
+
 ## Templating
 
 - [How to Book](templating/how-to-book.md)
