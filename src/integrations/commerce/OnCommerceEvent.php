@@ -213,6 +213,8 @@ class OnCommerceEvent
 			}
 		}
 
+		$i -= $previousTicketCount;
+		
 		while ($i-- > 0)
 		{
 			$bookedTicket = new BookedTicket();
