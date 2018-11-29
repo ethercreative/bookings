@@ -1,3 +1,7 @@
+## 1.0.0-alpha.19 - 2018-11-29
+### Fixed
+- Fixed a bug where booked slots were tripled on order complete.
+
 ## 1.0.0-alpha.18 - 2018-11-29
 ### Fixed
 - Fixed bug where more tickets were created than the qty booked

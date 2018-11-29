@@ -230,6 +230,17 @@ class OnCommerceEvent
 			$bookedTickets[] = $bookedTicket;
 		}
 
+		// Delete old slots
+		$oldSlots = BookedSlotRecord::findAll([
+			'eventId' => $event->id,
+			'ticketId' => $ticket->id,
+			'bookingId' => $booking->id,
+		]);
+
+		/** @var BookedSlotRecord $slot */
+		foreach ($oldSlots as $slot)
+			$slot->delete();
+
 		// Create the slots for this ticket
 		$slots = $bookings->slots->generateSlotsForGivenTimes($event, $startDate, $endDate);
 		$slotsCount = count($slots);
