@@ -2,7 +2,7 @@
   "name": "ether/bookings",
   "description": "An advanced booking plugin for Craft CMS and Craft Commerce",
   "type": "craft-plugin",
-  "version": "1.0.0-alpha.17",
+  "version": "1.0.0-alpha.18",
   "keywords": [
     "craft",
     "cms",

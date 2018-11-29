@@ -1,5 +1,8 @@
-## 1.0.0-alpha.17 - 2018-11-22
+## 1.0.0-alpha.18 - 2018-11-29
+### Fixed
+- Fixed bug where more tickets were created than the qty booked
 
+## 1.0.0-alpha.17 - 2018-11-22
 ### Fixed
 - Fixed booked ticket custom field data being when line items were updated
 
