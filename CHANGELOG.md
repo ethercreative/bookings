@@ -1,3 +1,7 @@
+## 1.0.0-alpha.20 - 2018-11-30
+### Fixed
+- Fixed issue with bookings fields being used before bookings has been initialized.
+
 ## 1.0.0-alpha.19 - 2018-11-29
 ### Fixed
 - Fixed a bug where booked slots were tripled on order complete.

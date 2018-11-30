@@ -126,6 +126,11 @@ class TicketField extends Field
 	 */
 	public function modifyElementsQuery (ElementQueryInterface $query, $value)
 	{
+		// For whatever reason, this function can be
+		// run BEFORE Bookings has been initialized
+		if (!Bookings::getInstance())
+			return null;
+
 		Bookings::getInstance()->field->modifyTicketFieldQuery($query, $value);
 		return null;
 	}
