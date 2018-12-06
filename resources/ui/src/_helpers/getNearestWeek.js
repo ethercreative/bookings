@@ -8,13 +8,13 @@
 export default function getNearestWeek (year, month, day) {
 	const d = new Date(year, month - 1, day);
 
-	while (d.getDay() !== 1) {
-		d.setDate(d.getDate() - 1);
+	while (d.getUTCDay() !== 1) {
+		d.setUTCDate(d.getUTCDate() - 1);
 	}
 
 	return {
-		year: d.getFullYear(),
-		month: d.getMonth() + 1,
-		day: d.getDate(),
+		year: d.getUTCFullYear(),
+		month: d.getUTCMonth() + 1,
+		day: d.getUTCDate(),
 	};
 }

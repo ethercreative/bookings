@@ -1,3 +1,7 @@
+## 1.0.0-alpha.21 - 2018-12-06
+### Fixed
+- Event calendar UI now shows the dates correctly, ignoring timezones.
+
 ## 1.0.0-alpha.20 - 2018-11-30
 ### Fixed
 - Fixed issue with bookings fields being used before bookings has been initialized.

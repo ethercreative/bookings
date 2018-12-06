@@ -29,18 +29,18 @@ class CraftDateTime extends Component {
 			, t = this._getDefaultTime(props);
 
 		if (d) {
-			value.setFullYear(d.getFullYear());
-			value.setMonth(d.getMonth());
-			value.setDate(d.getDate());
+			value.setUTCFullYear(d.getUTCFullYear());
+			value.setUTCMonth(d.getUTCMonth());
+			value.setUTCDate(d.getUTCDate());
 		}
 
 		if (t) {
-			value.setHours(t.getHours());
-			value.setMinutes(t.getMinutes());
+			value.setUTCHours(t.getUTCHours());
+			value.setUTCMinutes(t.getUTCMinutes());
 		}
 
-		value.setSeconds(0);
-		value.setMilliseconds(0);
+		value.setUTCSeconds(0);
+		value.setUTCMilliseconds(0);
 
 		this.state = { value };
 	}
@@ -77,9 +77,9 @@ class CraftDateTime extends Component {
 					const t = this._getDefaultTime();
 					$timePicker.timepicker(
 						"setTime",
-						t.getHours() * 3600
-						+ t.getMinutes() * 60
-						+ t.getSeconds()
+						t.getUTCHours() * 3600
+						+ t.getUTCMinutes() * 60
+						+ t.getUTCSeconds()
 					);
 				}
 
@@ -96,9 +96,9 @@ class CraftDateTime extends Component {
 		const d = $datePicker.datepicker("getDate");
 
 		const nextValue = new Date(this.state.value);
-		nextValue.setFullYear(d.getFullYear());
-		nextValue.setMonth(d.getMonth());
-		nextValue.setDate(d.getDate());
+		nextValue.setUTCFullYear(d.getFullYear());
+		nextValue.setUTCMonth(d.getMonth());
+		nextValue.setUTCDate(d.getDate());
 
 		this.setState({ value: nextValue }, this.onChange);
 	};
@@ -107,8 +107,8 @@ class CraftDateTime extends Component {
 		const t = new Date(`1/1/1970 ${value}`);
 
 		const nextValue = new Date(this.state.value);
-		nextValue.setHours(t.getHours());
-		nextValue.setMinutes(t.getMinutes());
+		nextValue.setUTCHours(t.getHours());
+		nextValue.setUTCMinutes(t.getMinutes());
 
 		this.setState({ value: nextValue }, this.onChange);
 	};

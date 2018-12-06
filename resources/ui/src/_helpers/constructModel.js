@@ -19,8 +19,8 @@ export default function constructModel (self, def = {}, overwriteId = false) {
 			if (!(value instanceof Date))
 				value = new Date(value.date.replace(" ", "T") + "Z");
 
-			value.setSeconds(0);
-			value.setMilliseconds(0);
+			value.setUTCSeconds(0);
+			value.setUTCMilliseconds(0);
 		}
 
 		self[key] = value;

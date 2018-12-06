@@ -46,7 +46,7 @@ const replaceChars = {
 	 * @returns {string}
 	 */
 	d: function () {
-		const d = this.getDate();
+		const d = this.getUTCDate();
 		return (d < 10 ? '0' : '') + d;
 	},
 
@@ -54,28 +54,28 @@ const replaceChars = {
 	 * @returns {string}
 	 */
 	D: function () {
-		return shortDays[this.getDay()];
+		return shortDays[this.getUTCDay()];
 	},
 
 	/**
 	 * @returns {number}
 	 */
 	j: function () {
-		return this.getDate();
+		return this.getUTCDate();
 	},
 
 	/**
 	 * @returns {string}
 	 */
 	l: function () {
-		return longDays[this.getDay()];
+		return longDays[this.getUTCDay()];
 	},
 
 	/**
 	 * @returns {number}
 	 */
 	N: function () {
-		const N = this.getDay();
+		const N = this.getUTCDay();
 		return N === 0 ? 7 : N;
 	},
 
@@ -83,7 +83,7 @@ const replaceChars = {
 	 * @returns {string}
 	 */
 	S: function () {
-		const S = this.getDate();
+		const S = this.getUTCDate();
 		return (
 			S % 10 === 1 && S !== 11 ? 'st' : (
 				S % 10 === 2 && S !== 12 ? 'nd' : (
@@ -97,14 +97,14 @@ const replaceChars = {
 	 * @returns {number}
 	 */
 	w: function () {
-		return this.getDay();
+		return this.getUTCDay();
 	},
 
 	/**
 	 * @returns {number}
 	 */
 	z: function () {
-		const d = new Date(this.getFullYear(), 0, 1);
+		const d = new Date(this.getUTCFullYear(), 0, 1);
 		return Math.ceil((this - d) / 86400000);
 	},
 
@@ -116,16 +116,16 @@ const replaceChars = {
 	 */
 	W: function () {
 		const target = new Date(this.valueOf())
-			, dayNr = (this.getDay() + 6) % 7;
+			, dayNr = (this.getUTCDay() + 6) % 7;
 
-		target.setDate(target.getDate() - dayNr + 3);
+		target.setUTCDate(target.getUTCDate() - dayNr + 3);
 
 		const firstThursday = target.valueOf();
 
-		target.setMonth(0, 1);
+		target.setUTCMonth(0, 1);
 
-		if (target.getDay() !== 4)
-			target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+		if (target.getUTCDay() !== 4)
+			target.setUTCMonth(0, 1 + ((4 - target.getUTCDay()) + 7) % 7);
 
 		const retVal = 1 + Math.ceil((firstThursday - target) / 604800000);
 
@@ -139,14 +139,14 @@ const replaceChars = {
 	 * @returns {string}
 	 */
 	F: function () {
-		return longMonths[this.getMonth()];
+		return longMonths[this.getUTCMonth()];
 	},
 
 	/**
 	 * @returns {string}
 	 */
 	m: function () {
-		const m = this.getMonth();
+		const m = this.getUTCMonth();
 		return (m < 9 ? '0' : '') + (m + 1);
 	},
 
@@ -154,28 +154,28 @@ const replaceChars = {
 	 * @returns {string}
 	 */
 	M: function () {
-		return shortMonths[this.getMonth()];
+		return shortMonths[this.getUTCMonth()];
 	},
 
 	/**
 	 * @returns {number}
 	 */
 	n: function () {
-		return this.getMonth() + 1;
+		return this.getUTCMonth() + 1;
 	},
 
 	/**
 	 * @returns {number}
 	 */
 	t: function () {
-		let year = this.getFullYear(), nextMonth = this.getMonth() + 1;
+		let year = this.getUTCFullYear(), nextMonth = this.getUTCMonth() + 1;
 
 		if (nextMonth === 12) {
 			year++;
 			nextMonth = 0;
 		}
 
-		return new Date(year, nextMonth, 0).getDate();
+		return new Date(year, nextMonth, 0).getUTCDate();
 	},
 
 	// Year
@@ -185,7 +185,7 @@ const replaceChars = {
 	 * @returns {boolean}
 	 */
 	L: function () {
-		const L = this.getFullYear();
+		const L = this.getUTCFullYear();
 		return (
 			L % 400 === 0 || (
 				L % 100 !== 0 && L % 4 === 0
@@ -198,15 +198,15 @@ const replaceChars = {
 	 */
 	o: function () {
 		const d = new Date(this.valueOf());
-		d.setDate(d.getDate() - ((this.getDay() + 6) % 7) + 3);
-		return d.getFullYear();
+		d.setUTCDate(d.getUTCDate() - ((this.getUTCDay() + 6) % 7) + 3);
+		return d.getUTCFullYear();
 	},
 
 	/**
 	 * @returns {number}
 	 */
 	Y: function () {
-		return this.getFullYear();
+		return this.getUTCFullYear();
 	},
 
 	/**
@@ -214,7 +214,7 @@ const replaceChars = {
 	 */
 	y: function () {
 		return (
-			'' + this.getFullYear()
+			'' + this.getUTCFullYear()
 		).substr(2);
 	},
 
@@ -225,14 +225,14 @@ const replaceChars = {
 	 * @returns {string}
 	 */
 	a: function () {
-		return this.getHours() < 12 ? 'am' : 'pm';
+		return this.getUTCHours() < 12 ? 'am' : 'pm';
 	},
 
 	/**
 	 * @returns {string}
 	 */
 	A: function () {
-		return this.getHours() < 12 ? 'AM' : 'PM';
+		return this.getUTCHours() < 12 ? 'AM' : 'PM';
 	},
 
 	/**
@@ -254,21 +254,21 @@ const replaceChars = {
 	 * @returns {number}
 	 */
 	g: function () {
-		return this.getHours() % 12 || 12;
+		return this.getUTCHours() % 12 || 12;
 	},
 
 	/**
 	 * @returns {number}
 	 */
 	G: function () {
-		return this.getHours();
+		return this.getUTCHours();
 	},
 
 	/**
 	 * @returns {string}
 	 */
 	h: function () {
-		const h = this.getHours();
+		const h = this.getUTCHours();
 		return (
 			(
 				h % 12 || 12
@@ -282,7 +282,7 @@ const replaceChars = {
 	 * @returns {string}
 	 */
 	H: function () {
-		const H = this.getHours();
+		const H = this.getUTCHours();
 		return (H < 10 ? '0' : '') + H;
 	},
 
@@ -290,7 +290,7 @@ const replaceChars = {
 	 * @returns {string}
 	 */
 	i: function () {
-		const i = this.getMinutes();
+		const i = this.getUTCMinutes();
 		return (
 			i < 10 ? '0' : ''
 		) + i;
@@ -300,7 +300,7 @@ const replaceChars = {
 	 * @returns {string}
 	 */
 	s: function () {
-		const s = this.getSeconds();
+		const s = this.getUTCSeconds();
 		return (
 			s < 10 ? '0' : ''
 		) + s;
@@ -310,7 +310,7 @@ const replaceChars = {
 	 * @returns {string}
 	 */
 	v: function () {
-		const v = this.getMilliseconds();
+		const v = this.getUTCMilliseconds();
 		return (
 			v < 10 ? '00' : (
 				v < 100 ? '0' : ''
@@ -334,7 +334,7 @@ const replaceChars = {
 	I: function () {
 		let DST = null;
 		for (let i = 0; i < 12; ++i) {
-			const d = new Date(this.getFullYear(), i, 1);
+			const d = new Date(this.getUTCFullYear(), i, 1);
 			const offset = d.getTimezoneOffset();
 
 			if (DST === null) DST = offset;

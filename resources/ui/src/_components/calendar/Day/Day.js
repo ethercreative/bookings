@@ -232,9 +232,9 @@ class Day extends Component {
 		).date;
 
 		const firstDay = {
-			year: startDate.getFullYear(),
-			month: startDate.getMonth() + 1,
-			day: startDate.getDate(),
+			year: startDate.getUTCFullYear(),
+			month: startDate.getUTCMonth() + 1,
+			day: startDate.getUTCDate(),
 		};
 
 		const days = [firstDay];
@@ -323,24 +323,27 @@ class Day extends Component {
 		const extraPartialChunkWidth = widthInclStartOffset % 60;
 		let extraWholeChunks = Math.floor(widthInclStartOffset / 60),
 			prevDate = slot.date,
-			prevHour = slot.date.getHours();
+			prevHour = slot.date.getUTCHours();
 
 		if (widthInclStartOffset === 60 * extraWholeChunks)
 			--extraWholeChunks;
 
 		while (extraWholeChunks--) {
-			const nDate = new Date(
-				prevDate.getFullYear(),
-				prevDate.getMonth(),
-				prevDate.getDate(),
-				prevHour + 1,
-				0, 0, 0
-			);
+			const nDate = new Date();
+
+			nDate.setUTCFullYear(prevDate.getUTCFullYear());
+			nDate.setUTCMonth(prevDate.getUTCMonth());
+			nDate.setUTCDate(prevDate.getUTCDate());
+			nDate.setUTCHours(prevDate.getUTCHours() + 1);
+			nDate.setUTCMinutes(0);
+			nDate.setUTCSeconds(0);
+			nDate.setUTCMilliseconds(0);
+
 			const nKey = nDate.getTime();
 
-			const ny = nDate.getFullYear()
-				, nm = nDate.getMonth() + 1
-				, nd = nDate.getDate();
+			const ny = nDate.getUTCFullYear()
+				, nm = nDate.getUTCMonth() + 1
+				, nd = nDate.getUTCDate();
 
 			if (!slots.hasOwnProperty(ny))
 				slots[ny] = {};
@@ -356,7 +359,7 @@ class Day extends Component {
 			slots[ny][nm].all[nKey] = {
 				...slot,
 				position: this._getPosition(
-					nDate.getHours(),
+					nDate.getUTCHours(),
 					0,
 					isPartial ? extraPartialChunkWidth : 60
 				),
@@ -368,7 +371,7 @@ class Day extends Component {
 				slots[ny][nm][nd].push(nKey);
 
 			prevDate = nDate;
-			prevHour = nDate.getHours();
+			prevHour = nDate.getUTCHours();
 		}
 
 		return slots;

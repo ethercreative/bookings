@@ -7,8 +7,8 @@ export default function modelToRRule (model:RRule|ExRule) {
 			obj[key] = model[key];
 
 		if (obj[key] instanceof Date) {
-			obj[key].setSeconds(0);
-			obj[key].setMilliseconds(0);
+			obj[key].setUTCSeconds(0);
+			obj[key].setUTCMilliseconds(0);
 
 			obj[key] = obj[key].toISOString();
 		}

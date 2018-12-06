@@ -231,9 +231,9 @@ class Week extends Component {
 		).date;
 
 		const firstWeek = getNearestWeek(
-			startDate.getFullYear(),
-			startDate.getMonth() + 1,
-			startDate.getDate()
+			startDate.getUTCFullYear(),
+			startDate.getUTCMonth() + 1,
+			startDate.getUTCDate()
 		);
 
 		const weeks = [firstWeek];
@@ -350,11 +350,20 @@ class Week extends Component {
 		// Calculate how many extra days & minutes (chunks) this slot overflows by
 		const extraPartialChunkHeight = heightInclStartOffset % FULL_DAY;
 		let extraWholeChunks = Math.floor(heightInclStartOffset / FULL_DAY),
-			previousDate = slot.date.getDate();
+			previousDate = slot.date.getUTCDate();
 
 		while (extraWholeChunks--) {
 			const [ny, nm, nd] = correctDate(y, m, previousDate + 1);
-			const nDate = new Date(ny, nm - 1, nd, 0, 0, 0, 0);
+			const nDate = new Date();
+
+			nDate.setUTCFullYear(ny);
+			nDate.setUTCMonth(nm - 1);
+			nDate.setUTCDate(nd);
+			nDate.setUTCHours(0);
+			nDate.setUTCMinutes(0);
+			nDate.setUTCSeconds(0);
+			nDate.setUTCMilliseconds(0);
+
 			const nKey = nDate.getTime();
 
 			if (!slots.hasOwnProperty(ny))
@@ -371,7 +380,7 @@ class Week extends Component {
 			slots[ny][nm].all[nKey] = {
 				...slot,
 				position: this._getPosition(
-					nDate.getDay(),
+					nDate.getUTCDay(),
 					0,
 					0,
 					isPartial ? extraPartialChunkHeight / numericFreq : 24

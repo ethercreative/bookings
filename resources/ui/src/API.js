@@ -37,19 +37,19 @@ export function refreshCalendar (state = store()) {
 function formatSlotsForStorage (slots) {
 	return slots.reduce((slots, slot) => {
 		const d = new Date(slot.date.replace(" ", "T") + "Z");
-		d.setSeconds(0);
-		d.setMilliseconds(0);
+		d.setUTCSeconds(0);
+		d.setUTCMilliseconds(0);
 
 		const fSlot = {};
 
 		fSlot.date = d;
-		fSlot.day = fSlot.date.getDay();
-		fSlot.hour = fSlot.date.getHours();
-		fSlot.minute = fSlot.date.getMinutes();
+		fSlot.day = fSlot.date.getUTCDay();
+		fSlot.hour = fSlot.date.getUTCHours();
+		fSlot.minute = fSlot.date.getUTCMinutes();
 
-		const year = fSlot.date.getFullYear()
-			, month = fSlot.date.getMonth() + 1
-			, date = fSlot.date.getDate()
+		const year = fSlot.date.getUTCFullYear()
+			, month = fSlot.date.getUTCMonth() + 1
+			, date = fSlot.date.getUTCDate()
 			, key = fSlot.date.getTime();
 
 		if (!slots.hasOwnProperty(year))
