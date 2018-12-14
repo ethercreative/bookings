@@ -1,3 +1,7 @@
+## 1.0.0-alpha.22 - 2018-12-14
+### Fixed
+- Fixed booked tickets not being deleted if qty is reduced
+
 ## 1.0.0-alpha.21 - 2018-12-06
 ### Fixed
 - Event calendar UI now shows the dates correctly, ignoring timezones.

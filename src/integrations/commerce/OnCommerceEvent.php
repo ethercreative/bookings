@@ -188,7 +188,7 @@ class OnCommerceEvent
 		// Create the booked tickets
 		$bookedTickets = [];
 
-		$i = $lineItem->qty;
+		$i = (int) $lineItem->qty;
 
 		// Find any existing tickets to update
 		if ($isNew === false)
@@ -206,8 +206,9 @@ class OnCommerceEvent
 
 		if ($previousTicketCount > $i)
 		{
-			while (--$previousTicketCount > $i)
+			while ($previousTicketCount > $i)
 			{
+				$previousTicketCount--;
 				$craft->elements->deleteElement($bookedTickets[$previousTicketCount]);
 				unset($bookedTickets[$previousTicketCount]);
 			}
