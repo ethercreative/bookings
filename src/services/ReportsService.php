@@ -23,7 +23,7 @@ use ether\bookings\records\BookingRecord;
 class ReportsService extends Component
 {
 
-	public function allSlotsForEvent ($eventId)
+	public function allSlotsForEvent ($eventId, $slot = null)
 	{
 		$slots = (new Query())
 			->select([
@@ -38,7 +38,12 @@ class ReportsService extends Component
 			->where([
 				'slots.[[eventId]]' => $eventId,
 				'bookings.[[status]]' => Booking::STATUS_COMPLETED,
-			])
+			]);
+
+		if ($slot)
+			$slots = $slots->andWhere(['slots.[[date]]' => $slot]);
+
+		$slots = $slots
 			->leftJoin(
 				BookingRecord::$tableName . ' bookings',
 				'slots.[[bookingId]] = bookings.[[id]]'

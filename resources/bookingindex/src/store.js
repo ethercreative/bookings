@@ -1,5 +1,6 @@
 import Vuex from 'vuex';
 import { get } from './helpers/fetch';
+import formatDate from './helpers/formatDate';
 
 export default new Vuex.Store({
 
@@ -10,6 +11,11 @@ export default new Vuex.Store({
 
 		events: {},
 		sortedEventIds: [],
+
+		// Slots
+		// ---------------------------------------------------------------------
+
+		slotsByEventId: {},
 
 		// Bookings
 		// ---------------------------------------------------------------------
@@ -48,6 +54,13 @@ export default new Vuex.Store({
 			};
 		},
 
+		// Slots
+		// ---------------------------------------------------------------------
+
+		storeSlotsByEventId (state, { eventId, slots }) {
+			state.slotsByEventId[eventId] = slots;
+		},
+
 		// Bookings
 		// ---------------------------------------------------------------------
 
@@ -78,15 +91,18 @@ export default new Vuex.Store({
 				return a;
 			}, { byId: {}, byEventId: {} });
 
-			state.bookings = {
-				...state.bookings,
-				...byId,
-			};
+			// state.bookings = {
+			// 	...state.bookings,
+			// 	...byId,
+			// };
+			//
+			// state.bookingsByEventId = {
+			// 	...state.bookingsByEventId,
+			// 	...byEventId,
+			// };
 
-			state.bookingsByEventId = {
-				...state.bookingsByEventId,
-				...byEventId,
-			};
+			state.bookings = byId;
+			state.bookingsByEventId = byEventId;
 		},
 
 	},
@@ -114,6 +130,17 @@ export default new Vuex.Store({
 			});
 		},
 
+		async getSlotsForEvent ({ commit }, { eventId }) {
+			const { slots: rawSlots } = await get('bookings/api/get-event-slots', { eventId });
+
+			const slots = rawSlots.map(({ date }) => ({
+				label: formatDate(new Date(date), window.bookingsDateTimeFormat),
+				value: date,
+			}));
+
+			commit('storeSlotsByEventId', { eventId, slots });
+		},
+
 		// Bookings
 		// ---------------------------------------------------------------------
 
@@ -122,8 +149,12 @@ export default new Vuex.Store({
 			commit('storeBooking', booking);
 		},
 
-		async getBookings ({ commit }, { eventId }) {
-			const bookings = await get('bookings/api/get-bookings', { eventId });
+		async getBookings ({ commit }, { eventId, slot = null, query = null }) {
+			const bookings = await get('bookings/api/get-bookings', {
+				eventId,
+				slot,
+				query,
+			});
 			commit('storeBookings', bookings);
 		},
 

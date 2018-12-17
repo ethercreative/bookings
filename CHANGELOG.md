@@ -1,3 +1,7 @@
+## 1.0.0-alpha.23 - 2018-12-17
+### Added
+- It's now possible to filter event bookings by slot (this also effects the export)
+
 ## 1.0.0-alpha.22 - 2018-12-14
 ### Fixed
 - Fixed booked tickets not being deleted if qty is reduced

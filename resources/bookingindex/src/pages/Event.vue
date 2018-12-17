@@ -18,11 +18,21 @@ export default class Event extends Vue {
 	busy = false;
 	activeDate = new Date();
 
+	query = null;
+	slot = null;
+
 	// Getters
 	// =========================================================================
 
 	get event () {
 		return this.$store.state.events[this.$route.params.eventId];
+	}
+
+	get slots () {
+		return [
+			{ label: 'All Slots', value: 'null' },
+			...this.$store.state.slotsByEventId[this.$route.params.eventId] || []
+		];
 	}
 
 	get allBookings () {
@@ -43,6 +53,7 @@ export default class Event extends Vue {
 		this.busy = true;
 
 		await this.$store.dispatch('getEvent', { eventId });
+		await this.$store.dispatch('getSlotsForEvent', { eventId });
 		await this.$store.dispatch('getBookings', { eventId });
 
 		this.busy = false;
@@ -51,9 +62,16 @@ export default class Event extends Vue {
 	// Actions
 	// =========================================================================
 
-	search (query, done) {
-		// TODO: Search
-		setTimeout(done, 1000);
+	async search () {
+		this.busy = true;
+
+		await this.$store.dispatch('getBookings', {
+			eventId: this.$route.params.eventId,
+			slot: this.slot,
+			query: this.query,
+		});
+
+		this.busy = false;
 	}
 
 	async export () {
@@ -61,7 +79,10 @@ export default class Event extends Vue {
 		const a = document.createElement('a');
 		a.setAttribute(
 			'href',
-			Craft.getActionUrl('bookings/api/export') + '&eventId=' + eventId
+			Craft.getActionUrl('bookings/api/export')
+			+ '&eventId=' + eventId
+			+ '&slot=' + encodeURI(this.slot)
+			+ '&query=' + encodeURI(this.query)
 		);
 		a.setAttribute(
 			'download',
@@ -75,12 +96,14 @@ export default class Event extends Vue {
 	// Events
 	// =========================================================================
 
-	onSelectChange () {
-		// TODO: Filter
-		this.busy = true;
-		setTimeout(() => {
-			this.busy = false;
-		}, 1000);
+	onSelectChange (e) {
+		this.slot = e.target.value;
+		this.search();
+	}
+
+	onSearchChange (query) {
+		this.query = query;
+		this.search();
 	}
 
 	// Render
@@ -111,11 +134,7 @@ export default class Event extends Vue {
 				<div class={this.$style.filter}>
 					<Select
 						onChange={this.onSelectChange}
-						options={[
-							{ label: 'All Slots', value: '*' },
-							{ label: 'All Slots for 22nd October', value: '*:2018-10-1' },
-							{ label: '10:00 - 22nd October', value: '10:00' },
-						]}
+						options={this.slots}
 					/>
 					<Search
 						onSearch={this.search}

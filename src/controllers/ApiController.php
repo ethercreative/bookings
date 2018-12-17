@@ -129,7 +129,10 @@ class ApiController extends Controller
 		$request = \Craft::$app->request;
 		$eventId = $request->getRequiredParam('eventId');
 		$offset  = $request->getParam('offset');
-		$slot    = $request->getParam('slot');
+		$slot    = $request->getParam('slot', null);
+
+		if ($slot === 'null')
+			$slot = null;
 
 		if ($slot !== null)
 			$slot = DateHelper::toUTCDateTime($slot);
@@ -179,14 +182,31 @@ class ApiController extends Controller
 		return $this->asJson(['success' => true]);
 	}
 
+	public function actionGetEventSlots ()
+	{
+		$eventId = \Craft::$app->request->getRequiredParam('eventId');
+		$eventRecord = EventRecord::findOne(['id' => $eventId]);
+
+		if (!$eventRecord)
+			return $this->asErrorJson('Unable to find Event Record');
+
+		$event = Event::fromRecord($eventRecord);
+
+		return $this->asJson(['slots' => $event->getAllSlots()]);
+	}
+
 	// Export
 	// -------------------------------------------------------------------------
 
 	public function actionExport ()
 	{
 		$eventId = \Craft::$app->request->getRequiredParam('eventId');
+		$slot = \Craft::$app->request->getParam('slot');
 
-		$slots = Bookings::getInstance()->reports->allSlotsForEvent($eventId);
+		if ($slot === 'null')
+			$slot = null;
+
+		$slots = Bookings::getInstance()->reports->allSlotsForEvent($eventId, $slot);
 
 		if (empty($slots))
 			exit();
