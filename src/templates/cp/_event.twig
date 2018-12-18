@@ -1,0 +1,18 @@
+{% extends '@bookings/cp/_layout.twig' %}
+
+{% set title = event.title %}
+
+{% block bookingMain %}
+
+	{% embed '@bookings/cp/_components/header.twig' with {
+		header: event.title,
+		description: '[Maecenas faucibus mollis interdum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.]',
+		to: siteUrl('/admin/bookings'),
+		back: 'Back to events'
+	} only %}
+		{% block children %}
+			[TODO: Calendar widget]
+		{% endblock %}
+	{% endembed %}
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends '@bookings/cp/_layout.twig' %}
+
+{% set title = 'Bookings'|t('bookings') %}
+
+{% block bookingMain %}
+
+	{% embed '@bookings/cp/_components/header.twig' with {
+		header: 'Bookings',
+		description: 'Welcome to bookings! You made a smart choice on how to manage your bookings with Craft. Click on the event below to view the attendance for each of the bookable slots or in total. Create new bookable products using the field type.',
+	} only %}
+		{% block children %}
+			<nav class="b--tabs">
+				<ul>
+					<li><a href="#" class="active">Active Events</a></li>
+					<li><a href="#">Past Events</a></li>
+				</ul>
+			</nav>
+		{% endblock %}
+	{% endembed %}
+
+	{% include '@bookings/cp/_components/search.twig' with {
+		placeholder: 'Search events...'
+	} only %}
+
+	{% include '@bookings/cp/_components/deck.twig' with {
+		cards: events,
+	} only %}
+
+{% endblock %}

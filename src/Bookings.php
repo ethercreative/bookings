@@ -13,6 +13,7 @@ namespace ether\bookings;
 use craft\base\Plugin;
 use craft\events\PluginEvent;
 use craft\events\RegisterComponentTypesEvent;
+use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\services\Fields;
@@ -21,12 +22,14 @@ use craft\services\Updates;
 use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
+use craft\web\View;
 use ether\bookings\controllers\DefaultController;
 use ether\bookings\fields\EventField;
 use ether\bookings\fields\TicketField;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
 use ether\bookings\integrations\commerce\OnCommerceEvent;
 use ether\bookings\models\Settings;
+use ether\bookings\services\ApiService;
 use ether\bookings\services\AvailabilityService;
 use ether\bookings\services\BookingsService;
 use ether\bookings\services\EventsService;
@@ -47,6 +50,7 @@ use yii\base\Model;
  * @property BookingsService $bookings
  * @property SlotsService $slots
  * @property ReportsService $reports
+ * @property ApiService $api
  *
  * @property Settings $settings
  *
@@ -84,6 +88,7 @@ class Bookings extends Plugin
 			'bookings' => BookingsService::class,
 			'slots' => SlotsService::class,
 			'reports' => ReportsService::class,
+			'api' => ApiService::class,
 		]);
 
 		// Events
@@ -123,6 +128,16 @@ class Bookings extends Plugin
 			Fields::class,
 			Fields::EVENT_REGISTER_FIELD_TYPES,
 			[$this, 'onRegisterFieldTypes']
+		);
+
+		Event::on(
+			View::class,
+			View::EVENT_REGISTER_CP_TEMPLATE_ROOTS,
+			function (RegisterTemplateRootsEvent $event) {
+				// Add @bookings template root to match custom PHPStorm
+				// twig namespace
+				$event->roots['@bookings'] = __DIR__ . '/templates';
+			}
 		);
 
 		if (class_exists(\craft\commerce\elements\Order::class))
@@ -206,7 +221,7 @@ class Bookings extends Plugin
 	public function onRegisterCpUrlRules (RegisterUrlRulesEvent $event)
 	{
 		$event->rules['bookings'] = 'bookings/cp/index';
-		$event->rules['bookings/<url:(.*)>'] = 'bookings/cp/index';
+		$event->rules['bookings/<eventId:\d>'] = 'bookings/cp/event';
 		$event->rules['/cpresources/bookings/<fileName>'] = 'bookings/cp/resource';
 	}
 

@@ -1,0 +1,39 @@
+@import "variables";
+
+.b--header {
+	position: relative;
+	z-index: 1;
+
+	display: grid;
+	grid-template-columns: repeat(12, 1fr);
+	grid-gap: 30px;
+	padding: 40px 30px;
+
+	background-color: #F1F5F8;
+	border-bottom: 1px solid #D9DDE2;
+}
+
+.b--heading {
+	grid-column: span 6;
+
+	a {
+		display: inline-block;
+		margin-bottom: 12px;
+
+		color: #75889E;
+		font-size: 14px;
+		letter-spacing: 0;
+		line-height: 26px;
+	}
+
+	h1 {
+		font-size: 44px;
+	}
+
+	p {
+		color: #75889E;
+		font-size: 14px;
+		letter-spacing: 0;
+		line-height: 26px;
+	}
+}

@@ -1,0 +1,66 @@
+@import "variables";
+
+.b--search {
+	position: relative;
+
+	display: block;
+	margin: 30px;
+	flex-grow: 1;
+
+	svg {
+		position: absolute;
+		top: 50%;
+		left: 13px;
+
+		pointer-events: none;
+		transform: translateY(-50%);
+	}
+
+	path {
+		fill: none;
+		stroke: #D9DDE2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 2;
+	}
+
+	input {
+		display: block;
+		width: 100%;
+		padding: 10px 0;
+
+		color: @text-color;
+		font-size: 14px;
+		font-family: @font-family;
+		text-indent: 40px;
+
+		appearance: none;
+		background: #fff;
+		border: 1px solid #D9DDE2;
+		border-radius: 3px;
+
+		transition: border-color 0.15s ease;
+
+		&:focus {
+			border-color: @primary;
+		}
+	}
+
+	span {
+		position: absolute;
+		top: 50%;
+		right: 10px;
+		transform: translateY(-50%);
+
+		pointer-events: none;
+	}
+
+	&-spinner {
+		transition: opacity 0.15s ease;
+		pointer-events: none;
+
+		&.hide {
+			opacity: 0;
+		}
+	}
+}

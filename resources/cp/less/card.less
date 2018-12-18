@@ -1,0 +1,43 @@
+@import "variables";
+
+.b--card {
+	text-decoration: none !important;
+
+	background: #fff;
+	border: 1px solid #D9DDE2;
+	border-radius: 3px;
+	box-shadow: 0 16px 24px 0 rgba(48, 49, 51, 0.10);
+	overflow: hidden;
+
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+	&:hover {
+		transform: translateY(-10px);
+		box-shadow: 0 30px 24px 0 rgba(48, 49, 51, 0.10);
+	}
+
+	&-image {
+		display: block;
+		width: 100%;
+		height: 120px;
+	}
+
+	&-content {
+		display: block;
+		padding: 20px;
+
+		&:last-child {
+			border-top: 1px solid #D9DDE2;
+		}
+	}
+
+	&-name {
+		display: block;
+
+		margin-bottom: 7px;
+		color: #3F4549;
+		font-size: 22px;
+		letter-spacing: 0;
+		line-height: 28px;
+	}
+}

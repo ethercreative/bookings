@@ -1,0 +1,11 @@
+<header class="b--header">
+	<div class="b--heading">
+		{% if to is defined and back is defined %}
+			<a href="{{ to }}">← {{ back }}</a>
+		{% endif %}
+		<h1>{{ header }}</h1>
+		<p>{{ description }}</p>
+	</div>
+
+	{% block children %}{% endblock %}
+</header>

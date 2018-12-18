@@ -10,10 +10,9 @@ namespace ether\bookings\controllers;
 
 use craft\helpers\StringHelper;
 use craft\helpers\UrlHelper;
-use craft\i18n\Locale;
 use craft\web\Controller;
-use craft\web\View;
 use ether\bookings\Bookings;
+use ether\bookings\web\assets\cp\BookingsCpAsset;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use ether\bookings\web\assets\bookingindex\BookingIndexAsset;
@@ -47,21 +46,21 @@ class CpController extends Controller
 	public function actionIndex ()
 	{
 		$view = $this->getView();
+		$view->registerAssetBundle(BookingsCpAsset::class);
 
-		$dateTimeFormat = \Craft::$app->locale->getDateTimeFormat(
-			Locale::LENGTH_SHORT,
-			Locale::FORMAT_PHP
-		);
+		return $this->renderTemplate('bookings/cp/index', [
+			'events' => Bookings::getInstance()->api->getEvents(),
+		]);
+	}
 
-		$js = <<<JS
-window.bookingsBaseUrl = '{$this->_getBookingsBaseUrl()}';
-window.bookingsDateTimeFormat = '{$dateTimeFormat}';
-JS;
+	public function actionEvent (int $eventId)
+	{
+		$view = $this->getView();
+		$view->registerAssetBundle(BookingsCpAsset::class);
 
-		$view->registerJs($js, View::POS_BEGIN);
-		$view->registerAssetBundle(BookingIndexAsset::class);
-
-		return $this->renderTemplate('bookings/index');
+		return $this->renderTemplate('bookings/cp/_event', [
+			'event' => Bookings::getInstance()->api->getEventById($eventId),
+		]);
 	}
 
 	/**
@@ -92,18 +91,6 @@ JS;
 		$url = $baseAssetsUrl . '/' . $fileName;
 
 		return $this->redirect($url);
-	}
-
-	// Helpers
-	// =========================================================================
-
-	private function _getBookingsBaseUrl ()
-	{
-		$url      = UrlHelper::url('bookings');
-		$hostInfo = \Craft::$app->getRequest()->getHostInfo();
-		$hostInfo = StringHelper::ensureRight($hostInfo, '/');
-
-		return (string)substr($url, strlen($hostInfo) - 1);
 	}
 
 }

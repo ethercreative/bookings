@@ -1,0 +1,32 @@
+<div class="b--deck">
+	{% for card in cards %}
+		{% set i = loop.index0 %}
+		<a href="{{ siteUrl('/admin/bookings/' ~ card.id) }}" class="b--card">
+			<span
+				class="b--card-image"
+				style="background:url(https://source.unsplash.com/400x130/?{{ card.title|url_encode }}&sig={{ i }}) center / cover"
+			></span>
+			<span class="b--card-content">
+				<span class="b--card-name">
+					{{ card.title }}
+				</span>
+
+				<ul class="b--dates">
+					{% for i in 0..2 %}
+						<li class="b--dates-date">
+							{{ i + 10 }}/01/19
+						</li>
+					{% endfor %}
+					<li>and 2 more</li>
+				</ul>
+
+				<span class="b--progress-bar">
+					<span
+						class="b--progress-fill"
+						style="width:{{ (i / 10) * 100 }}%"
+					></span>
+				</span>
+			</span>
+		</a>
+	{% endfor %}
+</div>
