@@ -1,4 +1,4 @@
-<script>
+<script type="text/jsx">
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import Header from '../components/BookingsHeader';
@@ -51,7 +51,7 @@ export default class Booking extends Vue {
 			, end   = new Date(this.activeTicket.startDate.getTime());
 
 		start.setDate(0);
-		end.setMonth(end.getMonth() + 1);
+		end.setMonth(end.getMonth() + 6);
 		end.setDate(0);
 
 		this.busy = true;
@@ -314,7 +314,7 @@ export default class Booking extends Vue {
 	}
 
 	_renderEditModal () {
-		if (this.activeTicket === null)
+		if (this.activeTicket === null || this.availability === null)
 			return null;
 
 		return (

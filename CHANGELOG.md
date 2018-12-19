@@ -1,9 +1,10 @@
-## [Unreleased] 1.0.0-alpha.24
+## 1.0.0-alpha.24 - 2018-12-19
 ### Fixed
 - Custom fields section of booked ticket view in CP no longer errors if a ticket doesn't have any custom fields.
 
 ### Improved
 - Slot export will now include custom ticket field content (only if the fields have columns on the content table)
+- It's now possible to switch between available months when editing a booking
 
 ## 1.0.0-alpha.23 - 2018-12-17
 ### Added

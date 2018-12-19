@@ -1,4 +1,4 @@
-<script>
+<script type="text/jsx">
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import formatDate from '../helpers/formatDate';
@@ -37,11 +37,36 @@ export default class MiniCalendar extends Vue {
 	offset = 0;
 	days = 0;
 	dateTemplate = null;
+	activeDate = null;
+	months = [];
+	activeMonthIndex = 0;
+
+	// Getters
+	// =========================================================================
+
+	get hasNextMonth () {
+		return this.months.length - 1 > this.activeMonthIndex;
+	}
+
+	get hasPrevMonth () {
+		return this.activeMonthIndex > 0;
+	}
 
 	// Vue
 	// =========================================================================
 
 	beforeMount () {
+		this.activeDate = new Date(this.$props.activeDate);
+		this.activeDate.setDate(1);
+		this.cacheMonths();
+		this.cacheDays();
+	}
+
+	// Actions
+	// =========================================================================
+
+	updateDays () {
+		this.activeDate = this.months[this.activeMonthIndex];
 		this.cacheDays();
 	}
 
@@ -53,6 +78,16 @@ export default class MiniCalendar extends Vue {
 		this.$props.whenDayClick && this.$props.whenDayClick(date);
 	}
 
+	onPrevMonthClick () {
+		this.activeMonthIndex--;
+		this.updateDays();
+	}
+
+	onNextMonthClick () {
+		this.activeMonthIndex++;
+		this.updateDays();
+	}
+
 	// Render
 	// =========================================================================
 
@@ -60,8 +95,17 @@ export default class MiniCalendar extends Vue {
 		return (
 			<div class={this.$style.calendar}>
 				<header class={this.$style.header}>
-					{/* TODO: Switch between available months */}
+					{this.hasPrevMonth ? (
+						<button type="button" onClick={this.onPrevMonthClick}>
+							{'<'}
+						</button>
+					) : <span />}
 					{formatDate(this.$props.activeDate, 'F Y')}
+					{this.hasNextMonth ? (
+						<button type="button" onClick={this.onNextMonthClick}>
+							{'>'}
+						</button>
+					) : <span />}
 				</header>
 
 				<ul class={[this.$style.grid, this.$style.week]}>
@@ -115,9 +159,30 @@ export default class MiniCalendar extends Vue {
 	// Helpers
 	// =========================================================================
 
+	cacheMonths () {
+		if (!this.$props.availability)
+			return;
+
+		const keys = Object.keys(this.$props.availability);
+
+		const first = new Date(keys[0])
+			, last  = new Date(keys[keys.length - 1]);
+
+		first.setDate(1);
+		last.setDate(1);
+
+		let d = first;
+
+		do {
+			this.months.push(d);
+			d = new Date(d);
+			d.setMonth(d.getMonth() + 1);
+		} while (d.getTime() <= last.getTime());
+	}
+
 	cacheDays () {
-		const start = new Date(this.$props.activeDate)
-			, end   = new Date(this.$props.activeDate);
+		const start = new Date(this.activeDate)
+			, end   = new Date(this.activeDate);
 
 		start.setDate(1);
 		end.setMonth(end.getMonth() + 1);
@@ -152,6 +217,9 @@ export default class MiniCalendar extends Vue {
 	}
 
 	.header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 		margin-bottom: @spacer/2;
 
 		color: @text-color;
@@ -159,6 +227,23 @@ export default class MiniCalendar extends Vue {
 		font-family: @font-family;
 		letter-spacing: 0;
 		text-align: center;
+
+		button,
+		span {
+			display: inline-block;
+			width: 24px;
+			height: 24px;
+		}
+
+		button {
+			color: #758EA1;
+			font-weight: bold;
+
+			appearance: none;
+			background: none;
+			border: none;
+			cursor: pointer;
+		}
 	}
 
 	.grid {
