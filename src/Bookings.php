@@ -18,18 +18,15 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\services\Fields;
 use craft\services\Plugins;
-use craft\services\Updates;
 use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use craft\web\View;
-use ether\bookings\controllers\DefaultController;
 use ether\bookings\fields\EventField;
 use ether\bookings\fields\TicketField;
 use ether\bookings\integrations\commerce\OnCommerceUninstall;
 use ether\bookings\integrations\commerce\OnCommerceEvent;
 use ether\bookings\models\Settings;
-use ether\bookings\services\ApiService;
 use ether\bookings\services\AvailabilityService;
 use ether\bookings\services\BookingsService;
 use ether\bookings\services\EventsService;
@@ -50,7 +47,6 @@ use yii\base\Model;
  * @property BookingsService $bookings
  * @property SlotsService $slots
  * @property ReportsService $reports
- * @property ApiService $api
  *
  * @property Settings $settings
  *
@@ -88,7 +84,6 @@ class Bookings extends Plugin
 			'bookings' => BookingsService::class,
 			'slots' => SlotsService::class,
 			'reports' => ReportsService::class,
-			'api' => ApiService::class,
 		]);
 
 		// Events

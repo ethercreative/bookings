@@ -24,6 +24,9 @@ use ether\bookings\records\EventRecord;
 class EventsService extends Component
 {
 
+	// Getters
+	// =========================================================================
+
 	/**
 	 * Get an event by its ID
 	 *
@@ -44,9 +47,44 @@ class EventsService extends Component
 	}
 
 	/**
+	 * Returns the events, paginated
+	 *
+	 * TODO: Make searchable
+	 * TODO: Split between current / future and past
+	 *
+	 * @param int $page - The page to get
+	 *
+	 * @return array
+	 */
+	public function getPaginatedEvents ($page = 0)
+	{
+		$limit = 20;
+
+		$events =
+			EventRecord::find()
+				->orderBy('nextSlot desc')
+				->limit($limit)
+				->offset($limit * $page)
+				->with('element')
+				->all();
+
+		$events = Event::fromRecords($events);
+
+		$total = EventRecord::find()->count();
+		$pages = ceil($total / $limit);
+
+		return compact('events', 'pages');
+	}
+
+	// Actions
+	// =========================================================================
+
+	/**
 	 * Refreshes the cached next available slot DB column
 	 *
 	 * @param bool $includeNull
+	 *
+	 * @throws \Exception
 	 */
 	public function refreshNextAvailableSlot (bool $includeNull = false)
 	{

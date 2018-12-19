@@ -4,11 +4,11 @@
 		<a href="{{ siteUrl('/admin/bookings/' ~ card.id) }}" class="b--card">
 			<span
 				class="b--card-image"
-				style="background:url(https://source.unsplash.com/400x130/?{{ card.title|url_encode }}&sig={{ i }}) center / cover"
+				style="background:url(https://source.unsplash.com/400x130/?{{ card.element.title|url_encode }}&sig={{ i }}) center / cover"
 			></span>
 			<span class="b--card-content">
 				<span class="b--card-name">
-					{{ card.title }}
+					{{ card.element.title }}
 				</span>
 
 				<ul class="b--dates">

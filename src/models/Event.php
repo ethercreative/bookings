@@ -103,6 +103,13 @@ class Event extends Model
 			$this->exceptions = $attributes['exceptions'];
 	}
 
+	/**
+	 * Populates an Event model from the given EventRecord
+	 *
+	 * @param EventRecord $record
+	 *
+	 * @return Event
+	 */
 	public static function fromRecord (EventRecord $record)
 	{
 		$model = new Event();
@@ -118,6 +125,20 @@ class Event extends Model
 		$model->exceptions = $record->exceptions;
 
 		return $model;
+	}
+
+	/**
+	 * Maps the given array of EventRecord's to Event models
+	 *
+	 * @param EventRecord[] $records
+	 *
+	 * @return Event[]
+	 */
+	public static function fromRecords (array $records)
+	{
+		return array_map(function (EventRecord $record) {
+			return self::fromRecord($record);
+		}, $records);
 	}
 
 	// Methods: Getters & Setters
@@ -196,6 +217,11 @@ class Event extends Model
 		return $set[$set->count() - 1];
 	}
 
+	/**
+	 * TODO: Eager-loading
+	 *
+	 * @return \craft\base\ElementInterface|null
+	 */
 	public function getElement ()
 	{
 		return \Craft::$app->elements->getElementById($this->elementId);
@@ -321,6 +347,7 @@ class Event extends Model
 	 * @param \DateTime|null $from - Get the next available slot from this date
 	 *
 	 * @return \DateTime|null
+	 * @throws \Exception
 	 */
 	public function getNextAvailableSlot (\DateTime $from = null)
 	{

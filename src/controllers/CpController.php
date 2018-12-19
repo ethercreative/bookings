@@ -48,9 +48,10 @@ class CpController extends Controller
 		$view = $this->getView();
 		$view->registerAssetBundle(BookingsCpAsset::class);
 
-		return $this->renderTemplate('bookings/cp/index', [
-			'events' => Bookings::getInstance()->api->getEvents(),
-		]);
+		return $this->renderTemplate(
+			'bookings/cp/index',
+			Bookings::getInstance()->events->getPaginatedEvents()
+		);
 	}
 
 	public function actionEvent (int $eventId)
