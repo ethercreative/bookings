@@ -1,3 +1,10 @@
+## [Unreleased] 1.0.0-alpha.24
+### Fixed
+- Custom fields section of booked ticket view in CP no longer errors if a ticket doesn't have any custom fields.
+
+### Improved
+- Slot export will now include custom ticket field content (only if the fields have columns on the content table)
+
 ## 1.0.0-alpha.23 - 2018-12-17
 ### Added
 - It's now possible to filter event bookings by slot (this also effects the export)

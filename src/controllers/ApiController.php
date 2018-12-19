@@ -206,7 +206,7 @@ class ApiController extends Controller
 		if ($slot === 'null')
 			$slot = null;
 
-		$slots = Bookings::getInstance()->reports->allSlotsForEvent($eventId, $slot);
+		$slots = Bookings::getInstance()->reports->allSlotsForEvent($eventId, $slot);;
 
 		if (empty($slots))
 			exit();

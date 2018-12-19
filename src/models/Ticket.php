@@ -63,6 +63,11 @@ class Ticket extends Model
 	// Methods
 	// =========================================================================
 
+	/**
+	 * @param TicketRecord $record
+	 *
+	 * @return Ticket
+	 */
 	public static function fromRecord (TicketRecord $record)
 	{
 		$model = new Ticket();
@@ -75,6 +80,18 @@ class Ticket extends Model
 		$model->fieldLayoutId = $record->fieldLayoutId;
 
 		return $model;
+	}
+
+	/**
+	 * @param array $records
+	 *
+	 * @return Ticket[]
+	 */
+	public static function fromRecords (array $records)
+	{
+		return array_map(function ($record) {
+			return self::fromRecord($record);
+		}, $records);
 	}
 
 	public function rules ()
@@ -117,6 +134,19 @@ class Ticket extends Model
 			return $this->_field;
 
 		return $this->_field = \Craft::$app->fields->getFieldById($this->fieldId);
+	}
+
+	/**
+	 * @return array|\craft\base\FieldInterface[]|\craft\base\Field[]
+	 */
+	public function getFieldsFromLayout ()
+	{
+		if (!$this->fieldLayoutId)
+			return [];
+
+		$fields = \Craft::$app->fields->getFieldsByLayoutId($this->fieldLayoutId);
+
+		return $fields;
 	}
 
 }

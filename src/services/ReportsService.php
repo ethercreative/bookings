@@ -9,10 +9,14 @@
 namespace ether\bookings\services;
 
 use craft\base\Component;
+use craft\base\Field;
 use craft\db\Query;
+use ether\bookings\Bookings;
 use ether\bookings\elements\Booking;
+use ether\bookings\models\Ticket;
 use ether\bookings\records\BookedSlotRecord;
 use ether\bookings\records\BookingRecord;
+use ether\bookings\records\EventRecord;
 
 /**
  * Class ReportsService
@@ -25,15 +29,27 @@ class ReportsService extends Component
 
 	public function allSlotsForEvent ($eventId, $slot = null)
 	{
+		$eventRecord = EventRecord::findOne(['id' => $eventId]);
+		$tickets = Ticket::fromRecords($eventRecord->getTickets()->all());
+
+		$select = [
+			'slots.[[bookingId]]',
+			'slots.[[date]] as slot',
+			'bookings.[[orderId]]',
+			'bookings.[[dateBooked]]',
+			'orders.[[email]]',
+			'CONCAT(addresses.[[firstName]], \' \', addresses.[[lastName]]) as name',
+		];
+
+		$prefix = \Craft::$app->fields->oldFieldColumnPrefix;
+
+		foreach ($tickets as $ticket)
+			foreach ($ticket->getFieldsFromLayout() as $field)
+				if ($field::hasContentColumn())
+					$select[] = 'content.[[' . $prefix . $field->handle . ']]';
+
 		$slots = (new Query())
-			->select([
-				'slots.[[bookingId]]',
-				'slots.[[date]] as slot',
-				'bookings.[[orderId]]',
-				'bookings.[[dateBooked]]',
-				'orders.[[email]]',
-				'CONCAT(addresses.[[firstName]], \' \', addresses.[[lastName]]) as name',
-			])
+			->select($select)
 			->from(BookedSlotRecord::$tableName . ' slots')
 			->where([
 				'slots.[[eventId]]' => $eventId,
@@ -55,6 +71,10 @@ class ReportsService extends Component
 			->leftJoin(
 				'{{%commerce_addresses}} addresses',
 				'orders.[[billingAddressId]] = addresses.[[id]]'
+			)
+			->leftJoin(
+				'{{%content}} content',
+				'content.[[elementId]] = slots.[[bookedTicketId]]'
 			)
 			->orderBy('slots.[[date]] ASC, orders.[[email]] ASC')
 			->all();
