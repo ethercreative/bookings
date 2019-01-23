@@ -110,7 +110,8 @@ export default class Booking extends Vue {
 			return a;
 		}, []);
 
-		this.selectedNewSlot = new Date(this.slots[0].value);
+
+		this.selectedNewSlot = new Date(this.slots[0].value + 'Z');
 		this.busy = false;
 	}
 

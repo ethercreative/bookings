@@ -1,3 +1,9 @@
+## [Unreleased] 1.0.0-alpha.25
+
+### Fixed
+- Fixed issue where changing the date on a booking might send a date in the 
+wrong timezone.
+
 ## 1.0.0-alpha.24 - 2018-12-19
 ### Fixed
 - Custom fields section of booked ticket view in CP no longer errors if a ticket doesn't have any custom fields.
