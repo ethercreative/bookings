@@ -1,8 +1,10 @@
-## [Unreleased] 1.0.0-alpha.25
+## 1.0.0-alpha.25
 
 ### Fixed
 - Fixed issue where changing the date on a booking might send a date in the 
-wrong timezone.
+wrong timezone. [#29]
+
+[#29]: https://github.com/ethercreative/bookings/issues/29
 
 ## 1.0.0-alpha.24 - 2018-12-19
 ### Fixed
