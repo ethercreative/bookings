@@ -1,0 +1,153 @@
+{% extends 'bookings/settings/_layout' %}
+{% import '_includes/forms' as forms %}
+
+{% block actionButton %}
+	<input type="hidden" name="action" value="bookings/event-types/save">
+	{{ redirectInput('bookings/settings/eventtypes') }}
+	{% if eventType.id %}
+		<input type="hidden" name="eventTypeId" value="{{ eventType.id }}">
+	{% endif %}
+
+	<input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
+{% endblock %}
+
+{% block content %}
+
+	<div id="event-type-settings">
+		{{ forms.textField({
+			first: true,
+			label: 'Name'|t('bookings'),
+			instructions: 'What this event type will be called in the CP.'|t('bookings'),
+			id: 'name',
+			name: 'name',
+			value: eventType.name,
+			errors: eventType.getErrors('name'),
+			autofocus: true,
+			required: true,
+			translatable: true,
+		}) }}
+
+		{{ forms.textField({
+			label: 'Handle'|t('bookings'),
+			instructions: 'How you\'ll refer to this event type in the templates.'|t('bookings'),
+			id: 'handle',
+			name: 'handle',
+			class: 'code',
+			value: eventType.handle,
+			errors: eventType.getErrors('handle'),
+			required: true,
+		}) }}
+
+		<hr>
+
+		{{ forms.checkboxField({
+			label: 'Show the Title field'|t('bookings'),
+			name: 'hasTitleField',
+			toggle: 'titleLabel-container',
+			reverseToggle: 'titleFormat-container',
+			checked: eventType.hasTitleField,
+		}) }}
+
+		<div id="titleLabel-container"{% if not eventType.hasTitleField %} class="hidden"{% endif %}>
+			{{ forms.textField({
+				label: 'Title Field Label'|t('bookings'),
+				instructions: 'What do you want the Title field to be called?'|t('bookings'),
+				id: 'titleLabel',
+				name: 'titleLabel',
+				value: eventType.titleLabel,
+				errors: eventType.getErrors('titleLabel'),
+				required: true,
+			}) }}
+		</div>
+
+		<div id="titleFormat-container"{% if eventType.hasTitleField %} class="hidden"{% endif %}>
+			{{ forms.textField({
+				label: 'Title Format'|t('bookings'),
+				instructions: 'What the auto-generated entry titles should look like. You can include tags that output entry properties, such as `{myCustomField}`.'|t('bookings'),
+				id: 'titleFormat',
+				name: 'titleFormat',
+				class: 'code',
+				value: eventType.titleFormat,
+				errors: eventType.getErrors('titleFormat'),
+				required: true,
+			}) }}
+		</div>
+
+		<hr>
+
+		{% set siteRows = [] %}
+		{% set siteErrors = eventType.getErrors('siteSettings') %}
+
+		{% for site in craft.app.sites.getAllSites() %}
+			{% set siteSettings = eventType.siteSettings[site.id] ?? null %}
+
+			{% if siteSettings %}
+				{% for attribute, errors in siteSettings.getErrors() %}
+					{% set siteErrors = siteErrors|merge(errors) %}
+				{% endfor %}
+			{% endif %}
+
+			{% set siteRows = siteRows|merge({
+				(site.handle): {
+					heading: site.name|t('site'),
+					uriFormat: {
+						value: siteSettings.uriFormat ?? null,
+						hasErrors: siteSettings.hasErrors('uriFormat') ?? false,
+					},
+					template: {
+						value: siteSettings.template ?? null,
+						hasErrors: siteSettings.hasErrors('template') ?? false,
+					},
+				}
+			}) %}
+		{% endfor %}
+
+		{{ forms.editableTableField({
+			label: 'Site Settings'|t('bookings'),
+			instructions: 'Configure the event type\'s site-specific settings.'|t('bookings'),
+			id: 'sites',
+			name: 'sites',
+			cols: {
+				heading: {
+					type: 'heading',
+					heading: 'Site'|t('app'),
+					class: 'thin',
+				},
+				uriFormat: {
+					type: 'singleline',
+					heading: 'Event Type URI Format'|t('bookings'),
+					info: 'What the Event Type URIs should look like for this site.'|t('bookings'),
+					placeholder: 'Leave blank if this Event Type doesn\'t have URLs'|t('bookings'),
+					code: true,
+				},
+				template: {
+					type: 'singleline',
+					heading: 'Template'|t('bookings'),
+					info: 'Which template should be loaded when an event\'s URL is requested'|t('bookings'),
+					code: true,
+				},
+			},
+			rows: siteRows,
+			staticRows: true,
+			errors: siteErrors|unique,
+		}) }}
+	</div>
+
+	<div id="event-fields" class="hidden">
+		{% include "_includes/fieldlayoutdesigner" with {
+			fieldLayout: eventType.getFieldLayout(),
+		} only %}
+	</div>
+
+{% endblock %}
+
+{% if newEventType %}
+	{% js %}
+		new Craft.HandleGenerator('#name', '#handle');
+
+		{% for site in craft.app.sites.getAllSites() %}
+			new Craft.UriFormatGenerator('#name', '#sites tr[data-id="{{ site.handle }}"] textarea[name$="[uriFormat]"]', { suffix: '/{slug}' });
+            new Craft.UriFormatGenerator('#name', '#sites tr[data-id="{{ site.handle }}"] textarea[name$="[template]"]', { suffix: '/_event' });
+		{% endfor %}
+	{% endjs %}
+{% endif %}

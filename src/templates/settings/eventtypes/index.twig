@@ -1,0 +1,59 @@
+{% extends 'bookings/settings/_layout' %}
+
+{% block actionButton %}
+	<a
+		href="{{ cpUrl('bookings/settings/eventtypes/new') }}"
+		class="btn submit add icon"
+	>
+		{{ 'New event type'|t('bookings') }}
+	</a>
+{% endblock %}
+
+{% block content %}
+	<div id="noeventtypes"{% if eventTypes|length %} class="hidden"{% endif %}>
+		<p>{{ 'No event types exist yet.'|t('bookings') }}</p>
+	</div>
+
+	{% if eventTypes|length %}
+		<table id="eventtypes" class="data fullwidth collapsible">
+			<thead>
+			<tr>
+				<th scope="col">{{ 'Name'|t('bookings') }}</th>
+				<th scope="col">{{ 'Handle'|t('bookings') }}</th>
+				<td class="thin"></td>
+			</tr>
+			</thead>
+			<tbody>
+			{% for eventType in eventTypes %}
+				<tr data-id="{{ eventType.id }}" data-name="{{ eventType.name }}">
+					<th scope="row" data-title="{{ 'Name'|t('bookings') }}">
+						<a href="{{ eventType.cpEditUrl }}">
+							{{ eventType.name }}
+						</a>
+					</th>
+					<td data-title="{{ 'Handle'|t('bookings') }}">
+						{{ eventType.handle }}
+					</td>
+					<td class="thin">
+						<a
+							class="delete icon"
+							role="button"
+							title="{{ 'Delete'|t('bookings') }}"
+						></a>
+					</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	{% endif %}
+{% endblock %}
+
+{% js %}
+const adminTable = new Craft.AdminTable({
+	tableSelector: '#eventtypes',
+	noObjectsSelector: '#noeventtypes',
+	newObjectBtnSelector: '#neweventTypecontainer',
+	deleteAction: 'bookings/event-types/delete',
+	confirmDeleteMessage: '{{ 'Are you sure you want to delete “{name}” and all its events? Please make sure you have a backup of your database before performing this destructive action.'|t('bookings') }}'
+});
+{% endjs %}
