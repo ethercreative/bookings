@@ -1,0 +1,42 @@
+{
+  "name": "ether/bookings",
+  "description": "An advanced booking plugin for Craft CMS and Craft Commerce",
+  "type": "craft-plugin",
+  "version": "1.0.0-alpha.25",
+  "keywords": [
+    "craft",
+    "cms",
+    "craftcms",
+    "craft-plugin",
+    "bookings",
+    "events"
+  ],
+  "support": {
+    "docs": "https://github.com/ethercreative/bookings/blob/master/README.md",
+    "issues": "https://github.com/ethercreative/bookings/issues"
+  },
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Ether Creative",
+      "homepage": "https://ethercreative.co.uk"
+    }
+  ],
+  "require": {
+    "craftcms/cms": "^3.0.0",
+    "rlanvin/php-rrule": "^1.6",
+    "ext-json": "*",
+    "dragonmantank/cron-expression": "^2.2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "ether\\bookings\\": "src/"
+    }
+  },
+  "extra": {
+    "name": "Bookings",
+    "handle": "bookings",
+    "changelogUrl": "https://raw.githubusercontent.com/ethercreative/bookings/master/CHANGELOG.md",
+    "class": "ether\\bookings\\Bookings"
+  }
+}
