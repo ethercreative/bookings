@@ -37,6 +37,10 @@ class BookingsCpAsset extends AssetBundle
 			'Bookings.js',
 		];
 
+		$this->css = [
+			'Bookings.css',
+		];
+
 		parent::init();
 	}
 

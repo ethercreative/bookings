@@ -107,7 +107,13 @@ class Bookings extends Plugin
 
 		$ret['label'] = Bookings::t('Bookings');
 
-		// TODO: Bookings
+		if ($user->checkPermission('bookings-manageBookings'))
+		{
+			$ret['subnav']['bookings'] = [
+				'label' => Bookings::t('Bookings'),
+				'url' => 'bookings/bookings',
+			];
+		}
 
 		if ($user->checkPermission('bookings-manageEvents'))
 		{
@@ -117,9 +123,21 @@ class Bookings extends Plugin
  			];
 		}
 
-		// TODO: Tickets
+		if ($user->checkPermission('bookings-manageTickets'))
+		{
+			$ret['subnav']['tickets'] = [
+				'label' => Bookings::t('Tickets'),
+				'url' => 'bookings/tickets',
+			];
+		}
 
-		// TODO: Resources
+		if ($user->checkPermission('bookings-manageResources'))
+		{
+			$ret['subnav']['resources'] = [
+				'label' => Bookings::t('Resources'),
+				'url' => 'bookings/resources',
+			];
+		}
 
 		if ($user->getIsAdmin())
 		{

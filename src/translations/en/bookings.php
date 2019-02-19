@@ -172,6 +172,7 @@ return [
 	'Date Updated'     => 'Date Updated',
 	'Availability'     => 'Availability',
 	'Tickets'          => 'Tickets',
+	'Resources'        => 'Resources',
 	'Save'             => 'Save',
 	'Delete'           => 'Delete',
 	'Enabled'          => 'Enabled',
