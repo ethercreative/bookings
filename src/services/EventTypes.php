@@ -10,10 +10,12 @@ namespace ether\bookings\services;
 
 use craft\base\Component;
 use craft\base\Field;
+use craft\db\Query;
 use craft\db\Table;
 use craft\events\ConfigEvent;
 use craft\events\DeleteSiteEvent;
 use craft\events\FieldEvent;
+use craft\events\SiteEvent;
 use craft\helpers\Db;
 use craft\helpers\ProjectConfig;
 use craft\helpers\StringHelper;
@@ -503,6 +505,53 @@ class EventTypes extends Component
 				])
 			);
 		}
+	}
+
+	/**
+	 * @param SiteEvent $event
+	 *
+	 * @throws Exception
+	 * @throws \yii\base\ErrorException
+	 * @throws \yii\base\NotSupportedException
+	 * @throws \yii\web\ServerErrorHttpException
+	 */
+	public function afterSaveSiteHandler (SiteEvent $event)
+	{
+		if (!$event->isNew)
+			return;
+
+		// Adds a new event type site setting row when a site is added to Craft
+		$primarySiteSettings = (new Query())
+			->select([
+				'eventTypes.uid eventTypeUid',
+				'eventTypes_sites.enabledByDefault',
+				'eventTypes_sites.hasUrls',
+				'eventTypes_sites.uriFormat',
+				'eventTypes_sites.template',
+			])
+			->from([EventTypeSiteRecord::TableName . ' eventTypes_sites'])
+			->innerJoin(
+				[EventTypeRecord::TableName . 'eventTypes'],
+				'[[eventTypes_sites.eventTypeId]] = [[eventTypes.id]]'
+			)
+			->where(['siteId' => $event->oldPrimarySiteId])
+			->one();
+
+		if (!$primarySiteSettings)
+			return;
+
+		$newSiteSettings = [
+			'enabledByDefault' => $primarySiteSettings['enabledByDefault'],
+			'hasUrls'          => $primarySiteSettings['hasUrls'],
+			'uriFormat'        => $primarySiteSettings['uriFormat'],
+			'template'         => $primarySiteSettings['template'],
+		];
+
+		$key = self::CONFIG_EVENTTYPES_KEY . '.' .
+		       $primarySiteSettings['eventTypeUid'] . '.siteSettings.' .
+		       $event->site->uid;
+
+		\Craft::$app->getProjectConfig()->set($key, $newSiteSettings);
 	}
 
 	// Deleting

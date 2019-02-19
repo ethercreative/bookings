@@ -17,9 +17,11 @@ use craft\services\Elements;
 use craft\services\Fields;
 use craft\services\Sites;
 use craft\services\UserPermissions;
+use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use ether\bookings\services\EventTypes;
 use ether\bookings\elements\Event as EventElement;
+use ether\bookings\web\twig\CraftVariableBehavior;
 use yii\base\Event;
 
 /**
@@ -78,6 +80,12 @@ class Bookings extends Plugin
 			Elements::class,
 			Elements::EVENT_REGISTER_ELEMENT_TYPES,
 			[$this, 'onRegisterElementTypes']
+		);
+
+		Event::on(
+			CraftVariable::class,
+			CraftVariable::EVENT_INIT,
+			[$this, 'onCraftVariableInit']
 		);
 
 		// Misc
@@ -159,6 +167,12 @@ class Bookings extends Plugin
 
 		Event::on(
 			Sites::class,
+			Sites::EVENT_AFTER_SAVE_SITE,
+			[$eventTypes, 'afterSaveSiteHandler']
+		);
+
+		Event::on(
+			Sites::class,
 			Sites::EVENT_AFTER_DELETE_SITE,
 			[$eventTypes, 'pruneDeletedSite']
 		);
@@ -225,6 +239,16 @@ class Bookings extends Plugin
 	public function onRegisterElementTypes (RegisterComponentTypesEvent $event)
 	{
 		$event->types[] = EventElement::class;
+	}
+
+	public function onCraftVariableInit (Event $event)
+	{
+		/** @var CraftVariable $variable */
+		$variable = $event->sender;
+		$variable->attachBehavior(
+			'bookings',
+			CraftVariableBehavior::class
+		);
 	}
 
 	// Helpers

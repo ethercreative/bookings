@@ -8,6 +8,7 @@
 
 namespace ether\bookings\controllers;
 
+use ether\bookings\web\assets\eventindex\EventIndexAsset;
 use yii\web\Response;
 
 /**
@@ -31,9 +32,11 @@ class EventsController extends BaseCpController
 
 	/**
 	 * @return Response
+	 * @throws \yii\base\InvalidConfigException
 	 */
 	public function actionIndex (): Response
 	{
+		\Craft::$app->view->registerAssetBundle(EventIndexAsset::class);
 		return $this->renderTemplate('bookings/events/_index');
 	}
 

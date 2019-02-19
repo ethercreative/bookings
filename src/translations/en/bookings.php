@@ -132,6 +132,9 @@ return [
 	'Resaving {type} events' => 'Resaving {type} events',
 	'Resaving {type} events ({site})' => 'Resaving {type} events ({site})',
 
+	'New event' => 'New event',
+	'New {eventType} event' => 'New {eventType} event',
+
 	// Errors
 	// =========================================================================
 

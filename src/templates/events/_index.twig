@@ -5,3 +5,19 @@
 {% set elementType = 'ether\\bookings\\elements\\Event' %}
 {% set selectedTab = 'bookings' %}
 {% set selectedSubnavItem = 'events' %}
+
+{% js %}
+	if (typeof Craft.Bookings === 'undefined') {
+		Craft.Bookings = {};
+	}
+
+	Craft.Bookings.editableEventTypes = [
+	{% for eventType in craft.bookings.eventTypes.getEditableEventTypes() %}
+		{id: {{ eventType.id }}, name: "{{ eventType.name|t('site')|e('js') }}", handle: "{{ eventType.handle|e('js') }}"}{% if not loop.last %},{% endif %}
+	{% endfor %}
+	];
+
+	{% if eventTypeHandle is defined %}
+	window.defaultEventTypeHandle = '{{ eventTypeHandle }}';
+	{% endif %}
+{% endjs %}
