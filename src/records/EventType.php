@@ -16,15 +16,17 @@ use yii\db\ActiveQueryInterface;
 /**
  * Class EventType
  *
- * @property int         $id            ID
- * @property int         $fieldLayoutId Field Layout ID
- * @property string      $name          Name
- * @property string      $handle        Handle
- * @property bool        $hasTitleField Has title field
- * @property string      $titleLabel    Title label
- * @property string      $titleFormat   Title format
- * @property int         $sortOrder     Sort order
- * @property FieldLayout $fieldLayout   Field Layout
+ * @property int         $id               ID
+ * @property int         $fieldLayoutId    Field Layout ID
+ * @property string      $name             Name
+ * @property string      $handle           Handle
+ * @property bool        $enableVersioning Enable Versioning
+ * @property bool        $hasTitleField    Has title field
+ * @property string      $titleLabel       Title label
+ * @property string      $titleFormat      Title format
+ * @property int         $sortOrder        Sort order
+ * @property bool        $propagateEvents  Should propagate events across sites
+ * @property FieldLayout $fieldLayout      Field Layout
  * @author  Ether Creative
  * @package ether\bookings\records
  */

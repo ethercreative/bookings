@@ -49,6 +49,9 @@ class EventType extends Model
 	/** @var string|null Handle */
 	public $handle;
 
+	/** @var bool Enable Versioning */
+	public $enableVersioning = true;
+
 	/** @var bool Has title field */
 	public $hasTitleField = true;
 
@@ -58,8 +61,20 @@ class EventType extends Model
 	/** @var string|null Title format */
 	public $titleFormat;
 
+	/** @var bool Propagate events */
+	public $propagateEvents = true;
+
 	/** @var string UID */
 	public $uid;
+
+	/** @var \DateTime */
+	public $dateCreated;
+
+	/** @var \DateTime */
+	public $dateUpdated;
+
+	/** @var \DateTime */
+	public $dateDeleted;
 
 	// Private Properties
 	// -------------------------------------------------------------------------
@@ -165,10 +180,11 @@ class EventType extends Model
 	public function attributeLabels ()
 	{
 		return [
-			'handle'      => \Craft::t('app', 'Handle'),
-			'name'        => \Craft::t('app', 'Name'),
-			'titleFormat' => \Craft::t('app', 'Title Format'),
-			'titleLabel'  => \Craft::t('app', 'Title Field Label'),
+			'handle'          => \Craft::t('app', 'Handle'),
+			'name'            => \Craft::t('app', 'Name'),
+			'titleFormat'     => \Craft::t('app', 'Title Format'),
+			'titleLabel'      => \Craft::t('app', 'Title Field Label'),
+			'propagateEvents' => \Craft::t('app', 'Propagate Events'),
 		];
 	}
 

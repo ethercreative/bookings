@@ -38,6 +38,7 @@ class Event extends ActiveRecord
 	// =========================================================================
 
 	const TableName = '{{%bookings_events}}';
+	const TableNameUnprefixed = 'bookings_events';
 
 	// Methods
 	// =========================================================================

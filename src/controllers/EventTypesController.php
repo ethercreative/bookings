@@ -8,9 +8,12 @@
 
 namespace ether\bookings\controllers;
 
+use craft\behaviors\FieldLayoutBehavior;
 use craft\helpers\UrlHelper;
 use ether\bookings\Bookings;
+use ether\bookings\elements\Event;
 use ether\bookings\models\EventType;
+use ether\bookings\models\EventTypeSite;
 use yii\web\HttpException;
 use yii\web\Response;
 
@@ -104,18 +107,111 @@ class EventTypesController extends BaseCpController
 		);
 	}
 
+	/**
+	 * @return Response
+	 * @throws HttpException
+	 * @throws \craft\errors\MissingComponentException
+	 * @throws \yii\base\ErrorException
+	 * @throws \yii\base\Exception
+	 * @throws \yii\base\InvalidConfigException
+	 * @throws \yii\base\NotSupportedException
+	 * @throws \yii\web\BadRequestHttpException
+	 * @throws \yii\web\ServerErrorHttpException
+	 */
 	public function actionSave (): Response
 	{
-		// TODO:
+		$currentUser = \Craft::$app->getUser()->getIdentity();
 
-		return null;
+		if (!$currentUser->can('bookings-manageEvents'))
+			throw new HttpException(
+				403,
+				Bookings::t('This action is not allowed for the current user.')
+			);
+
+		$request = \Craft::$app->getRequest();
+		$this->requirePostRequest();
+
+		// Event Type
+		// ---------------------------------------------------------------------
+
+		$eventType = new EventType();
+
+		$eventType->id = $request->getBodyParam('eventTypeId');
+		$eventType->name = $request->getBodyParam('name');
+		$eventType->handle = $request->getBodyParam('handle');
+		$eventType->enableVersioning = $request->getBodyParam('enableVersioning', true);
+		$eventType->hasTitleField = $request->getBodyParam('hasTitleField');
+		$eventType->titleLabel = $request->getBodyParam('titleLabel');
+		$eventType->titleFormat = $request->getBodyParam('titleFormat');
+		$eventType->propagateEvents = $request->getBodyParam('propagateEvents', true);
+
+		// Event Type Sites
+		// ---------------------------------------------------------------------
+
+		$allSiteSettings = [];
+		$isMultiSite = \Craft::$app->getIsMultiSite();
+
+		foreach (\Craft::$app->getSites()->getAllSites() as $site)
+		{
+			$postedSettings = $request->getBodyParam('sites.' . $site->handle);
+
+			if ($isMultiSite && empty($postedSettings['enabled']))
+				continue;
+
+			$siteSettings = new EventTypeSite();
+			$siteSettings->siteId = $site->id;
+			$siteSettings->hasUrls = !empty($postedSettings['uriFormat']);
+			$siteSettings->uriFormat = $postedSettings['uriFormat'];
+			$siteSettings->template = $postedSettings['template'];
+			$siteSettings->enabledByDefault = (bool) $postedSettings['enabledByDefault'];
+
+			$allSiteSettings[$site->id] = $siteSettings;
+		}
+
+		$eventType->setSiteSettings($allSiteSettings);
+
+		// Field Layout
+		// ---------------------------------------------------------------------
+
+		$fieldLayout = \Craft::$app->getFields()->assembleLayoutFromPost();
+		$fieldLayout->type = Event::class;
+		/** @var FieldLayoutBehavior $fieldLayoutBehavior */
+		$fieldLayoutBehavior = $eventType->getBehavior('fieldLayout');
+		$fieldLayoutBehavior->setFieldLayout($fieldLayout);
+
+		// Save
+		// ---------------------------------------------------------------------
+
+		if (Bookings::$i->eventTypes->saveEventType($eventType))
+		{
+			\Craft::$app->getSession()->setNotice(
+				Bookings::t('Event type saved.')
+			);
+			return $this->redirectToPostedUrl($eventType);
+		}
+
+		\Craft::$app->getSession()->setError(
+			Bookings::t('Couldn\'t save event type.')
+		);
+
+		return \Craft::$app->getUrlManager()->setRouteParams([
+			'eventType' => $eventType,
+		]);
 	}
 
+	/**
+	 * @return Response
+	 * @throws \yii\web\BadRequestHttpException
+	 */
 	public function actionDelete (): Response
 	{
-		// TODO:
+		$this->requirePostRequest();
+		$this->requireAcceptsJson();
 
-		return null;
+		$eventTypeId = \Craft::$app->getRequest()->getRequiredBodyParam('id');
+
+		Bookings::$i->eventTypes->deleteEventTypeById($eventTypeId);
+		return $this->asJson(['success' => true]);
 	}
 
 }

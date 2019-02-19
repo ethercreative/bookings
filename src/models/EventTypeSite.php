@@ -37,6 +37,9 @@ class EventTypeSite extends Model
 	/** @var int Site ID */
 	public $siteId;
 
+	/** @var bool Enabled by default */
+	public $enabledByDefault = true;
+
 	/** @var bool Has URLs */
 	public $hasUrls;
 
@@ -48,6 +51,15 @@ class EventTypeSite extends Model
 
 	/** @var string Template path */
 	public $template;
+
+	/** @var string UID */
+	public $uid;
+
+	/** @var \DateTime */
+	public $dateCreated;
+
+	/** @var \DateTime */
+	public $dateUpdated;
 
 	// Private Properties
 	// -------------------------------------------------------------------------

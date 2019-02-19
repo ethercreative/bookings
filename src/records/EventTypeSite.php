@@ -18,6 +18,7 @@ use yii\db\ActiveQueryInterface;
  * @property int       $id
  * @property int       $eventTypeId
  * @property int       $siteId
+ * @property bool      $enabledByDefault
  * @property bool      $hasUrls
  * @property string    $uriFormat
  * @property string    $template

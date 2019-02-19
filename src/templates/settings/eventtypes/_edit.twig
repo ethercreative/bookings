@@ -38,6 +38,12 @@
 			required: true,
 		}) }}
 
+		{{ forms.checkboxField({
+			label: 'Enable versioning for events of this type?'|t('bookings'),
+			name: 'enableVersioning',
+			checked: eventType.enableVersioning,
+		}) }}
+
 		<hr>
 
 		{{ forms.checkboxField({
@@ -90,6 +96,12 @@
 			{% set siteRows = siteRows|merge({
 				(site.handle): {
 					heading: site.name|t('site'),
+					enabled: include('_includes/forms/lightswitch', {
+						name: 'sites[' ~ site.handle ~ '][enabled]',
+						on: newEventType or siteSettings,
+						value: site.id,
+						small: true,
+					}),
 					uriFormat: {
 						value: siteSettings.uriFormat ?? null,
 						hasErrors: siteSettings.hasErrors('uriFormat') ?? false,
@@ -98,6 +110,7 @@
 						value: siteSettings.template ?? null,
 						hasErrors: siteSettings.hasErrors('template') ?? false,
 					},
+					enabledByDefault: siteSettings ? siteSettings.enabledByDefault : true,
 				}
 			}) %}
 		{% endfor %}
@@ -113,6 +126,10 @@
 					heading: 'Site'|t('app'),
 					class: 'thin',
 				},
+				enabled: {
+					type: 'heading',
+					class: 'thin' ~ (not craft.app.getIsMultiSite() ? ' hidden')
+				},
 				uriFormat: {
 					type: 'singleline',
 					heading: 'Event Type URI Format'|t('bookings'),
@@ -121,16 +138,30 @@
 					code: true,
 				},
 				template: {
-					type: 'singleline',
+					type: 'template',
 					heading: 'Template'|t('bookings'),
 					info: 'Which template should be loaded when an event\'s URL is requested'|t('bookings'),
 					code: true,
 				},
+				enabledByDefault: {
+					type: 'lightswitch',
+					heading: 'Default Status'|t('app'),
+					class: 'thin type-channel'
+				}
 			},
 			rows: siteRows,
 			staticRows: true,
 			errors: siteErrors|unique,
 		}) }}
+
+		{% if craft.app.getIsMultiSite() %}
+			{{ forms.checkboxField({
+				label: 'Propagate events across all enabled sites?'|t('bookings'),
+				instructions: 'Whether events should be propagated across all the sites. If this is disabled, each event will only belong to the site it was created in.'|t('bookings'),
+				name: 'propagateEvents',
+				checked: eventType.propagateEvents,
+			}) }}
+		{% endif %}
 	</div>
 
 	<div id="event-fields" class="hidden">
@@ -141,13 +172,32 @@
 
 {% endblock %}
 
-{% if newEventType %}
-	{% js %}
+{% js %}
+	var $siteRows      = $('#sites').children('tbody').children(),
+	    $lightswitches = $siteRows.children('th:nth-child(2)').children('.lightswitch');
+
+	function updateSites () {
+		$lightswitches.each(function () {
+			if ($(this).data('lightswitch').on) {
+				$(this).parent().nextAll('td').removeClass('disabled').find('textarea,div.lightswitch,input').attr('tabindex', '0');
+			} else {
+				$(this).parent().nextAll('td').addClass('disabled').find('textarea,div.lightswitch,input').attr('tabindex', '-1');
+			}
+		});
+	}
+
+	$lightswitches.on('change', updateSites);
+
+	Garnish.$doc.ready(function () {
+		updateSites();
+	});
+
+	{% if newEventType %}
 		new Craft.HandleGenerator('#name', '#handle');
 
 		{% for site in craft.app.sites.getAllSites() %}
 			new Craft.UriFormatGenerator('#name', '#sites tr[data-id="{{ site.handle }}"] textarea[name$="[uriFormat]"]', { suffix: '/{slug}' });
-            new Craft.UriFormatGenerator('#name', '#sites tr[data-id="{{ site.handle }}"] textarea[name$="[template]"]', { suffix: '/_event' });
+	        new Craft.UriFormatGenerator('#name', '#sites tr[data-id="{{ site.handle }}"] textarea[name$="[template]"]', { suffix: '/_event' });
 		{% endfor %}
-	{% endjs %}
-{% endif %}
+	{% endif %}
+{% endjs %}

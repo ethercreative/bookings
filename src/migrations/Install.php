@@ -71,30 +71,32 @@ class Install extends Migration
 		]);
 
 		$this->createTable(EventType::TableName, [
-			'id'            => $this->primaryKey(),
-			'fieldLayoutId' => $this->integer(),
-			'name'          => $this->string()->notNull(),
-			'handle'        => $this->string()->notNull(),
-			'hasTitleField' => $this->boolean()->defaultValue(true)->notNull(),
-			'titleLabel'    => $this->string()->defaultValue('Title'),
-			'titleFormat'   => $this->string(),
-			'sortOrder'     => $this->smallInteger()->unsigned(),
-			'dateCreated'   => $this->dateTime()->notNull(),
-			'dateUpdated'   => $this->dateTime()->notNull(),
-			'dateDeleted'   => $this->dateTime()->null(),
-			'uid'           => $this->uid(),
+			'id'               => $this->primaryKey(),
+			'fieldLayoutId'    => $this->integer(),
+			'name'             => $this->string()->notNull(),
+			'handle'           => $this->string()->notNull(),
+			'enableVersioning' => $this->boolean()->defaultValue(true)->notNull(),
+			'hasTitleField'    => $this->boolean()->defaultValue(true)->notNull(),
+			'titleLabel'       => $this->string()->defaultValue('Title'),
+			'titleFormat'      => $this->string(),
+			'propagateEvents'  => $this->boolean()->defaultValue(true)->notNull(),
+			'dateCreated'      => $this->dateTime()->notNull(),
+			'dateUpdated'      => $this->dateTime()->notNull(),
+			'dateDeleted'      => $this->dateTime()->null(),
+			'uid'              => $this->uid(),
 		]);
 
 		$this->createTable(EventTypeSite::TableName, [
-			'id'          => $this->primaryKey(),
-			'eventTypeId' => $this->integer()->notNull(),
-			'siteId'      => $this->integer()->notNull(),
-			'hasUrls'     => $this->boolean(),
-			'uriFormat'   => $this->text(),
-			'template'    => $this->string(500),
-			'dateCreated' => $this->dateTime()->notNull(),
-			'dateUpdated' => $this->dateTime()->notNull(),
-			'uid'         => $this->uid(),
+			'id'               => $this->primaryKey(),
+			'eventTypeId'      => $this->integer()->notNull(),
+			'siteId'           => $this->integer()->notNull(),
+			'enabledByDefault' => $this->boolean()->defaultValue(true)->notNull(),
+			'hasUrls'          => $this->boolean(),
+			'uriFormat'        => $this->text(),
+			'template'         => $this->string(500),
+			'dateCreated'      => $this->dateTime()->notNull(),
+			'dateUpdated'      => $this->dateTime()->notNull(),
+			'uid'              => $this->uid(),
 		]);
 
 		// Indexes

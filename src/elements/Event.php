@@ -128,6 +128,9 @@ class Event extends Element
 		];
 	}
 
+	/**
+	 * @return EventQuery|ElementQueryInterface
+	 */
 	public static function find (): ElementQueryInterface
 	{
 		return new EventQuery(static::class);
@@ -427,6 +430,29 @@ class Event extends Element
 				$this->authorId == \Craft::$app->getUser()->getId()
 			)
 		);
+	}
+
+	/**
+	 * @inheritdoc
+	 * @throws InvalidConfigException
+	 */
+	public function getSupportedSites (): array
+	{
+		$type = $this->getType();
+		$sites = [];
+
+		foreach ($type->getSiteSettings() as $siteSettings)
+		{
+			if ($type->propagateEvents || $siteSettings->siteId == $this->siteId)
+			{
+				$sites[] = [
+					'siteId' => $siteSettings->siteId,
+					'enabledByDefault' => $siteSettings->enabledByDefault,
+				];
+			}
+		}
+
+		return $sites;
 	}
 
 	/**

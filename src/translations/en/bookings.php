@@ -88,6 +88,9 @@ return [
 	'How you\'ll refer to this event type in the templates.' =>
 		'How you\'ll refer to this event type in the templates.',
 
+	'Enable versioning for events of this type?' =>
+		'Enable versioning for events of this type?',
+
 	'Show the Title field' => 'Show the Title field',
 
 	'Title Field Label' => 'Title Field Label',
@@ -112,11 +115,31 @@ return [
 	'Which template should be loaded when an event\'s URL is requested' =>
 		'Which template should be loaded when an event\'s URL is requested',
 
+	'Default Status' => 'Default Status',
+
+	'Propagate Events' => 'Propagate Events',
+	'Propagate events across all enabled sites?' =>
+		'Propagate events across all enabled sites?',
+	'Whether events should be propagated across all the sites. If this is disabled, each event will only belong to the site it was created in.' =>
+		'Whether events should be propagated across all the sites. If this is disabled, each event will only belong to the site it was created in.',
+
+	'Event type saved.' => 'Event type saved.',
+	'Couldn\'t save event type.' => 'Couldn\'t save event type.',
+
+	// Events
+	// =========================================================================
+
+	'Resaving {type} events' => 'Resaving {type} events',
+	'Resaving {type} events ({site})' => 'Resaving {type} events ({site})',
+
 	// Errors
 	// =========================================================================
 
 	'You don’t have permission to access to any of the Bookings sub-sections. Please contact an admin.' =>
 		'You don’t have permission to access to any of the Bookings sub-sections. Please contact an admin.',
+
+	'This action is not allowed for the current user.' =>
+		'This action is not allowed for the current user.',
 
 	// Misc
 	// =========================================================================

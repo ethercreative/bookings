@@ -18,6 +18,7 @@ use craft\models\UserGroup;
 use ether\bookings\Bookings;
 use ether\bookings\elements\Event;
 use ether\bookings\models\EventType;
+use ether\bookings\records\Event as EventRecord;
 use ether\bookings\records\EventType as EventTypeRecord;
 
 /**
@@ -75,7 +76,7 @@ class EventQuery extends ElementQuery
 	/**
 	 * @inheritdoc
 	 */
-	protected $defaultOrderBy = ['events.postDate' => SORT_DESC];
+	protected $defaultOrderBy = ['bookings_events.postDate' => SORT_DESC];
 
 	// Public Methods
 	// =========================================================================
@@ -211,7 +212,7 @@ class EventQuery extends ElementQuery
 		if ($this->typeId === [] || $this->authorGroupId === [])
 			return false;
 
-		$this->joinElementTable('bookings_events');
+		$this->joinElementTable(EventRecord::TableNameUnprefixed);
 
 		$this->query->select([
 			'bookings_events.typeId',

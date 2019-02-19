@@ -12,7 +12,10 @@ use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
+use craft\helpers\UrlHelper;
 use craft\services\Elements;
+use craft\services\Fields;
+use craft\services\Sites;
 use craft\services\UserPermissions;
 use craft\web\UrlManager;
 use ether\bookings\services\EventTypes;
@@ -56,6 +59,8 @@ class Bookings extends Plugin
 
 		// Events
 		// ---------------------------------------------------------------------
+
+		$this->_registerProjectConfigEventListeners();
 
 		Event::on(
 			UrlManager::class,
@@ -116,8 +121,48 @@ class Bookings extends Plugin
 		return $ret;
 	}
 
+	public function getSettingsResponse ()
+	{
+		return \Craft::$app->getResponse()->redirect(
+			UrlHelper::cpUrl('bookings/settings')
+		);
+	}
+
 	// Events
 	// =========================================================================
+
+	private function _registerProjectConfigEventListeners ()
+	{
+		$projectConfig = \Craft::$app->getProjectConfig();
+
+		// Event Types
+		$eventTypes = Bookings::$i->eventTypes;
+		$projectConfig
+			->onAdd(
+				EventTypes::CONFIG_EVENTTYPES_KEY . '.{uid}',
+				[$eventTypes, 'handleChangedEventType']
+			)
+			->onUpdate(
+				EventTypes::CONFIG_EVENTTYPES_KEY . '.{uid}',
+				[$eventTypes, 'handleChangedEventType']
+			)
+			->onRemove(
+				EventTypes::CONFIG_EVENTTYPES_KEY . '.{uid}',
+				[$eventTypes, 'handleDeletedEventType']
+			);
+
+		Event::on(
+			Fields::class,
+			Fields::EVENT_AFTER_DELETE_FIELD,
+			[$eventTypes, 'pruneDeletedField']
+		);
+
+		Event::on(
+			Sites::class,
+			Sites::EVENT_AFTER_DELETE_SITE,
+			[$eventTypes, 'pruneDeletedSite']
+		);
+	}
 
 	public function onRegisterCpUrlRules (RegisterUrlRulesEvent $event)
 	{
