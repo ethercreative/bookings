@@ -680,7 +680,7 @@ class EventTypes extends Component
 				foreach ($eventQuery->siteId($siteId)->each() as $event)
 				{
 					/** @var Event $event */
-					$event->deletedWithEventType = true;
+					$event->deletedWithType = true;
 					$elements->deleteElement($event);
 				}
 			}

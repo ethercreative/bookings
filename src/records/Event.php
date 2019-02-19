@@ -21,7 +21,7 @@ use yii\db\ActiveQueryInterface;
  * @property int $authorId Author ID
  * @property \DateTime $postDate Post Date
  * @property \DateTime $expiryDate Expiry Date
- * @property bool $deletedWithEventType Was the event deleted its event type?
+ * @property bool $deletedWithType Was the event deleted its event type?
  * @property Element $element Element
  * @property EventType $eventType Event Type
  * @property User $author Author

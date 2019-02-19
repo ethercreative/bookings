@@ -65,7 +65,7 @@ class Event extends Element
 	 * @var bool Whether the event was deleted along with its event type
 	 * @see beforeDelete()
 	 */
-	public $deletedWithEventType = false;
+	public $deletedWithType = false;
 
 	// Private Properties
 	// -------------------------------------------------------------------------
@@ -766,7 +766,7 @@ class Event extends Element
 		\Craft::$app->getDb()->createCommand()
 			->update(
 				EventRecord::TableName,
-				['deletedWithEventType' => $this->deletedWithEventType],
+				['deletedWithType' => $this->deletedWithType],
 				['id' => $this->id],
 				[],
 				false

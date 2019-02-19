@@ -14,6 +14,7 @@ use craft\helpers\MigrationHelper;
 use ether\bookings\records\Event;
 use ether\bookings\records\EventType;
 use ether\bookings\records\EventTypeSite;
+use ether\bookings\records\Ticket;
 
 /**
  * Class Install
@@ -50,6 +51,9 @@ class Install extends Migration
 		return true;
 	}
 
+	// Events
+	// =========================================================================
+
 	/**
 	 * Create the tables for the Event element type
 	 */
@@ -59,15 +63,15 @@ class Install extends Migration
 		// ---------------------------------------------------------------------
 
 		$this->createTable(Event::TableName, [
-			'id'                   => $this->primaryKey(),
-			'typeId'               => $this->integer()->notNull(),
-			'authorId'             => $this->integer(),
-			'postDate'             => $this->dateTime(),
-			'expiryDate'           => $this->dateTime(),
-			'deletedWithEventType' => $this->boolean()->null(),
-			'dateCreated'          => $this->dateTime()->notNull(),
-			'dateUpdated'          => $this->dateTime()->notNull(),
-			'uid'                  => $this->uid(),
+			'id'              => $this->primaryKey(),
+			'typeId'          => $this->integer()->notNull(),
+			'authorId'        => $this->integer(),
+			'postDate'        => $this->dateTime(),
+			'expiryDate'      => $this->dateTime(),
+			'deletedWithType' => $this->boolean()->null(),
+			'dateCreated'     => $this->dateTime()->notNull(),
+			'dateUpdated'     => $this->dateTime()->notNull(),
+			'uid'             => $this->uid(),
 		]);
 
 		$this->createTable(EventType::TableName, [
@@ -214,6 +218,24 @@ class Install extends Migration
 		$this->dropTableIfExists(Event::TableName);
 		$this->dropTableIfExists(EventType::TableName);
 		$this->dropTableIfExists(EventTypeSite::TableName);
+	}
+
+	// Tickets
+	// =========================================================================
+
+	private function _createTicketTables ()
+	{
+		// Tables
+		// ---------------------------------------------------------------------
+
+		$this->createTable(Ticket::TableName, [
+			'id'              => $this->primaryKey(),
+			'typeId'          => $this->integer()->notNull(),
+			'deletedWithType' => $this->boolean()->null(),
+			'dateCreated'     => $this->dateTime()->notNull(),
+			'dateUpdated'     => $this->dateTime()->notNull(),
+			'uid'             => $this->uid(),
+		]);
 	}
 
 	// Helpers
