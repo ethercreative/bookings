@@ -10,6 +10,8 @@ namespace ether\bookings\controllers;
 
 use craft\base\Field;
 use craft\elements\User;
+use craft\errors\InvalidElementException;
+use craft\helpers\DateTimeHelper;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\Site;
@@ -167,13 +169,13 @@ class EventsController extends BaseCpController
 		$variables['tabs'][] = [
 			'label' => Bookings::t('Availability'),
 			'url' => '#availability-container',
-			// TODO: Has errors?
+			// TODO: Has errors class
 		];
 
 		$variables['tabs'][] = [
 			'label' => Bookings::t('Tickets'),
 			'url' => '#tickets-container',
-			// TODO: Has errors?
+			// TODO: Has errors class
 		];
 
 		// Live Preview
@@ -219,14 +221,194 @@ class EventsController extends BaseCpController
 		return $this->renderTemplate('bookings/events/_edit', $variables);
 	}
 
+	/**
+	 * @return Response
+	 * @throws ForbiddenHttpException
+	 * @throws HttpException
+	 * @throws InvalidConfigException
+	 * @throws NotFoundHttpException
+	 * @throws ServerErrorHttpException
+	 * @throws \Throwable
+	 * @throws \craft\errors\ElementNotFoundException
+	 * @throws \craft\errors\MissingComponentException
+	 * @throws \yii\base\Exception
+	 * @throws \yii\web\BadRequestHttpException
+	 */
 	public function actionSave ()
 	{
-		// TODO: this
+		$this->requirePostRequest();
+
+		$request = \Craft::$app->getRequest();
+		$session = \Craft::$app->getSession();
+		$urlManager = \Craft::$app->getUrlManager();
+		$elements = \Craft::$app->getElements();
+
+		// Event Model
+		// ---------------------------------------------------------------------
+
+		$eventId = $request->getBodyParam('eventId');
+		$siteId  = $request->getBodyParam('siteId');
+
+		if ($eventId)
+		{
+			$event = Bookings::$i->events->getEventById($eventId, $siteId);
+
+			if (!$event)
+				throw new NotFoundHttpException('Event not found');
+		}
+		else
+		{
+			$event = new Event();
+			$event->typeId = $request->getRequiredBodyParam('typeId');
+
+			if ($siteId)
+				$event->siteId = $siteId;
+		}
+
+		$this->_enforceEventPermissions($event);
+
+		// Duplicate
+		// ---------------------------------------------------------------------
+
+		if ((bool) $request->getBodyParam('duplicate'))
+		{
+			try
+			{
+				$event = $elements->duplicateElement($event);
+			}
+			catch (InvalidElementException $e)
+			{
+				/** @var Event $clone */
+				$clone = $e->element;
+
+				if ($request->getAcceptsJson())
+					return $this->asJson([
+						'success' => false,
+						'errors' => $clone->getErrors(),
+					]);
+
+				$session->setError(
+					Bookings::t('Couldn\'t duplicate event.')
+				);
+
+				$event->addErrors($clone->getErrors());
+				return $urlManager->setRouteParams([
+					'event' => $event,
+				]);
+			}
+			catch (\Throwable $e)
+			{
+				throw new ServerErrorHttpException(
+					Bookings::t('An error occurred when duplicating the event.'),
+					0,
+					$e
+				);
+			}
+		}
+
+		// Populate
+		// ---------------------------------------------------------------------
+
+		$event = EventHelper::populateEventFromPost($event);
+
+		// Save
+		// ---------------------------------------------------------------------
+
+		if ($event->enabled && $event->enabledForSite)
+			$event->setScenario(Event::SCENARIO_LIVE);
+
+		if (!$elements->saveElement($event))
+		{
+			if ($request->getAcceptsJson())
+				return $this->asJson([
+					'success' => false,
+					'errors' => $event->getErrors(),
+				]);
+
+			$session->setError(
+				Bookings::t('Couldn\'t save event.')
+			);
+
+			return $urlManager->setRouteParams([
+				'event' => $event,
+			]);
+		}
+
+		if ($request->getAcceptsJson())
+		{
+			$return = [
+				'success' => true,
+				'id' => $event->id,
+				'title' => $event->title,
+				'slug' => $event->slug,
+			];
+
+			if ($request->getIsCpRequest())
+				$return['cpEditUrl'] = $event->getCpEditUrl();
+
+			if (($author = $event->getAuthor()) !== null)
+				$return['authorUsername'] = $author->username;
+
+			$return['dateCreated'] = DateTimeHelper::toIso8601($event->dateCreated);
+			$return['dateUpdated'] = DateTimeHelper::toIso8601($event->dateUpdated);
+			$return['postDate'] = $event->postDate ? DateTimeHelper::toIso8601($event->postDate) : null;
+
+			return $this->asJson($return);
+		}
+
+		$session->setNotice(
+			Bookings::t('Event saved.')
+		);
+
+		return $this->redirectToPostedUrl($event);
 	}
 
+	/**
+	 * @return Response
+	 * @throws NotFoundHttpException
+	 * @throws \Throwable
+	 * @throws \craft\errors\MissingComponentException
+	 * @throws \yii\web\BadRequestHttpException
+	 */
 	public function actionDelete ()
 	{
-		// TODO: this
+		$this->requirePostRequest();
+
+		$request = \Craft::$app->getRequest();
+		$elements = \Craft::$app->getElements();
+		$session = \Craft::$app->getSession();
+		$urlManager = \Craft::$app->getUrlManager();
+
+		$eventId = $request->getRequiredBodyParam('eventId');
+		$siteId  = $request->getBodyParam('siteId');
+
+		$event = Bookings::$i->events->getEventById($eventId, $siteId);
+
+		if (!$event)
+			throw new NotFoundHttpException('Event not found');
+
+		if (!$elements->deleteElement($event))
+		{
+			if ($request->getAcceptsJson())
+				return $this->asJson(['success' => false]);
+
+			$session->setError(
+				Bookings::t('Couldn\'t delete event.')
+			);
+
+			return $urlManager->setRouteParams([
+				'event' => $event,
+			]);
+		}
+
+		if ($request->getAcceptsJson())
+			return $this->asJson(['success' => true]);
+
+		$session->setNotice(
+			Bookings::t('Event deleted.')
+		);
+
+		return $this->redirectToPostedUrl($event);
 	}
 
 	/**

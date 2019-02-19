@@ -122,7 +122,6 @@ return [
 		'Whether events should be propagated across all the sites. If this is disabled, each event will only belong to the site it was created in.',
 
 	'Event type saved.' => 'Event type saved.',
-	'Couldn\'t save event type.' => 'Couldn\'t save event type.',
 
 	// Events
 	// =========================================================================
@@ -138,6 +137,7 @@ return [
 	'Save as a new event' => 'Save as a new event',
 	'Are you sure you want to delete this event?' =>
 		'Are you sure you want to delete this event?',
+	'Event deleted.' => 'Event deleted.',
 
 	// Errors
 	// =========================================================================
@@ -149,6 +149,13 @@ return [
 		'This action is not allowed for the current user.',
 
 	'No event with the ID "{id}"' => 'No event with the ID "{id}"',
+
+	'Couldn\'t save event type.' => 'Couldn\'t save event type.',
+	'Couldn\'t save event.' => 'Couldn\'t save event.',
+	'Couldn\'t duplicate event.' => 'Couldn\'t duplicate event.',
+	'An error occurred when duplicating the event.' =>
+		'An error occurred when duplicating the event.',
+	'Couldn\'t delete event.' => 'Couldn\'t delete event.',
 
 	// Misc
 	// =========================================================================
@@ -167,7 +174,6 @@ return [
 	'Tickets'          => 'Tickets',
 	'Save'             => 'Save',
 	'Delete'           => 'Delete',
-	'Enter title'      => 'Enter title',
 	'Enabled'          => 'Enabled',
 	'Enabled for site' => 'Enabled for site',
 

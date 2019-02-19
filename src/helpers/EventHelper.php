@@ -23,17 +23,19 @@ class EventHelper
 {
 
 	/**
+	 * @param Event|null $event
+	 *
 	 * @return Event
 	 * @throws HttpException
 	 */
-	public static function populateEventFromPost (): Event
+	public static function populateEventFromPost (Event $event = null): Event
 	{
 		$request = \Craft::$app->getRequest();
 
 		$eventId = $request->getBodyParam('eventId');
 		$siteId  = $request->getBodyParam('siteId');
 
-		if ($eventId)
+		if (!$event && $eventId)
 		{
 			$event = Bookings::$i->events->getEventById($eventId, $siteId);
 
@@ -46,13 +48,12 @@ class EventHelper
 					)
 				);
 		}
-		else
+		else if (!$event)
 		{
 			$event = new Event();
 		}
 
 		$event->typeId = $request->getBodyParam('typeId');
-		$event->authorId = $request->getBodyParam('authorId');
 		$event->siteId = $siteId ?? $event->siteId;
 		$event->enabled = (bool) $request->getBodyParam('enabled');
 
@@ -66,8 +67,19 @@ class EventHelper
 		$event->enabledForSite = (bool) $request->getBodyParam('enabledForSite', $event->enabledForSite);
 		$event->title = $request->getBodyParam('title', $event->title);
 
-		/** @noinspection PhpParamsInspection */
-		$event->setFieldValuesFromRequest('fields');
+		// Author
+		$event->authorId = $request->getBodyParam(
+			'authorId',
+			$event->authorId ?: \Craft::$app->getUser()->getId()
+		);
+
+		if (is_array($event->authorId))
+			$event->authorId = $event->authorId[0];
+
+		// Fields
+		$event->fieldLayoutId = null;
+		$fieldsLocation = $request->getParam('fieldsLocation', 'fields');
+		$event->setFieldValuesFromRequest($fieldsLocation);
 
 		return $event;
 	}
