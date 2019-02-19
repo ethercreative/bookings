@@ -21,6 +21,7 @@ use craft\helpers\ProjectConfig;
 use craft\helpers\StringHelper;
 use craft\models\FieldLayout;
 use craft\queue\jobs\ResaveElements;
+use craft\web\View;
 use ether\bookings\Bookings;
 use ether\bookings\elements\Event;
 use ether\bookings\events\EventTypeEvent;
@@ -70,6 +71,35 @@ class EventTypes extends Component
 
 	// Methods
 	// =========================================================================
+
+	/**
+	 * Check if the given event type's template for the given site exists
+	 *
+	 * @param EventType $eventType
+	 * @param int       $siteId
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function isEventTypeTemplateValid (EventType $eventType, int $siteId): bool
+	{
+		$siteSettings = $eventType->getSiteSettings();
+
+		if (!isset($siteSettings[$siteId]) || !$siteSettings[$siteId]->hasUrls)
+			return false;
+
+		$view = \Craft::$app->getView();
+		$oldTemplateMode = $view->getTemplateMode();
+		$view->setTemplateMode(View::TEMPLATE_MODE_SITE);
+
+		$templateExists = $view->doesTemplateExist(
+			(string) $siteSettings[$siteId]->template
+		);
+
+		$view->setTemplateMode($oldTemplateMode);
+
+		return $templateExists;
+	}
 
 	// Getters
 	// -------------------------------------------------------------------------
@@ -131,6 +161,31 @@ class EventTypes extends Component
 		$this->_memoizeEventType(new EventType($result));
 
 		return $this->_eventTypesById[$id];
+	}
+
+	/**
+	 * Returns the Event Type for the given handle
+	 *
+	 * @param string $handle
+	 *
+	 * @return EventType
+	 */
+	public function getEventTypeByHandle (string $handle): EventType
+	{
+		if (isset($this->_eventTypesByHandle[$handle]))
+			return $this->_eventTypesByHandle[$handle];
+
+		if ($this->_allEventTypes)
+			return null;
+
+		$result = EventTypeRecord::findOne(['handle' => $handle]);
+
+		if (!$result)
+			return null;
+
+		$this->_memoizeEventType(new EventType($result));
+
+		return $this->_eventTypesByHandle[$handle];
 	}
 
 	/**
@@ -454,7 +509,7 @@ class EventTypes extends Component
 					'elementType' => Event::class,
 					'criteria'    => [
 						'siteId'         => $siteId,
-						'eventTypeId'    => $eventTypeRecord->id,
+						'typeId'         => $eventTypeRecord->id,
 						'status'         => null,
 						'enabledForSite' => false,
 					],
@@ -477,7 +532,7 @@ class EventTypes extends Component
 						'elementType' => Event::class,
 						'criteria'    => [
 							'siteId'         => $siteIdMap[$siteUid],
-							'eventTypeId'    => $eventTypeRecord->id,
+							'typeId'         => $eventTypeRecord->id,
 							'status'         => null,
 							'enabledForSite' => false,
 						],

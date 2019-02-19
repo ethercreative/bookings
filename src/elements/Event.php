@@ -486,6 +486,21 @@ class Event extends Element
 	}
 
 	/**
+	 * Returns true if the event is Live or Full
+	 *
+	 * @return bool
+	 */
+	public function getIsLive ()
+	{
+		$status = $this->getStatus();
+
+		return (
+			$status == self::STATUS_LIVE ||
+			$status == self::STATUS_FULL
+		);
+	}
+
+	/**
 	 * Returns the event's author
 	 *
 	 * @return User|null
@@ -648,7 +663,7 @@ class Event extends Element
 	 */
 	protected function route ()
 	{
-		if ($this->getStatus() != self::STATUS_LIVE || $this->getStatus() != self::STATUS_FULL)
+		if (!$this->getIsLive())
 			return null;
 
 		$siteId = \Craft::$app->getSites()->getCurrentSite()->id;

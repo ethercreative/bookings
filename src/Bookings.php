@@ -19,6 +19,7 @@ use craft\services\Sites;
 use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
+use ether\bookings\services\Events;
 use ether\bookings\services\EventTypes;
 use ether\bookings\elements\Event as EventElement;
 use ether\bookings\web\twig\CraftVariableBehavior;
@@ -28,6 +29,7 @@ use yii\base\Event;
  * Class Bookings
  *
  * @property EventTypes $eventTypes
+ * @property Events     $events
  * @author  Ether Creative
  * @package ether\bookings
  */
@@ -57,6 +59,7 @@ class Bookings extends Plugin
 
 		$this->setComponents([
 			'eventTypes' => EventTypes::class,
+			'events' => Events::class,
 		]);
 
 		// Events
@@ -144,6 +147,8 @@ class Bookings extends Plugin
 		$projectConfig = \Craft::$app->getProjectConfig();
 
 		// Event Types
+		// ---------------------------------------------------------------------
+
 		$eventTypes = Bookings::$i->eventTypes;
 		$projectConfig
 			->onAdd(
@@ -176,6 +181,18 @@ class Bookings extends Plugin
 			Sites::EVENT_AFTER_DELETE_SITE,
 			[$eventTypes, 'pruneDeletedSite']
 		);
+
+		// Events
+		// ---------------------------------------------------------------------
+
+		$events = Bookings::$i->events;
+
+		Event::on(
+			Sites::class,
+			Sites::EVENT_AFTER_SAVE_SITE,
+			[$events, 'afterSiteSaveHandler']
+		);
+
 	}
 
 	public function onRegisterCpUrlRules (RegisterUrlRulesEvent $event)

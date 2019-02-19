@@ -1,0 +1,226 @@
+{# @var event \ether\bookings\elements\Event #}
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends '_layouts/cp' %}
+
+{% set selectedSubnavItem = 'events' %}
+{% set crumbs = [
+	{ label: 'Events'|t('bookings'), url: url('bookings/events') },
+	{ label: eventType.name|t('site'), url: url('bookings/events/' ~ eventType.handle) },
+] %}
+
+{% set fullPageForm = true %}
+{% set saveShortcutRedirect = continueEditingUrl %}
+
+{% import '_includes/forms' as forms %}
+
+{% block header %}
+	{{ block('pageTitle') }}
+	{{ block('contextMenu') }}
+
+	<div class="flex-grow"></div>
+
+	{% if showPreviewBtn or shareUrl is defined %}
+		{% if showPreviewBtn %}
+			<div class="btn livepreviewbtn">{{ 'Live Preview'|t('app') }}</div>
+		{% endif %}
+
+		{% if shareUrl is defined %}
+			<a href="{{ shareUrl }}" class="btn sharebtn" target="_blank">
+				{{ 'Share'|t('app') }}
+			</a>
+		{% endif %}
+
+		<div class="flex-grow"></div>
+	{% endif %}
+
+	{{ block('actionButton') }}
+{% endblock %}
+
+{% block contextMenu %}
+	{% if craft.app.getIsMultiSite() %}
+		<div class="btn menubtn sitemenubtn" data-icon="world">
+			{{ event.site.name|t('site') }}
+		</div>
+
+		<div class="menu">
+			<ul class="padded">
+				{% for siteId in siteIds %}
+					{% set site = craft.app.sites.getSiteById(siteId) %}
+					{% set status = siteId in enabledSiteIds ? 'enabled' : 'disabled' %}
+					<li>
+						{% if siteId == event.siteId %}
+							<a class="sel" data-site-id="{{ siteId }}">
+								<div class="status {{ status }}"></div>
+								{{- site.name|t('site') }}
+							</a>
+						{% else %}
+							{% set url = url('bookings/events/' ~ eventTypeHandle ~ '/' ~ craft.app.request.getSegment(4) ~ '/' ~ site.handle) %}
+							<a href="{{ url }}" data-site-id="{{ siteId }}">
+								<div class="status {{ status }}"></div>
+								{{- site.name|t('site') }}
+							</a>
+						{% endif %}
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+{% endblock %}
+
+{% block actionButton %}
+	<div class="btngroup">
+		<input type="submit" class="btn submit" value="{{ 'Save'|t('bookings') }}">
+		<div class="btn submit menubtn"></div>
+		<div class="menu">
+			<ul>
+				<li>
+					<a class="formsubmit" data-redirect="{{ continueEditingUrl|hash }}">
+						{{ 'Save and continue editing'|t('bookings') }}
+						{{ forms.optionShortcutLabel('S') }}
+					</a>
+				</li>
+				{% if event.id %}
+					<li>
+						<a
+							class="formsubmit"
+							data-param="eventId"
+							data-value=""
+							data-redirect="{{ continueEditingUrl|hash }}"
+						>
+							{{ 'Save as a new event'|t('bookings') }}
+						</a>
+					</li>
+				{% endif %}
+			</ul>
+			{% if event.id %}
+				<hr>
+				<ul>
+					<li>
+						<a
+							class="formsubmit error"
+							data-action="bookings/events/delete"
+							data-confirm="{{ 'Are you sure you want to delete this event?'|t('bookings') }}"
+							data-redirect="{{ 'bookings/events'|hash }}"
+						>
+							{{ 'Delete'|t('bookings') }}
+						</a>
+					</li>
+				</ul>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block content %}
+	{{ csrfInput() }}
+	<input type="hidden" name="action" value="bookings/events/save">
+	<input type="hidden" name="typeId" value="{{ eventType.id }}">
+	{% if event.id %}
+		<input type="hidden" name="eventId" value="{{ event.id }}">
+	{% endif %}
+	{% if craft.app.getIsMultiSite() %}
+		<input type="hidden" name="siteId" value="{{ event.siteId }}">
+	{% endif %}
+	{{ redirectInput('bookings/events') }}
+
+	{% set tabs = eventType.getFieldLayout().getTabs() %}
+	<div id="fields">
+		{{ forms.textField({
+			label: 'Title'|t('bookings'),
+			site: event.site,
+			id: 'title',
+			name: 'title',
+			value: event.title,
+			placeholder: 'Enter title'|t('commerce'),
+			errors: event.getErrors('title'),
+			first: true,
+			autofocus: true,
+			required: true,
+			maxlength: 255
+		}) }}
+
+		<div>
+			{% for tab in tabs %}
+				<div id="tab{{ loop.index }}" {% if not loop.first %} class="hidden"{% endif %}>
+					{% include '_includes/fields' with {
+						fields: tab.getFields(),
+						element: event,
+					} %}
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+
+	<div id="availability-container"{% if tabs|length >= 1 %} class="hidden"{% endif %}>
+		[TODO: Availability]
+	</div>
+
+	<div id="tickets-container" class="hidden">
+		[TODO: Tickets]
+	</div>
+{% endblock %}
+
+{% block details %}
+	<div class="meta">
+		{{ forms.textField({
+			label: 'Slug'|t('bookings'),
+			site: event.site,
+			id: 'slug',
+			name: 'slug',
+			value: event.slug,
+			placeholder: 'Enter slug'|t('bookings'),
+			errors: event.getErrors('slug')|merge(event.getErrors('uri'))
+		}) }}
+
+		{% if CraftEdition == CraftPro %}
+			{{ forms.elementSelectField({
+				label: 'Author'|t('app'),
+				id: 'author',
+				name: 'author',
+				elementType: userElementType,
+				selectionLabel: 'Choose'|t('app'),
+				criteria: authorOptionCriteria,
+				limit: 1,
+				elements: (author is defined and author ? [author])
+			}) }}
+		{% endif %}
+
+		{{ forms.dateTimeField({
+			label: 'Post Date'|t('bookings'),
+			id: 'postDate',
+			name: 'postDate',
+			value: event.postDate,
+			errors: event.getErrors('postDate')
+		}) }}
+
+		{{ forms.dateTimeField({
+			label: 'Expiry Date'|t('bookings'),
+			id: 'expiryDate',
+			name: 'expiryDate',
+			value: event.expiryDate,
+			errors: event.getErrors('expiryDate')
+		}) }}
+
+		{{ forms.lightswitchField({
+			label: 'Enabled'|t('bookings'),
+			id: 'enabled',
+			name: 'enabled',
+			on: event.enabled
+		}) }}
+
+		{% if craft.app.getIsMultiSite() %}
+			{{ forms.lightswitchField({
+				label: 'Enabled for site'|t('bookings'),
+				id: 'enabledForSite',
+				name: 'enabledForSite',
+				on: event.enabledForSite
+			}) }}
+		{% endif %}
+	</div>
+{% endblock %}
+
+{% if not event.slug %}
+	{% js %}
+		window.slugGenerator = new Craft.SlugGenerator('#title', '#slug');
+	{% endjs %}
+{% endif %}

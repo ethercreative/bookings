@@ -52,7 +52,9 @@ class EventTypesController extends BaseCpController
 			'fullPageForm' => true,
 		];
 
-		// Get event type (if none set)
+		// Event Type
+		// ---------------------------------------------------------------------
+
 		if ($eventType === null)
 		{
 			if ($eventTypeId === null)
@@ -69,13 +71,17 @@ class EventTypesController extends BaseCpController
 			}
 		}
 
-		// Set title
+		// Title
+		// ---------------------------------------------------------------------
+
 		if ($eventTypeId === null)
 			$variables['title'] = Bookings::t('Create an Event Type');
 		else
 			$variables['title'] = $variables['eventType']->name;
 
-		// Set tabs
+		// Tabs
+		// ---------------------------------------------------------------------
+
 		$variables['tabs'] = [
 			'eventTypeSettings' => [
 				'label' => Bookings::t('Settings'),
@@ -89,7 +95,9 @@ class EventTypesController extends BaseCpController
 
 		$variables['selectedTab'] = 'eventTypeSettings';
 
-		// Set Breadcrumbs
+		// Breadcrumbs
+		// ---------------------------------------------------------------------
+
 		$variables['crumbs'] = [
 			[
 				'label' => Bookings::t('Bookings Settings'),

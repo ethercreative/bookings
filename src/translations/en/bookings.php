@@ -65,8 +65,6 @@ return [
 	'Bookings Settings' => 'Bookings Settings',
 	'Settings' => 'Settings',
 
-	'Delete' => 'Delete',
-
 	// Settings: Event Types
 	// -------------------------------------------------------------------------
 
@@ -98,8 +96,8 @@ return [
 		'What do you want the Title field to be called?',
 
 	'Title Format' => 'Title Format',
-	'What the auto-generated entry titles should look like. You can include tags that output entry properties, such as `{myCustomField}`.' =>
-		'What the auto-generated entry titles should look like. You can include tags that output entry properties, such as `{myCustomField}`.',
+	'What the auto-generated event titles should look like. You can include tags that output event properties, such as `{myCustomField}`.' =>
+		'What the auto-generated event titles should look like. You can include tags that output event properties, such as `{myCustomField}`.',
 
 	'Site Settings' => 'Site Settings',
 	'Configure the event type\'s site-specific settings.' =>
@@ -135,6 +133,12 @@ return [
 	'New event' => 'New event',
 	'New {eventType} event' => 'New {eventType} event',
 
+	'Create a new event' => 'Create a new event',
+	'Save and continue editing' => 'Save and continue editing',
+	'Save as a new event' => 'Save as a new event',
+	'Are you sure you want to delete this event?' =>
+		'Are you sure you want to delete this event?',
+
 	// Errors
 	// =========================================================================
 
@@ -144,18 +148,27 @@ return [
 	'This action is not allowed for the current user.' =>
 		'This action is not allowed for the current user.',
 
+	'No event with the ID "{id}"' => 'No event with the ID "{id}"',
+
 	// Misc
 	// =========================================================================
 
-	'Title'        => 'Title',
-	'Type'         => 'Type',
-	'Slug'         => 'Slug',
-	'URI'          => 'URI',
-	'Author'       => 'Author',
-	'Post Date'    => 'Post Date',
-	'Expiry Date'  => 'Expiry Date',
-	'Link'         => 'Link',
-	'Date Created' => 'Date Created',
-	'Date Updated' => 'Date Updated',
+	'Title'            => 'Title',
+	'Type'             => 'Type',
+	'Slug'             => 'Slug',
+	'URI'              => 'URI',
+	'Author'           => 'Author',
+	'Post Date'        => 'Post Date',
+	'Expiry Date'      => 'Expiry Date',
+	'Link'             => 'Link',
+	'Date Created'     => 'Date Created',
+	'Date Updated'     => 'Date Updated',
+	'Availability'     => 'Availability',
+	'Tickets'          => 'Tickets',
+	'Save'             => 'Save',
+	'Delete'           => 'Delete',
+	'Enter title'      => 'Enter title',
+	'Enabled'          => 'Enabled',
+	'Enabled for site' => 'Enabled for site',
 
 ];
