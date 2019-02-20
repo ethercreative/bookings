@@ -11,6 +11,7 @@ namespace ether\bookings\migrations;
 use craft\db\Migration;
 use craft\db\Table;
 use craft\helpers\MigrationHelper;
+use ether\bookings\records\BookedSlot;
 use ether\bookings\records\Event;
 use ether\bookings\records\EventType;
 use ether\bookings\records\EventTypeSite;
@@ -31,6 +32,7 @@ class Install extends Migration
 	public function safeUp ()
 	{
 		$this->_createEventTables();
+		$this->_createBookingsTables();
 	}
 
 	/**
@@ -40,6 +42,7 @@ class Install extends Migration
 	public function safeDown ()
 	{
 		$this->_dropEventTables();
+		$this->_dropBookingsTables();
 
 		$this->delete(
 			'{{%elementindexsettings}}',
@@ -236,6 +239,78 @@ class Install extends Migration
 			'dateUpdated'     => $this->dateTime()->notNull(),
 			'uid'             => $this->uid(),
 		]);
+	}
+
+	// Bookings
+	// =========================================================================
+
+	/**
+	 * Create tables related to booked bookings
+	 */
+	private function _createBookingsTables ()
+	{
+		$this->_createBookedSlotsTable();
+	}
+
+	/**
+	 * Drop tables relating to booked bookings
+	 *
+	 * @throws \yii\base\NotSupportedException
+	 */
+	private function _dropBookingsTables ()
+	{
+		$this->_dropBookedSlotsTable();
+	}
+
+	// Bookings: Booked Slots
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Create the booked slots table
+	 */
+	private function _createBookedSlotsTable ()
+	{
+		$this->createTable(BookedSlot::TableName, [
+			'id'      => $this->primaryKey(),
+			'start'   => $this->boolean()->defaultValue(false)->notNull(),
+			'end'     => $this->boolean()->defaultValue(false)->notNull(),
+			'date'    => $this->dateTime()->notNull(),
+			'eventId' => $this->integer()->notNull(),
+			// TODO: Add bookingId / ticketId / resourceId
+			'uid'     => $this->uid(),
+		]);
+
+		$this->createIndex(null, BookedSlot::TableName, ['date'], false);
+		$this->createIndex(null, BookedSlot::TableName, ['eventId'], false);
+		// TODO: Add indexes for bookingId / ticketId / resourceId
+
+		$this->addForeignKey(
+			null,
+			BookedSlot::TableName,
+			['eventId'],
+			Event::TableName,
+			['id'],
+			'CASCADE',
+			null
+		);
+
+		// TODO: Add foreign keys for booking / ticket / resource
+	}
+
+	/**
+	 * Drop the booked slots table
+	 *
+	 * @throws \yii\base\NotSupportedException
+	 */
+	private function _dropBookedSlotsTable ()
+	{
+		if ($this->_tableExists(BookedSlot::TableName))
+		{
+			MigrationHelper::dropAllForeignKeysToTable(BookedSlot::TableName);
+			MigrationHelper::dropAllForeignKeysOnTable(BookedSlot::TableName);
+		}
+
+		$this->dropTableIfExists(BookedSlot::TableName);
 	}
 
 	// Helpers
