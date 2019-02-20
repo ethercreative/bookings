@@ -79,10 +79,16 @@ class Field extends Component {
 							instructions={"The user can book a range of slots.\r\nHandy for hotels, hardware hire, etc."}
 							icon={FlexibleIcon}
 							onClick={this.onTypeButtonClick}
-							disabled
 						/>
 					</div>
 				</CraftLabel>
+
+				<p>
+					<strong>Note:</strong> Both ticket and event capacity are
+					ignored when using flexible bookings; only the multiplier is
+					used. You are only able to book a qty of 1 each booking when
+					using flexible bookings.
+				</p>
 
 				<CraftLabel
 					label="Capacity"

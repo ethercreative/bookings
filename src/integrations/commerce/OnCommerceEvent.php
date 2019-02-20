@@ -37,6 +37,8 @@ class OnCommerceEvent
 
 	/**
 	 * @param Event $event
+	 *
+	 * @throws \Exception
 	 */
 	public function onBeforeSaveLineItem (Event $event)
 	{
@@ -62,9 +64,16 @@ class OnCommerceEvent
 		if (!$ticketId)
 			return;
 
-		$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
-		// TODO: Date ranges
-		$endDate = null;
+		if (is_array($options['ticketDate']))
+		{
+			$startDate = DateHelper::parseDateFromPost($options['ticketDate']['start']);
+			$endDate   = DateHelper::parseDateFromPost($options['ticketDate']['end']);
+		}
+		else
+		{
+			$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
+			$endDate   = null;
+		}
 
 		$ticket = $bookings->tickets->getTicketById($ticketId);
 
@@ -82,8 +91,7 @@ class OnCommerceEvent
 		$event = $ticket->getEvent();
 
 		// Is time valid?
-		// TODO: Date ranges
-		if ($event->isDateOccurrence($startDate) === false)
+		if ($event->isRangeOccurrence($startDate, $endDate) === false)
 		{
 			$err = \Craft::t('bookings', 'Selected Date / Time is invalid.');
 
@@ -94,7 +102,6 @@ class OnCommerceEvent
 		}
 
 		// Do we have an existing booking?
-		// TODO: Date ranges
 		$booking = $bookings->bookings->getBookingByOrderEventAndSlot(
 			$order->id,
 			$event->id,
@@ -102,10 +109,9 @@ class OnCommerceEvent
 		);
 
 		// Is time available?
-		// TODO: Date ranges
 		$qty = $lineItem->qty;
 
-		if ($qty > 0 && $bookings->availability->isTimeAvailable($booking, $ticket, $startDate, $qty) === false)
+		if ($qty > 0 && $bookings->availability->isRangeAvailable($booking, $ticket, $startDate, $endDate, $qty) === false)
 		{
 			$err = \Craft::t(
 				'bookings',
@@ -151,19 +157,22 @@ class OnCommerceEvent
 		if (!$ticketId)
 			return;
 
-		$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
-
-		// TODO: Date ranges
-		$endDate = null;
-//		$endDate = $craft->request->getBodyParam('ticketEndDate');
+		if (is_array($options['ticketDate']))
+		{
+			$startDate = DateHelper::parseDateFromPost($options['ticketDate']['start']);
+			$endDate   = DateHelper::parseDateFromPost($options['ticketDate']['end']);
+		}
+		else
+		{
+			$startDate = DateHelper::parseDateFromPost($options['ticketDate']);
+			$endDate   = null;
+		}
 
 		$ticket = $bookings->tickets->getTicketById($ticketId);
 
 		$event = $ticket->getEvent();
 
 		// Do we have an existing booking?
-		// TODO: cache from onBeforeSaveLineItem?
-		// TODO: Date ranges
 		$booking = $bookings->bookings->getBookingByOrderEventAndSlot(
 			$order->id,
 			$event->id,

@@ -9,7 +9,7 @@
 namespace ether\bookings\helpers;
 
 
-class ArrayHelper
+class ArrayHelper extends \yii\helpers\ArrayHelper
 {
 
 	public static function groupBy (array $arr, $key): array

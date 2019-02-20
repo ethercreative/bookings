@@ -11,8 +11,10 @@ namespace ether\bookings\models;
 use craft\helpers\DateTimeHelper;
 use ether\bookings\base\Model;
 use ether\bookings\enums\EventType;
+use ether\bookings\enums\Frequency;
 use ether\bookings\helpers\DateHelper;
 use ether\bookings\records\EventRecord;
+use RRule\RRule;
 use RRule\RSet;
 use yii\helpers\Json;
 
@@ -210,7 +212,7 @@ class Event extends Model
 
 		$rules[] = [
 			['type', 'multiplier', 'baseRule'],
-			'required'
+			'required',
 		];
 
 		return $rules;
@@ -248,8 +250,10 @@ class Event extends Model
 	/**
 	 * Returns the slots as an iterable.
 	 *
-	 * This is the recommended way of accessing the slots, especially if you can
-	 * get away with not needing them all generated at once (i.e. not used in JS)
+	 * This is the recommended way of accessing the slots, especially if you
+	 * can
+	 * get away with not needing them all generated at once (i.e. not used in
+	 * JS)
 	 *
 	 * @return RSet|\Iterator|\ArrayAccess|\Countable
 	 */
@@ -316,11 +320,51 @@ class Event extends Model
 	}
 
 	/**
+	 * Checks if the given range is valid
+	 *
+	 * @param string|\DateTime      $start
+	 * @param string|\DateTime|null $end
+	 *
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public function isRangeOccurrence ($start, $end = null)
+	{
+		if ($end === null)
+			return $this->isDateOccurrence($start);
+
+		$start = clone DateHelper::toUTCDateTime($start);
+		$end   = clone DateHelper::toUTCDateTime($end);
+
+		// Occurrences in this event
+		$eventOccurrences = $this->_getSet()->getOccurrencesBetween(
+			$start,
+			$end->modify('+' . $this->baseRule->interval . ' ' . Frequency::toUnit($this->baseRule->frequency))
+		);
+
+		// Selected occurrences
+		$rules = array_merge($this->baseRule->asRRuleArray(), [
+			'DTSTART' => $start->format('c'),
+			'UNTIL'   => $end->format('c'),
+		]);
+		unset($rules['COUNT']);
+		$rrule = new RRule($rules);
+
+		/** @var \DateTime $occurrence */
+		foreach ($rrule->getOccurrences() as $occurrence)
+			if (!in_array($occurrence, $eventOccurrences))
+				return false;
+
+		return true;
+	}
+
+	/**
 	 * Returns the next available slot from today
 	 *
 	 * @param \DateTime|null $from - Get the next available slot from this date
 	 *
 	 * @return \DateTime|null
+	 * @throws \Exception
 	 */
 	public function getNextAvailableSlot (\DateTime $from = null)
 	{
