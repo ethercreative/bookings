@@ -59,31 +59,21 @@ e.g. `<input type="text" name="options[ticketDate]" value="2018-11-14 15:38:00">
 	{{ csrfInput() }}
 	<input type="hidden" name="action" value="commerce/cart/update-cart" />
 	
-	<ul>
-		{% for variant in product.variants %}
-			<li>
-				<p><strong>{{ variant.title }}</strong> - {{ variant.price|currency }}</p>
-				<input type="hidden" name="purchasables[{{loop.index}}][id]" value="{{ variant.id }}" />
-				<input type="hidden" name="purchasables[{{loop.index}}][options][ticketId]" value="{{ variant.myTicketField.id }}" />
-				<input type="hidden" name="purchasables[{{loop.index}}][options][ticketDate]" />
-				<label>
-					Start
-					<input type="hidden" name="purchasables[{{loop.index}}][options][ticketDate][start]" />
-					<input type="date" name="purchasables[{{loop.index}}][options][ticketDate][start][date]" />
-					<input type="time" name="purchasables[{{loop.index}}][options][ticketDate][start][time]" />
-					<input type="hidden" name="purchasables[{{loop.index}}][options][ticketDate][start][timezone]" value="{{ craft.app.getTimeZone() }}" />
-				</label>
-				<label>
-					End
-					<input type="hidden" name="purchasables[{{loop.index}}][options][ticketDate][end]" />
-					<input type="date" name="purchasables[{{loop.index}}][options][ticketDate][end][date]" />
-					<input type="time" name="purchasables[{{loop.index}}][options][ticketDate][end][time]" />
-					<input type="hidden" name="purchasables[{{loop.index}}][options][ticketDate][end][timezone]" value="{{ craft.app.getTimeZone() }}" />
-				</label>
-				<input type="hidden" name="purchasables[{{loop.index}}][qty]" value="1" />
-			</li>
-		{% endfor %}
-	</ul>
+	{% set variant = product.defaultVariant %}
+	<p><strong>{{ variant.title }}</strong> - {{ variant.price|currency }}</p>
+	<input type="hidden" name="purchasables[0][id]" value="{{ variant.id }}"/>
+	<input type="hidden" name="purchasables[0][qty]" value="1"/>
+	<input type="hidden" name="purchasables[0][options][ticketId]" value="{{ variant.ticket.id }}"/>
+	<input type="hidden" name="purchasables[0][options][ticketDate]"/>
+	<label>
+		Start
+		<input type="text" name="purchasables[0][options][ticketDate][start]"/>
+	</label>
+	<br>
+	<label>
+		End
+		<input type="text" name="purchasables[0][options][ticketDate][end]"/>
+	</label>
 	
 	<button>Add to Cart</button>
 </form>

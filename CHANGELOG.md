@@ -1,5 +1,8 @@
-## 1.0.0-alpha.25
+## 1.0.0-alpha.26
+### Added
+- Flexible Bookings
 
+## 1.0.0-alpha.25
 ### Fixed
 - Fixed issue where changing the date on a booking might send a date in the 
 wrong timezone. [#29]
