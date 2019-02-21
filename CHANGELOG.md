@@ -1,3 +1,7 @@
+## 1.0.0-alpha.29
+### Fixed
+- Fixed flexible bookings erroring if qty was greater than 1
+
 ## 1.0.0-alpha.28
 ### Fixed
 - The qty of a line item with a flexible booking is automatically set to the 

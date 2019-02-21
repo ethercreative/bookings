@@ -95,10 +95,7 @@ class AvailabilityService extends Component
 
 		// Check the qty
 		if ($qty > 1)
-		{
-			\Craft::info('Quantity is greater than 1', 'bookings');
-			return false;
-		}
+			$qty = 1;
 
 		$event = $ticket->getEvent();
 
