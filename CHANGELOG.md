@@ -1,3 +1,9 @@
+## 1.0.0-alpha.28
+### Fixed
+- The qty of a line item with a flexible booking is automatically set to the 
+number of slots in that booking.
+- Temp calendar slot list now scrollable
+
 ## 1.0.0-alpha.27
 ### Added
 - Added temp screen for viewing slots on views currently without calendars

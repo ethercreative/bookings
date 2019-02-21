@@ -125,6 +125,10 @@ class OnCommerceEvent
 
 			return;
 		}
+
+		// Set qty to slots in range
+		if ($endDate !== null)
+			$lineItem->qty = count($event->getSlotsInRange($startDate, $endDate));
 	}
 
 	/**

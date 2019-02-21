@@ -165,7 +165,7 @@ class RulesModal extends Component {
 
 		// Temp to show available slots
 		let Calendar = () => (
-			<pre style={{padding:30}}>
+			<pre style={{padding:30,height:'100%',overflow:'auto'}}>
 				<code style={{fontFamily: 'Fira Code, monospace'}}>
 					{JSON.stringify(this.props.availability, null, 2)}
 				</code>
