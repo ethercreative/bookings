@@ -163,6 +163,24 @@ class RulesModal extends Component {
 	_renderMain () {
 		const { activeView } = this.state;
 
+		// Temp to show available slots
+		let Calendar = () => (
+			<pre style={{padding:30}}>
+				<code style={{fontFamily: 'Fira Code, monospace'}}>
+					{JSON.stringify(this.props.availability, null, 2)}
+				</code>
+			</pre>
+		);
+
+		switch (activeView) {
+			case 'day':
+				Calendar = Day;
+				break;
+			case 'week':
+				Calendar = Week;
+				break;
+		}
+
 		return (
 			<div class={styles.main}>
 				<header class={styles.header}>
@@ -189,8 +207,7 @@ class RulesModal extends Component {
 					</CraftButton>
 				</header>
 
-				{activeView === "day" && <Day />}
-				{activeView === "week" && <Week />}
+				<Calendar />
 			</div>
 		);
 	}
@@ -204,8 +221,9 @@ class RulesModal extends Component {
 
 }
 
-export default connect(({ settings: { baseRule, exceptions }, hasAnyBookings }) => ({
+export default connect(({ settings: { baseRule, exceptions }, availability, hasAnyBookings }) => ({
 	baseRule,
 	exceptions,
 	hasAnyBookings,
+	availability,
 }))(RulesModal);

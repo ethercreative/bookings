@@ -1,3 +1,7 @@
+## 1.0.0-alpha.27
+### Added
+- Added temp screen for viewing slots on views currently without calendars
+
 ## 1.0.0-alpha.26
 ### Added
 - Flexible Bookings
