@@ -1,3 +1,7 @@
+## 1.0.0-alpha.30
+### Fixed
+- Fixed saving multiple booked tickets not erroring when invalid
+
 ## 1.0.0-alpha.29
 ### Fixed
 - Fixed flexible bookings erroring if qty was greater than 1
