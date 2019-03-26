@@ -170,42 +170,40 @@ class DefaultController extends Controller
 		// Save the tickets
 		// ---------------------------------------------------------------------
 
-		$transaction = \Craft::$app->db->beginTransaction();
 		$failed = false;
 
 		foreach ($tickets as $ticket)
 		{
-			if (Bookings::getInstance()->tickets->saveBookedTicket($ticket))
-				continue;
-
-			$transaction->rollBack();
-			$failed = true;
-			break;
+			if (Bookings::getInstance()->tickets->saveBookedTicket($ticket) === false)
+				$failed = true;
 		}
-
-		$transaction->commit();
 
 		// Return
 		// ---------------------------------------------------------------------
+
+
+		$craft->urlManager->setRouteParams([
+			'tickets' => array_reduce(
+				$tickets, function ($a, $b) {
+				$a[$b->id] = $b;
+
+				return $a;
+			}, []),
+		]);
 
 		if ($failed) {
 			$craft->session->setError(
 				\Craft::t('bookings', 'Unable to update booked tickets.')
 			);
+
+			return null;
 		} else {
 			$craft->session->setNotice(
 				\Craft::t('bookings', 'Booked tickets updated.')
 			);
+
+			return $this->redirectToPostedUrl();
 		}
-
-		$craft->urlManager->setRouteParams([
-			'tickets' => array_reduce($tickets, function ($a, $b) {
-				$a[$b->id] = $b;
-				return $a;
-			}, []),
-		]);
-
-		return $this->redirectToPostedUrl();
 	}
 
 }
