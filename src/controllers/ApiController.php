@@ -214,7 +214,14 @@ class ApiController extends Controller
 		$out = fopen('php://output', 'w');
 		fputcsv($out, array_keys($slots[0]));
 		foreach ($slots as $slot)
+		{
+			// WARNING: Temp workaround for not storing dates with timezones
+			$s = new \DateTime($slot['slot'], new \DateTimeZone('UTC'));
+			$s->setTimezone(new \DateTimeZone('Europe/London'));
+			$slot['slot'] = $s->format('Y-m-d H:i:s');
+
 			fputcsv($out, array_values($slot));
+		}
 		fclose($out);
 		exit();
 	}
