@@ -1,3 +1,7 @@
+## 1.0.0-alpha.31
+### Added
+- Add ticket price and title columns to export
+
 ## 1.0.0-alpha.30
 ### Fixed
 - Fixed saving multiple booked tickets not erroring when invalid
