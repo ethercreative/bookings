@@ -39,6 +39,8 @@ class ReportsService extends Component
 			'bookings.[[dateBooked]]',
 			'orders.[[email]]',
 			'CONCAT(addresses.[[firstName]], \' \', addresses.[[lastName]]) as name',
+			'lineItems.[[salePrice]] as price',
+			'TRIM(BOTH \'"\' FROM JSON_EXTRACT(lineItems.[[snapshot]], \'$.title\')) as ticket',
 		];
 
 		$prefix = \Craft::$app->fields->oldFieldColumnPrefix;
@@ -76,6 +78,14 @@ class ReportsService extends Component
 				'{{%content}} content',
 				'content.[[elementId]] = slots.[[bookedTicketId]]'
 			)
+			->leftJoin(
+				'{{%bookings_booked_tickets}} bookedTickets',
+				'bookedTickets.[[id]] = slots.[[bookedTicketId]]'
+			)
+			->leftJoin(
+				'{{%commerce_lineitems}} lineItems',
+				'lineItems.[[id]] = bookedTickets.[[lineItemId]]'
+			)
 			->orderBy('slots.[[date]] ASC, orders.[[email]] ASC')
 			->all();
 
@@ -83,3 +93,4 @@ class ReportsService extends Component
 	}
 
 }
+
