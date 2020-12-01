@@ -41,6 +41,7 @@ class ReportsService extends Component
 			'CONCAT(addresses.[[firstName]], \' \', addresses.[[lastName]]) as name',
 			'lineItems.[[salePrice]] as price',
 			'TRIM(BOTH \'"\' FROM JSON_EXTRACT(lineItems.[[snapshot]], \'$.title\')) as ticket',
+			'orders.[[totalPrice]]',
 		];
 
 		$prefix = \Craft::$app->fields->oldFieldColumnPrefix;
