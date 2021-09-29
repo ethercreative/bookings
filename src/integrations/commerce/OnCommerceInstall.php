@@ -6,7 +6,7 @@
  * @copyright Copyright (c) Ether Creative
  */
 
-namespace ether\bookings;
+namespace ether\bookings\integrations\commerce;
 
 use ether\bookings\records\BookedTicketRecord;
 use ether\bookings\records\BookingRecord;
