@@ -7355,7 +7355,7 @@ postcss@^6.0.0, postcss@^6.0.1, postcss@^6.0.17, postcss@^6.0.2:
 preact-cli@^2.0.2:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/preact-cli/-/preact-cli-2.2.1.tgz#05a3311e89bdb120a5273532c77b87bdd710e04b"
-  integrity sha1-BaMxHom9sSClJzUyx3uHvdcQ4Es=
+  integrity sha512-ufiYPHg2+ywJBPqWjlPybM6qR3pwP93fZ2EAeM53RX+1Xxb1XmS3pwWrp/ZKXefvaddcZLUN1h2QloYRogwvsA==
   dependencies:
     autoprefixer "^7.1.0"
     babel-loader "^7.0.0"
